@@ -70,8 +70,11 @@
                     <p class="text-gray-500 mt-2 text-sm">請輸入您的 Gemini API Key 以啟用 AI 題目生成與分析功能。此金鑰僅暫存於您的瀏覽器中，保障安全。</p>
                 </div>
                 <div class="space-y-4">
-                    <div>
-                        <input type="password" id="input-api-key" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="AIzaSy...">
+                    <div class="relative">
+                        <input type="password" id="input-api-key" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition pr-10" placeholder="AIzaSy...">
+                        <button type="button" onclick="toggleVisibility('input-api-key', 'icon-api-key')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-eye" id="icon-api-key"></i>
+                        </button>
                     </div>
                     <div class="flex items-center justify-between">
                         <label class="flex items-center text-sm text-gray-600 cursor-pointer">
@@ -100,7 +103,12 @@
                         <input type="text" id="auth-dept" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="任教科系 (例如：行銷系)">
                     </div>
                     <input type="email" id="auth-email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="teacher@school.edu">
-                    <input type="password" id="auth-password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••">
+                    <div class="relative">
+                        <input type="password" id="auth-password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none pr-10" placeholder="••••••••">
+                        <button type="button" onclick="toggleVisibility('auth-password', 'icon-password')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-eye" id="icon-password"></i>
+                        </button>
+                    </div>
                     <button id="btn-login" onclick="handleAuthAction('login')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">登入</button>
                     <button id="btn-register" onclick="handleAuthAction('register')" class="w-full bg-white border-2 border-blue-600 hover:bg-blue-50 text-blue-600 font-semibold py-3 rounded-lg hidden transition">註冊新帳號</button>
                     <div class="text-center mt-4"><button onclick="toggleAuthMode()" class="text-sm text-blue-600 hover:underline" id="auth-toggle-btn">沒有帳號？點此註冊</button></div>
@@ -117,6 +125,10 @@
                 <div class="space-y-4">
                     <input type="text" id="student-code" class="w-full px-4 py-4 text-center text-2xl tracking-[0.5em] font-bold uppercase rounded-lg border-2 border-gray-300 focus:border-blue-500 outline-none" placeholder="123456" maxlength="6">
                     <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="student-dept" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="科系 (例如:資管系)">
+                        <input type="text" id="student-grade" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="年級 (例如:大三)">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
                         <input type="text" id="student-id-number" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="請輸入學號">
                         <input type="text" id="student-nickname" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="請輸入姓名">
                     </div>
@@ -131,7 +143,6 @@
             <div class="flex justify-between items-center mb-8">
                 <div><h1 class="text-3xl font-bold text-gray-800">活動管理控制台</h1></div>
                 <div class="flex gap-2">
-                    <button onclick="exportData()" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2"><i class="fas fa-download"></i> 離線備份</button>
                     <button onclick="loadOverallDashboard()" class="bg-green-600 hover:bg-green-700 transition text-white px-5 py-2 rounded-lg font-semibold shadow-md flex items-center gap-2"><i class="fas fa-chart-pie"></i> 總體成效看板</button>
                     <button onclick="navigate('create-activity')" class="bg-blue-600 hover:bg-blue-700 transition text-white px-5 py-2 rounded-lg font-semibold shadow-md flex items-center gap-2"><i class="fas fa-plus"></i> 建立新活動</button>
                 </div>
@@ -466,7 +477,6 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration
         const firebaseConfig = { 
             apiKey: "AIzaSyDIBl4wYBulCVQOlC6hNHyCIA96dqC61N8", 
             authDomain: "k19-ai-classroom-comprehension.firebaseapp.com", 
@@ -485,22 +495,30 @@
             apiKey: '', user: null, isTeacher: false, isAdmin: false, 
             activities: [], currentActivity: null, responses: [], 
             draftQuestions: [], uploadedFiles: [], unsubscribeLive: null,
-            viewingTeacherId: null, viewingTeacherName: null // For Admin cross-viewing
+            viewingTeacherId: null, viewingTeacherName: null
         };
 
-        // --- STREAMING_CHUNK: Helper Functions & Modals ---
         function showToast(msg, type='info') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<span>${msg}</span>`; c.appendChild(t); setTimeout(() => t.remove(), 3000); }
         function generateId() { return Math.random().toString(36).substring(2,8).toUpperCase(); }
         function openTonyModal() { document.getElementById('modal-tony').classList.remove('hidden'); }
         function closeTonyModal() { document.getElementById('modal-tony').classList.add('hidden'); }
+        
+        function toggleVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === "password") { input.type = "text"; icon.classList.remove("fa-eye"); icon.classList.add("fa-eye-slash"); } 
+            else { input.type = "password"; icon.classList.remove("fa-eye-slash"); icon.classList.add("fa-eye"); }
+        }
         
         let currentConfirmAction = null;
         function showConfirmModal(title, msg, action) { document.getElementById('confirm-title').innerText = title; document.getElementById('confirm-message').innerText = msg; currentConfirmAction = action; document.getElementById('modal-confirm').classList.remove('hidden'); }
         function closeConfirmModal() { document.getElementById('modal-confirm').classList.add('hidden'); currentConfirmAction = null; }
         function executeConfirmAction() { if(currentConfirmAction) currentConfirmAction(); closeConfirmModal(); }
 
-        // --- STREAMING_CHUNK: Navigation Logic ---
-        function navigate(viewId) { 
+        function navigate(viewId) {
+            // 安全移除監聽器，防止權限錯誤
+            if(currentState.unsubscribeLive) { currentState.unsubscribeLive(); currentState.unsubscribeLive = null; }
+            
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); 
             const target = document.getElementById(`view-${viewId}`);
             if(target) target.classList.add('active'); 
@@ -516,14 +534,12 @@
             } else navigate(currentState.apiKey ? 'auth' : 'api-key');
         }
 
-        // Export functions to window for HTML access
-        Object.assign(window, { navigate, navigateHome, saveApiKey, handleAuthAction, toggleAuthMode, handleLogout, openTonyModal, closeTonyModal, nextStep, prevStep, handleFileUpload, generateAIQuestions, publishActivity, studentJoinActivity, submitQuiz, endActivityAndAnalyze, triggerAIAnalysis, exportData, downloadWordReport, downloadExcelReport, openLiveActivity, viewAnalysis, goBackFromAnalysis, loadAdminDashboard, toggleUserStatus, deleteUserRecord, requestDeleteActivity, closeConfirmModal, executeConfirmAction, toggleCreateMode, loadOverallDashboard, loadAdminTeacherActivities });
+        // Export to window for HTML access
+        Object.assign(window, { navigate, navigateHome, saveApiKey, handleAuthAction, toggleAuthMode, handleLogout, openTonyModal, closeTonyModal, toggleVisibility, nextStep, prevStep, handleFileUpload, generateAIQuestions, publishActivity, studentJoinActivity, submitQuiz, endActivityAndAnalyze, triggerAIAnalysis, downloadWordReport, downloadExcelReport, openLiveActivity, viewAnalysis, goBackFromAnalysis, loadAdminDashboard, toggleUserStatus, deleteUserRecord, requestDeleteActivity, closeConfirmModal, executeConfirmAction, toggleCreateMode, loadOverallDashboard, loadAdminTeacherActivities });
 
-        // --- STREAMING_CHUNK: Auth and Initialization ---
         function initApp() {
             currentState.apiKey = localStorage.getItem('k19_api_key') || sessionStorage.getItem('k19_api_key') || '';
             if (currentState.apiKey) document.getElementById('input-api-key').value = currentState.apiKey;
-            currentState.activities = JSON.parse(localStorage.getItem('k19_local_activities') || '[]');
 
             onAuthStateChanged(auth, async (user) => {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -548,6 +564,7 @@
                         navigate('student-entry');
                     }
                 } else {
+                    if(currentState.unsubscribeLive) { currentState.unsubscribeLive(); currentState.unsubscribeLive = null; }
                     currentState.user = null; currentState.isTeacher = false; currentState.isAdmin = false;
                     document.getElementById('nav-auth-section').classList.add('hidden');
                     document.getElementById('nav-admin-btn').classList.add('hidden');
@@ -602,7 +619,6 @@
         }
         function handleLogout() { signOut(auth); }
 
-        // --- STREAMING_CHUNK: Admin Functions (Users & View Activities) ---
         async function loadAdminDashboard() {
             if(!currentState.isAdmin) return;
             const listEl = document.getElementById('admin-user-list');
@@ -656,7 +672,6 @@
                 const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'users', uid, 'activities'));
                 let acts = []; snap.forEach(d => acts.push(d.data()));
                 
-                // Temporarily store in currentState so viewAnalysis can find them
                 currentState.activities = acts;
 
                 if (acts.length === 0) { listEl.innerHTML = `<div class="p-8 text-center text-gray-500">此教師尚無建立任何活動</div>`; return; }
@@ -685,7 +700,6 @@
             });
         }
 
-        // --- STREAMING_CHUNK: Teacher Dashboard ---
         async function requestDeleteActivity(id) {
             showConfirmModal('確定刪除活動？', '刪除後無法還原，所有相關的作答紀錄與報表都會一併清除。', async () => {
                 try {
@@ -695,7 +709,6 @@
                         await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code));
                     }
                     currentState.activities = currentState.activities.filter(a => a.id !== id);
-                    localStorage.setItem('k19_local_activities', JSON.stringify(currentState.activities));
                     showToast('活動已成功刪除', 'success'); loadDashboard();
                 } catch(e) { showToast('刪除失敗', 'error'); }
             });
@@ -710,7 +723,6 @@
                 const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'users', currentState.user.uid, 'activities'));
                 let acts = []; snap.forEach(d => acts.push(d.data()));
                 currentState.activities = acts; 
-                localStorage.setItem('k19_local_activities', JSON.stringify(acts));
             } catch (e) {}
             
             document.getElementById('dashboard-stats').innerHTML = `<div class="bg-white p-6 rounded-xl border flex items-center justify-between shadow-sm"><div><p class="text-sm text-gray-500 mb-1">活動總數</p><p class="text-3xl font-bold text-gray-800">${currentState.activities.length}</p></div><i class="fas fa-folder text-blue-500 text-3xl opacity-80"></i></div>`;
@@ -733,7 +745,6 @@
                 </div>`).join('');
         }
 
-        // --- STREAMING_CHUNK: Overall Dashboard ---
         async function loadOverallDashboard() {
             navigate('overall-dashboard');
             const container = document.getElementById('overall-dashboard-content');
@@ -800,7 +811,6 @@
             container.innerHTML = html;
         }
 
-        // --- STREAMING_CHUNK: Create Activity Wizard & AI ---
         function nextStep(s) { document.querySelectorAll('.wizard-step').forEach(e=>e.classList.add('hidden')); document.getElementById(`wizard-step-${s}`).classList.remove('hidden'); }
         function prevStep(s) { nextStep(s); }
         
@@ -883,15 +893,15 @@
                 document.getElementById('draft-questions-container').innerHTML = currentState.draftQuestions.map((q,i) => `<div class="p-4 border rounded-lg bg-white mb-2"><h4 class="font-bold text-gray-800">Q${i+1}: ${q.stem}</h4><p class="text-sm text-green-700 font-bold mt-1 bg-green-50 inline-block px-2 py-1 rounded">正解: ${q.correctAnswer}</p><p class="text-sm text-gray-500 mt-2">解析: ${q.explanation}</p></div>`).join('');
                 nextStep(4);
             } catch(e) { 
-                showToast('AI 產生失敗，可能是內容過長或 Key 錯誤', 'error'); 
-                prevStep(2); 
+                showToast('AI 產生失敗，請退回重試或檢查 Key', 'error'); 
+                document.getElementById('wizard-step-3').innerHTML = `<div class="text-center"><p class="text-red-500 mb-4 font-bold">生成失敗，可能是內容過長或連線中斷</p><button onclick="prevStep(2)" class="px-6 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">退回上一步重試</button></div>`;
             }
         }
 
         async function publishActivity() {
             if(!document.getElementById('confirm-review-check').checked) return showToast('請勾選確認', 'warning');
             const act = { id: 'act_'+Date.now(), code: generateId(), ownerId: currentState.user.uid, courseName: document.getElementById('create-course-name').value||'課程', activityName: document.getElementById('create-activity-name').value||'測驗', status: 'open', questions: currentState.draftQuestions, createdAt: Date.now() };
-            currentState.activities.push(act); localStorage.setItem('k19_local_activities', JSON.stringify(currentState.activities));
+            currentState.activities.push(act);
             try { await setDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), act); await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code), {id: act.id, ownerId: act.ownerId, code: act.code, courseName: act.courseName, activityName: act.activityName, status: act.status, questions: act.questions}); } catch(e){}
             
             document.getElementById('create-course-name').value = ''; document.getElementById('create-activity-name').value = ''; document.getElementById('create-material').value = '';
@@ -900,7 +910,6 @@
             showToast('發布成功', 'success'); openLiveActivity(act.id);
         }
 
-        // --- STREAMING_CHUNK: Student Join & Live Sync ---
         function openLiveActivity(id) {
             const act = currentState.activities.find(a=>a.id===id); if(!act) return;
             currentState.currentActivity = act;
@@ -909,23 +918,36 @@
             navigate('activity-live');
             
             if(currentState.unsubscribeLive) currentState.unsubscribeLive();
-            currentState.unsubscribeLive = onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses'), snap => {
-                document.getElementById('live-response-count').innerText = snap.size; currentState.responses = []; snap.forEach(d=>currentState.responses.push(d.data()));
-            });
+            
+            // 安全監聽機制
+            currentState.unsubscribeLive = onSnapshot(
+                collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses'), 
+                {
+                    next: (snap) => {
+                        document.getElementById('live-response-count').innerText = snap.size; 
+                        currentState.responses = []; 
+                        snap.forEach(d=>currentState.responses.push(d.data()));
+                    },
+                    error: (err) => { console.log('Listener disconnected gracefully'); }
+                }
+            );
         }
 
         async function studentJoinActivity() {
             const code = document.getElementById('student-code').value.toUpperCase().trim();
+            const dept = document.getElementById('student-dept').value.trim();
+            const grade = document.getElementById('student-grade').value.trim();
             const sid = document.getElementById('student-id-number').value.trim();
             const name = document.getElementById('student-nickname').value.trim();
-            if(!code || !sid || !name) return showToast('代碼、學號與姓名皆必填', 'warning');
+            
+            if(!code || !dept || !grade || !sid || !name) return showToast('所有欄位皆為必填項目', 'warning');
 
             if(!auth.currentUser) await signInAnonymously(auth).catch(e=>{});
             let act = currentState.activities.find(a=>a.code===code);
             try { const snap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', code)); if(snap.exists()) act = snap.data(); } catch(e){}
             if(!act || act.status !== 'open') return showToast('活動不存在或已結束', 'error');
 
-            currentState.currentActivity = act; currentState.studentInfo = { sid, name };
+            currentState.currentActivity = act; currentState.studentInfo = { sid, name, dept, grade };
             document.getElementById('quiz-course-title').innerText = act.courseName; document.getElementById('quiz-student-id').innerText = sid; document.getElementById('quiz-student-name').innerText = name;
             document.getElementById('quiz-questions-container').innerHTML = act.questions.map((q,i) => `
                 <div class="bg-gray-50 p-5 border border-gray-200 rounded-xl mb-4 shadow-sm"><h3 class="font-bold mb-4 text-lg text-gray-800">Q${i+1}. ${q.stem}</h3><div class="space-y-3">
@@ -942,7 +964,15 @@
             if(!all) return showToast('請回答所有問題', 'warning');
             
             const uid = auth.currentUser ? auth.currentUser.uid : 's_'+Date.now();
-            const payload = { studentUid: uid, studentId: currentState.studentInfo.sid, nickname: currentState.studentInfo.name, answers: ans, submittedAt: Date.now() };
+            const payload = { 
+                studentUid: uid, 
+                department: currentState.studentInfo.dept,
+                grade: currentState.studentInfo.grade,
+                studentId: currentState.studentInfo.sid, 
+                nickname: currentState.studentInfo.name, 
+                answers: ans, 
+                submittedAt: Date.now() 
+            };
             currentState.responses.push(payload); 
 
             try { await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses', uid), payload); } catch(e){}
@@ -950,7 +980,6 @@
             document.getElementById('quiz-questions-container').classList.add('hidden'); document.getElementById('btn-submit-quiz').classList.add('hidden'); document.getElementById('quiz-success-msg').classList.remove('hidden');
         }
 
-        // --- STREAMING_CHUNK: Analysis & Export ---
         function endActivityAndAnalyze() { viewAnalysis(currentState.currentActivity.id); }
         
         async function viewAnalysis(id) {
@@ -997,9 +1026,7 @@
 
                 const ai = JSON.parse(res.candidates[0].content.parts[0].text.replace(/```json/g,'').replace(/```/g,'').trim());
                 act.analysis = { ai }; 
-                localStorage.setItem('k19_local_activities', JSON.stringify(currentState.activities));
                 
-                // If viewing own, save to Firestore. Admin viewing others avoids overwriting to keep it simple.
                 if(currentState.user && currentState.user.uid === act.ownerId) {
                     try { await updateDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), { analysis: act.analysis }); } catch(e){}
                 }
@@ -1013,34 +1040,80 @@
             }
         }
 
-        // Excel Export (Formatted Column Widths)
+        // Excel Export (Formatted Column Widths & Dept/Grade)
         function downloadExcelReport() {
             const act = currentState.currentActivity; const resps = currentState.responses;
             if(!act || resps.length === 0) return showToast('目前沒有作答資料可供匯出', 'warning');
-            let headers = ['課程名稱', '活動名稱', '學號', '學生姓名', '總答對', '總題數', '得分(%)'];
+            let headers = ['課程名稱', '活動名稱', '科系', '年級', '學號', '學生姓名', '總答對', '總題數', '得分(%)'];
             act.questions.forEach((q, i) => { headers.push(`Q${i+1} 作答`); headers.push(`Q${i+1} 結果 (O/X)`); });
             let dataRows = [];
             resps.forEach(r => {
                 let correctCount = 0; let qDetails = [];
                 act.questions.forEach(q => { const studentAns = r.answers[q.id] || '未作答'; const isCorrect = studentAns === q.correctAnswer; if(isCorrect) correctCount++; qDetails.push(studentAns); qDetails.push(isCorrect ? 'O' : 'X'); });
                 const scorePercent = Math.round((correctCount / act.questions.length) * 100);
-                let row = [act.courseName, act.activityName, r.studentId || '無資料', r.nickname || '匿名', correctCount, act.questions.length, scorePercent];
+                let row = [act.courseName, act.activityName, r.department || '無資料', r.grade || '無資料', r.studentId || '無資料', r.nickname || '匿名', correctCount, act.questions.length, scorePercent];
                 dataRows.push(row.concat(qDetails));
             });
             
             const ws = XLSX.utils.aoa_to_sheet([headers, ...dataRows]); 
             
-            // Set Column Widths for better Excel formatting
-            let wscols = [ {wch: 15}, {wch: 25}, {wch: 15}, {wch: 15}, {wch: 10}, {wch: 10}, {wch: 10} ];
+            let wscols = [ {wch: 15}, {wch: 25}, {wch: 15}, {wch: 10}, {wch: 15}, {wch: 15}, {wch: 10}, {wch: 10}, {wch: 10} ];
             act.questions.forEach(() => { wscols.push({wch: 35}); wscols.push({wch: 15}); });
             ws['!cols'] = wscols;
 
             const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "作答明細"); XLSX.writeFile(wb, `${act.courseName}_${act.activityName}_作答明細.xlsx`);
             showToast('作答明細已完美排版並匯出！', 'success');
         }
+        
+        // Full AI Word Report Generation
+        function downloadWordReport() { 
+            const act = currentState.currentActivity; 
+            if(!act || !act.analysis) return showToast('無完整的 AI 分析報告可供下載', 'warning'); 
+            
+            let questionsHtml = act.questions.map((q, i) => `
+                <div style="margin-bottom: 20px;">
+                    <p style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">Q${i+1}. ${q.stem}</p>
+                    <ul style="list-style-type: none; padding-left: 15px; margin-top: 0;">
+                        ${q.options.map(o => `<li style="${o === q.correctAnswer ? 'color: #166534; font-weight: bold;' : 'color: #4b5563;'} margin-bottom: 4px;">${o === q.correctAnswer ? '【正解】' : '○'} ${o}</li>`).join('')}
+                    </ul>
+                    <p style="color: #6b7280; font-size: 14px; margin-top: 8px; border-left: 3px solid #e5e7eb; padding-left: 10px;">解析: ${q.explanation || '無'}</p>
+                </div>
+            `).join('');
 
-        function exportData() { const el = document.createElement('a'); el.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentState.activities)); el.download = "backup.json"; el.click(); }
-        function downloadWordReport() { const act = currentState.currentActivity; if(!act||!act.analysis)return showToast('無報告', 'warning'); const html = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body><h1>${act.courseName}</h1><p>${act.analysis.ai.summary}</p></body></html>`; const el = document.createElement("a"); el.href = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html); el.download = `${act.courseName}.doc`; el.click(); }
+            const html = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head><meta charset='utf-8'><title>${act.courseName} 分析報告</title></head>
+                <body style="font-family: '微軟正黑體', Arial, sans-serif;">
+                    <h1 style="color: #1e3a8a; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; text-align: center;">${act.courseName} - ${act.activityName}</h1>
+                    
+                    <h2 style="color: #374151; background-color: #f3f4f6; padding: 10px; margin-top: 30px;">一、測驗題庫與解答</h2>
+                    <div style="padding: 10px;">${questionsHtml}</div>
+
+                    <h2 style="color: #6b21a8; background-color: #f3f4f6; padding: 10px; margin-top: 30px;">二、AI 班級理解分析摘要</h2>
+                    <p style="line-height: 1.8; font-size: 15px; padding: 0 10px;">${act.analysis.ai.summary}</p>
+                    
+                    <h3 style="color: #15803d; margin-top: 25px; padding-left: 10px;">三、班級已掌握概念</h3>
+                    <ul style="line-height: 1.8; font-size: 15px;">
+                        ${act.analysis.ai.masteredConcepts.map(c => `<li>${c}</li>`).join('')}
+                    </ul>
+                    
+                    <h3 style="color: #b45309; margin-top: 25px; padding-left: 10px;">四、建議優先補強行動</h3>
+                    <ul style="line-height: 1.8; font-size: 15px;">
+                        ${act.analysis.ai.priorityActions.map(c => `<li>${c}</li>`).join('')}
+                    </ul>
+                    
+                    <p style="margin-top: 50px; font-size: 12px; color: #9ca3af; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+                        本教學分析報告由 TONY STUDIO AI 課堂系統自動生成 | 產出時間: ${new Date().toLocaleString()}
+                    </p>
+                </body>
+                </html>
+            `; 
+            
+            const el = document.createElement("a"); 
+            el.href = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html); 
+            el.download = `${act.courseName}_${act.activityName}_AI分析報告.doc`; 
+            el.click(); 
+        }
 
         window.addEventListener('DOMContentLoaded', () => { initApp(); });
     </script>
