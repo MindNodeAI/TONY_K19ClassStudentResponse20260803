@@ -61,7 +61,6 @@
 
     <main class="flex-grow w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 relative">
         
-        <!-- API Key Setup -->
         <section id="view-api-key" class="view-section active max-w-xl mx-auto mt-10">
             <div class="glass-panel p-8 rounded-2xl">
                 <div class="text-center mb-6">
@@ -70,6 +69,7 @@
                     <p class="text-gray-500 mt-2 text-sm">請輸入您的 Gemini API Key 以啟用 AI 題目生成與分析功能。此金鑰僅暫存於您的瀏覽器中，保障安全。</p>
                 </div>
                 <div class="space-y-4">
+                    <!-- 加上眼睛按鈕的密碼框 -->
                     <div class="relative">
                         <input type="password" id="input-api-key" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition pr-10" placeholder="AIzaSy...">
                         <button type="button" onclick="toggleVisibility('input-api-key', 'icon-api-key')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
@@ -92,7 +92,6 @@
             </div>
         </section>
 
-        <!-- Authentication -->
         <section id="view-auth" class="view-section max-w-md mx-auto mt-10">
             <div class="glass-panel p-8 rounded-2xl">
                 <h2 class="text-2xl font-bold text-center text-gray-800 mb-2" id="auth-title">教師登入</h2>
@@ -103,6 +102,7 @@
                         <input type="text" id="auth-dept" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="任教科系 (例如：行銷系)">
                     </div>
                     <input type="email" id="auth-email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="teacher@school.edu">
+                    <!-- 加上眼睛按鈕的密碼框 -->
                     <div class="relative">
                         <input type="password" id="auth-password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none pr-10" placeholder="••••••••">
                         <button type="button" onclick="toggleVisibility('auth-password', 'icon-password')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
@@ -116,7 +116,6 @@
             </div>
         </section>
 
-        <!-- Student Entry -->
         <section id="view-student-entry" class="view-section max-w-md mx-auto mt-10">
              <div class="glass-panel p-8 rounded-2xl text-center">
                 <i class="fas fa-qrcode text-5xl text-blue-500 mb-4"></i>
@@ -138,7 +137,6 @@
             </div>
         </section>
 
-        <!-- Teacher Dashboard -->
         <section id="view-dashboard" class="view-section max-w-5xl mx-auto">
             <div class="flex justify-between items-center mb-8 border-b pb-4">
                 <div><h1 class="text-3xl font-bold text-gray-800">活動管理控制台</h1></div>
@@ -154,12 +152,11 @@
             </div>
         </section>
 
-        <!-- Overall Dashboard (Statistics) -->
         <section id="view-overall-dashboard" class="view-section max-w-6xl mx-auto">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b pb-4 gap-4">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3"><i class="fas fa-chart-pie text-green-600"></i> 總體成效看板</h1>
-                    <p class="text-gray-500 mt-1">匯總您所有活動的學習數據與排名</p>
+                    <p class="text-gray-500 mt-1">匯總您所有活動的學習數據與排名 (簡答題不計入正確率)</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
                     <div class="flex items-center gap-2 bg-white p-2 rounded-lg border border-gray-300 shadow-sm">
@@ -178,7 +175,6 @@
             </div>
         </section>
 
-        <!-- System Admin Dashboard -->
         <section id="view-admin" class="view-section max-w-6xl mx-auto">
             <div class="flex justify-between items-center mb-8 border-b pb-4">
                 <div>
@@ -217,14 +213,12 @@
                             </tr>
                         </thead>
                         <tbody id="admin-user-list" class="divide-y divide-gray-200">
-                            <!-- Users injected here -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- Admin View Teacher's Activities -->
         <section id="view-admin-teacher-activities" class="view-section max-w-5xl mx-auto">
             <div class="flex justify-between items-center mb-8 border-b pb-4">
                 <div>
@@ -241,7 +235,6 @@
             </div>
         </section>
 
-        <!-- Create Activity Wizard -->
         <section id="view-create-activity" class="view-section max-w-4xl mx-auto">
             <div class="glass-panel p-6 sm:p-8 rounded-2xl">
                 <div class="flex justify-between items-center mb-8">
@@ -284,10 +277,46 @@
                         <!-- 文字輸入區 -->
                         <textarea id="create-material" rows="5" class="w-full px-4 py-3 rounded-lg border border-gray-300 outline-none text-sm focus:ring-2 focus:ring-blue-500 transition" placeholder="或在此貼上教材文字補充..."></textarea>
                         
-                        <!-- 參數設定區 -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <select id="create-q-count" class="w-full px-4 py-2 rounded-lg border border-gray-300"><option value="3">3 題</option><option value="5" selected>5 題</option><option value="10">10 題</option></select>
-                            <select id="create-difficulty" class="w-full px-4 py-2 rounded-lg border border-gray-300"><option value="intermediate" selected>中等 (理解、應用)</option></select>
+                        <!-- 參數設定區 (加入題數自訂、情境、擴充難度) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                            <!-- 題數 -->
+                            <div class="flex gap-2 items-center">
+                                <span class="text-sm text-gray-600 w-16 font-medium">題數：</span>
+                                <select id="create-q-count" class="flex-grow px-3 py-2 rounded-lg border border-gray-300 outline-none text-sm" onchange="toggleCustomCount()">
+                                    <option value="3">3 題</option>
+                                    <option value="5" selected>5 題</option>
+                                    <option value="10">10 題</option>
+                                    <option value="custom">其他數量...</option>
+                                </select>
+                                <input type="number" id="create-q-count-custom" class="hidden w-20 px-3 py-2 rounded-lg border border-gray-300 outline-none text-sm" min="1" max="50" placeholder="題數">
+                            </div>
+                            <!-- 題型 -->
+                            <div class="flex gap-2 items-center">
+                                <span class="text-sm text-gray-600 w-16 font-medium">題型：</span>
+                                <select id="create-q-type" class="flex-grow px-3 py-2 rounded-lg border border-gray-300 outline-none text-sm">
+                                    <option value="single_choice" selected>選擇題</option>
+                                    <option value="short_answer">簡答題</option>
+                                    <option value="mixed">綜合題 (選擇+簡答)</option>
+                                </select>
+                            </div>
+                            <!-- 難度 -->
+                            <div class="flex gap-2 items-center">
+                                <span class="text-sm text-gray-600 w-16 font-medium">難度：</span>
+                                <select id="create-difficulty" class="flex-grow px-3 py-2 rounded-lg border border-gray-300 outline-none text-sm">
+                                    <option value="微量級 (基礎記憶、名詞解釋)">微量級 (基礎記憶)</option>
+                                    <option value="輕量級 (概念理解、簡單說明)">輕量級 (概念理解)</option>
+                                    <option value="中等 (情境應用、邏輯分析)" selected>中等 (應用分析)</option>
+                                    <option value="重量級 (深度評估、綜合創造)">重量級 (深度評估)</option>
+                                </select>
+                            </div>
+                            <!-- 情境 -->
+                            <div class="flex gap-2 items-center">
+                                <span class="text-sm text-gray-600 w-16 font-medium">情境：</span>
+                                <select id="create-scenario" class="flex-grow px-3 py-2 rounded-lg border border-gray-300 outline-none text-sm">
+                                    <option value="quiz" selected>課堂測驗 (知識檢定)</option>
+                                    <option value="feedback">意見回饋 (蒐集建議與想法)</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="flex justify-between mt-4">
@@ -320,7 +349,6 @@
             </div>
         </section>
 
-        <!-- Live Activity -->
         <section id="view-activity-live" class="view-section max-w-4xl mx-auto">
             <div class="glass-panel p-8 rounded-2xl text-center relative">
                 <button onclick="navigate('dashboard')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 bg-gray-100 px-3 py-1 rounded-lg text-sm transition">返回控制台</button>
@@ -339,7 +367,6 @@
             </div>
         </section>
 
-        <!-- Student Quiz -->
         <section id="view-student-quiz" class="view-section max-w-3xl mx-auto mt-4">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-4 flex justify-between items-center">
                 <div><h2 class="font-bold text-gray-800" id="quiz-course-title">課程</h2></div>
@@ -354,7 +381,6 @@
             </div>
         </section>
 
-        <!-- Analysis & Report View -->
         <section id="view-analysis" class="view-section max-w-6xl mx-auto">
             <div class="flex justify-between items-center mb-6 border-b pb-4">
                 <button onclick="goBackFromAnalysis()" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-50"><i class="fas fa-arrow-left"></i> 返回</button>
@@ -374,7 +400,7 @@
                     <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2"><i class="fas fa-chart-bar text-blue-500"></i> 客觀統計數據</h3>
                     <div class="grid grid-cols-2 gap-4 mb-4 text-center">
                         <div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><p class="text-xs text-gray-500 mb-1">作答人數</p><p class="text-2xl font-bold" id="stat-total-responses">0</p></div>
-                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><p class="text-xs text-gray-500 mb-1">平均正確率</p><p class="text-2xl font-bold text-blue-600" id="stat-avg-score">0%</p></div>
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><p class="text-xs text-gray-500 mb-1" title="僅計算選擇題">客觀正確率</p><p class="text-2xl font-bold text-blue-600" id="stat-avg-score">0%</p></div>
                     </div>
                     <div id="stat-questions-breakdown" class="space-y-4 max-h-[500px] overflow-y-auto pr-2"></div>
                 </div>
@@ -395,8 +421,8 @@
                     <div id="analysis-content" class="hidden space-y-6">
                         <div><h4 class="font-bold text-lg mb-2">摘要</h4><p class="bg-blue-50 p-4 rounded-lg text-gray-800" id="ai-summary"></p></div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-green-50 p-4 rounded-lg"><h4 class="font-bold text-green-800 mb-2">已掌握概念</h4><ul class="list-disc pl-5 text-sm text-gray-700" id="ai-mastered"></ul></div>
-                            <div class="bg-yellow-50 p-4 rounded-lg"><h4 class="font-bold text-yellow-800 mb-2">優先補強</h4><ul class="list-disc pl-5 text-sm text-gray-700" id="ai-actions"></ul></div>
+                            <div class="bg-green-50 p-4 rounded-lg"><h4 class="font-bold text-green-800 mb-2">已掌握概念 (亮點)</h4><ul class="list-disc pl-5 text-sm text-gray-700" id="ai-mastered"></ul></div>
+                            <div class="bg-yellow-50 p-4 rounded-lg"><h4 class="font-bold text-yellow-800 mb-2">優先補強 (建議)</h4><ul class="list-disc pl-5 text-sm text-gray-700" id="ai-actions"></ul></div>
                         </div>
                     </div>
                 </div>
@@ -404,7 +430,7 @@
         </section>
     </main>
 
-    <!-- Tony Modal (Enhanced Profile) -->
+    <!-- Tony Modal -->
     <div id="modal-tony" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl relative overflow-hidden">
             <button onclick="closeTonyModal()" class="absolute top-4 right-4 bg-white/80 rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition z-10"><i class="fas fa-times"></i></button>
@@ -415,40 +441,40 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6">
                         <h2 class="text-3xl font-bold text-white mb-3">TONY 楊文澤 <span class="text-lg font-normal opacity-80">老師</span></h2>
                         <div class="space-y-1.5">
-                            <p class="text-blue-300 text-sm font-medium tracking-wide"><i class="fas fa-check-circle mr-2"></i>資深數位行銷科技顧問</p>
-                            <p class="text-blue-300 text-sm font-medium tracking-wide"><i class="fas fa-check-circle mr-2"></i>生成式 AI 創作者</p>
-                            <p class="text-blue-300 text-sm font-medium tracking-wide"><i class="fas fa-check-circle mr-2"></i>創業導師</p>
+                            <span class="inline-block bg-blue-600/80 text-white text-xs font-bold px-2 py-1 rounded-full mb-1 border border-blue-400">資深數位行銷科技顧問</span>
+                            <span class="inline-block bg-purple-600/80 text-white text-xs font-bold px-2 py-1 rounded-full mb-1 border border-purple-400">生成式 AI 創作者</span>
+                            <span class="inline-block bg-green-600/80 text-white text-xs font-bold px-2 py-1 rounded-full mb-1 border border-green-400">創業導師</span>
                         </div>
                     </div>
                 </div>
                 <!-- 右側詳細經歷 -->
                 <div class="md:w-3/5 p-6 md:p-8 overflow-y-auto max-h-[85vh] bg-gray-50 text-sm space-y-6">
                     <div>
-                        <h3 class="font-bold text-gray-800 text-base mb-3 border-b-2 border-blue-200 pb-1 inline-block">現職 Current</h3>
-                        <ul class="list-none space-y-2 text-gray-700">
+                        <h3 class="font-bold text-gray-800 text-base mb-3 border-b-2 border-blue-200 pb-1 inline-block"><i class="fas fa-briefcase text-blue-500 mr-2"></i>現職 Current</h3>
+                        <ul class="list-none space-y-2 text-gray-700 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                             <li><span class="text-blue-500 font-bold mr-2">▪</span>龍華科大 數位行銷講師</li>
                             <li><span class="text-blue-500 font-bold mr-2">▪</span>智策慧 品牌行銷科技顧問</li>
                         </ul>
                     </div>
                     <div>
-                        <h3 class="font-bold text-gray-800 text-base mb-3 border-b-2 border-blue-200 pb-1 inline-block">經歷 Experience</h3>
-                        <ul class="list-none space-y-2 text-gray-700">
+                        <h3 class="font-bold text-gray-800 text-base mb-3 border-b-2 border-blue-200 pb-1 inline-block"><i class="fas fa-history text-blue-500 mr-2"></i>經歷 Experience</h3>
+                        <ul class="list-none space-y-2 text-gray-700 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                             <li><span class="text-blue-500 font-bold mr-2">▪</span>脈動心聯股份有限公司 創辦人暨執行長</li>
                             <li><span class="text-blue-500 font-bold mr-2">▪</span>宏碁集團建碁 AOPEN 整合營銷處處長 / 全球品牌行銷總監 / 企業發言人</li>
                             <li><span class="text-blue-500 font-bold mr-2">▪</span>台灣數位看板多媒體聯盟 (DSMA) 副會長</li>
                         </ul>
                     </div>
                     <div>
-                        <h3 class="font-bold text-gray-800 text-base mb-3 border-b-2 border-blue-200 pb-1 inline-block">學歷 Education</h3>
-                        <ul class="list-none space-y-2 text-gray-700">
+                        <h3 class="font-bold text-gray-800 text-base mb-3 border-b-2 border-blue-200 pb-1 inline-block"><i class="fas fa-graduation-cap text-blue-500 mr-2"></i>學歷 Education</h3>
+                        <ul class="list-none space-y-2 text-gray-700 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                             <li><span class="text-blue-500 font-bold mr-2">▪</span>台大 EMBA 商學組</li>
                             <li><span class="text-blue-500 font-bold mr-2">▪</span>美國 Arizona State University 互動多媒體設計</li>
                             <li><span class="text-blue-500 font-bold mr-2">▪</span>北科大 工業設計</li>
                         </ul>
                     </div>
                     <div>
-                        <h3 class="font-bold text-gray-800 text-base mb-3 border-b-2 border-blue-200 pb-1 inline-block">專家授課經歷</h3>
-                        <ul class="list-none space-y-2 text-gray-700">
+                        <h3 class="font-bold text-gray-800 text-base mb-3 border-b-2 border-blue-200 pb-1 inline-block"><i class="fas fa-chalkboard-teacher text-blue-500 mr-2"></i>專家授課經歷</h3>
+                        <ul class="list-none space-y-2 text-gray-700 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                             <li><span class="text-blue-500 font-bold mr-2">▪</span>CPC 生產力中心 經營管理顧問師班 / 中小企業成長創價能量 講師</li>
                             <li><span class="text-blue-500 font-bold mr-2">▪</span>台大 EMBA / 長榮 EMBA / 北科大 / 政大 / 世新 業師</li>
                             <li><span class="text-blue-500 font-bold mr-2">▪</span>2021 MarTech 行銷科技行銷長認證班 講師</li>
@@ -470,6 +496,21 @@
             <div class="flex gap-3 justify-center">
                 <button onclick="closeConfirmModal()" class="w-1/2 px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition">取消</button>
                 <button onclick="executeConfirmAction()" class="w-1/2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium shadow-sm transition">確定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 補上缺少的 Prompt 彈出視窗 HTML -->
+    <div id="modal-prompt" class="fixed inset-0 bg-black/60 z-[106] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800" id="prompt-title">請輸入</h3>
+                <button onclick="closePromptModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            <input type="text" id="prompt-input" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none mb-6" placeholder="請輸入名稱...">
+            <div class="flex gap-3 justify-end">
+                <button onclick="closePromptModal()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition">取消</button>
+                <button onclick="executePromptAction()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm transition">確定</button>
             </div>
         </div>
     </div>
@@ -504,7 +545,7 @@
             activities: [], currentActivity: null, responses: [], 
             draftQuestions: [], uploadedFiles: [], unsubscribeLive: null,
             viewingTeacherId: null, viewingTeacherName: null,
-            dashboardData: null // 存放整體看板篩選後的資料供匯出使用
+            dashboardData: null 
         };
 
         function showToast(msg, type='info') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<span>${msg}</span>`; c.appendChild(t); setTimeout(() => t.remove(), 3000); }
@@ -519,10 +560,41 @@
             else { input.type = "password"; icon.classList.remove("fa-eye-slash"); icon.classList.add("fa-eye"); }
         }
         
+        // 切換顯示「其他題數」的輸入框
+        function toggleCustomCount() {
+            const select = document.getElementById('create-q-count');
+            const customInput = document.getElementById('create-q-count-custom');
+            if(select.value === 'custom') customInput.classList.remove('hidden');
+            else customInput.classList.add('hidden');
+        }
+
         let currentConfirmAction = null;
         function showConfirmModal(title, msg, action) { document.getElementById('confirm-title').innerText = title; document.getElementById('confirm-message').innerText = msg; currentConfirmAction = action; document.getElementById('modal-confirm').classList.remove('hidden'); }
         function closeConfirmModal() { document.getElementById('modal-confirm').classList.add('hidden'); currentConfirmAction = null; }
         function executeConfirmAction() { if(currentConfirmAction) currentConfirmAction(); closeConfirmModal(); }
+
+        let currentPromptAction = null;
+        function showPromptModal(title, defaultValue, action) {
+            document.getElementById('prompt-title').innerText = title;
+            const input = document.getElementById('prompt-input');
+            input.value = defaultValue;
+            currentPromptAction = action;
+            document.getElementById('modal-prompt').classList.remove('hidden');
+            // 延遲一點點讓視窗彈出後自動聚焦輸入框，方便直接打字
+            setTimeout(() => { input.focus(); input.select(); }, 100);
+        }
+        function closePromptModal() { 
+            document.getElementById('modal-prompt').classList.add('hidden'); 
+            currentPromptAction = null; 
+        }
+        function executePromptAction() { 
+            if(currentPromptAction) {
+                const val = document.getElementById('prompt-input').value.trim();
+                if(!val) return showToast('活動名稱不能為空', 'warning');
+                currentPromptAction(val);
+            }
+            closePromptModal(); 
+        }
 
         function navigate(viewId) {
             if(currentState.unsubscribeLive) { currentState.unsubscribeLive(); currentState.unsubscribeLive = null; }
@@ -542,7 +614,7 @@
             } else navigate(currentState.apiKey ? 'auth' : 'api-key');
         }
 
-        Object.assign(window, { navigate, navigateHome, saveApiKey, handleAuthAction, toggleAuthMode, handleLogout, openTonyModal, closeTonyModal, toggleVisibility, nextStep, prevStep, handleFileUpload, generateAIQuestions, publishActivity, studentJoinActivity, submitQuiz, endActivityAndAnalyze, triggerAIAnalysis, downloadWordReport, downloadExcelReport, openLiveActivity, viewAnalysis, goBackFromAnalysis, loadAdminDashboard, toggleUserStatus, deleteUserRecord, requestDeleteActivity, closeConfirmModal, executeConfirmAction, toggleCreateMode, loadOverallDashboard, loadAdminTeacherActivities, downloadOverallWordReport });
+        Object.assign(window, { navigate, navigateHome, saveApiKey, handleAuthAction, toggleAuthMode, handleLogout, openTonyModal, closeTonyModal, toggleVisibility, toggleCustomCount, nextStep, prevStep, handleFileUpload, generateAIQuestions, publishActivity, studentJoinActivity, submitQuiz, endActivityAndAnalyze, triggerAIAnalysis, downloadWordReport, downloadExcelReport, openLiveActivity, viewAnalysis, goBackFromAnalysis, loadAdminDashboard, toggleUserStatus, deleteUserRecord, requestDeleteActivity, closeConfirmModal, executeConfirmAction, closePromptModal, executePromptAction, toggleCreateMode, loadOverallDashboard, loadAdminTeacherActivities, downloadOverallWordReport, duplicateActivity });
 
         function initApp() {
             currentState.apiKey = localStorage.getItem('k19_api_key') || sessionStorage.getItem('k19_api_key') || '';
@@ -722,6 +794,33 @@
             });
         }
 
+        async function duplicateActivity(id) {
+            const act = currentState.activities.find(a => a.id === id); if(!act) return;
+            
+            showPromptModal('請為複製的活動輸入新名稱', act.activityName + ' (複製)', async (newName) => {
+                const newAct = { 
+                    id: 'act_' + Date.now(), 
+                    code: generateId(), 
+                    ownerId: act.ownerId, 
+                    courseName: act.courseName, 
+                    activityName: newName, 
+                    status: 'open', 
+                    questions: act.questions, 
+                    createdAt: Date.now() 
+                };
+                
+                try { 
+                    await setDoc(doc(db, 'artifacts', APP_ID, 'users', newAct.ownerId, 'activities', newAct.id), newAct); 
+                    await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', newAct.code), {id: newAct.id, ownerId: newAct.ownerId, code: newAct.code, courseName: newAct.courseName, activityName: newAct.activityName, status: newAct.status, questions: newAct.questions}); 
+                    currentState.activities.push(newAct);
+                    showToast('活動複製成功！已產生全新代碼', 'success'); 
+                    loadDashboard();
+                } catch(e) { 
+                    showToast('複製失敗', 'error'); 
+                }
+            });
+        }
+
         async function loadDashboard() {
             if (!currentState.user) return;
             const el = document.getElementById('activity-list');
@@ -740,14 +839,15 @@
             }
             
             el.innerHTML = currentState.activities.sort((a,b)=>b.createdAt-a.createdAt).map(act => `
-                <div class="px-6 py-4 flex justify-between items-center hover:bg-gray-50 border-b border-gray-100 last:border-0 transition">
+                <div class="px-6 py-4 flex flex-col md:flex-row justify-between md:items-center hover:bg-gray-50 border-b border-gray-100 last:border-0 transition gap-4">
                     <div>
                         <h4 class="font-bold text-lg text-gray-800">${act.activityName} <span class="text-xs ${act.status==='open'?'bg-green-100 text-green-700':'bg-gray-200 text-gray-600'} px-2 py-0.5 rounded ml-2 align-middle">${act.status==='open'?'開放作答中':'已結束'}</span></h4>
                         <p class="text-sm text-gray-500 mt-1">代碼: <b class="text-blue-600 tracking-wider">${act.code}</b> | 課程: ${act.courseName}</p>
                     </div>
-                    <div class="flex gap-2">
+                    <div class="flex flex-wrap gap-2">
                         ${act.status==='open' ? `<button onclick="openLiveActivity('${act.id}')" class="bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1.5 rounded text-sm transition font-medium">管理課堂</button>` : ''}
                         <button onclick="viewAnalysis('${act.id}')" class="bg-purple-100 text-purple-700 hover:bg-purple-200 px-3 py-1.5 rounded text-sm transition font-medium">查看報告</button>
+                        <button onclick="duplicateActivity('${act.id}')" class="bg-gray-100 text-gray-700 hover:bg-gray-200 px-3 py-1.5 rounded text-sm transition" title="複製活動 (適用於不同班級)"><i class="fas fa-copy"></i></button>
                         <button onclick="requestDeleteActivity('${act.id}')" class="bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded text-sm transition" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>`).join('');
@@ -758,7 +858,6 @@
             const container = document.getElementById('overall-dashboard-content');
             container.innerHTML = '<div class="flex justify-center py-20"><div class="loader"></div></div>';
             
-            // 處理期間篩選
             const startDateStr = document.getElementById('filter-start-date').value;
             const endDateStr = document.getElementById('filter-end-date').value;
             const startDate = startDateStr ? new Date(startDateStr).getTime() : 0;
@@ -775,20 +874,32 @@
                 return;
             }
 
-            let totalResponses = 0; let totalCorrect = 0; let totalQuestions = 0; let activityStats = [];
+            let totalResponses = 0; let totalChoiceCorrect = 0; let totalChoiceQuestions = 0; let activityStats = [];
 
             for (const act of filteredActivities) {
                 try {
                     const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses'));
-                    const respCount = snap.size; let actCorrect = 0; let actTotalQ = respCount * act.questions.length;
+                    const respCount = snap.size; 
+                    let actChoiceCorrect = 0; 
+                    
+                    let actChoiceQCount = 0;
+                    act.questions.forEach(q => { if (q.type !== 'short_answer' && q.options && q.options.length > 0) actChoiceQCount++; });
+                    let actTotalChoiceQ = respCount * actChoiceQCount;
                     
                     snap.forEach(doc => {
                         const r = doc.data();
-                        act.questions.forEach(q => { if (r.answers[q.id] === q.correctAnswer) actCorrect++; });
+                        act.questions.forEach(q => { 
+                            if (q.type !== 'short_answer' && q.options && q.options.length > 0) {
+                                if (r.answers[q.id] === q.correctAnswer) actChoiceCorrect++; 
+                            }
+                        });
                     });
 
-                    totalResponses += respCount; totalCorrect += actCorrect; totalQuestions += actTotalQ;
-                    const actAcc = actTotalQ > 0 ? Math.round((actCorrect / actTotalQ) * 100) : 0;
+                    totalResponses += respCount; 
+                    totalChoiceCorrect += actChoiceCorrect; 
+                    totalChoiceQuestions += actTotalChoiceQ;
+                    
+                    const actAcc = actTotalChoiceQ > 0 ? Math.round((actChoiceCorrect / actTotalChoiceQ) * 100) : -1;
                     
                     if (respCount > 0) {
                         activityStats.push({ name: act.activityName, course: act.courseName, responses: respCount, accuracy: actAcc });
@@ -802,15 +913,19 @@
                 return;
             }
 
-            const overallAcc = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
-            activityStats.sort((a,b) => b.accuracy - a.accuracy);
-            const bestAct = activityStats[0];
-            const worstAct = activityStats[activityStats.length - 1];
+            const overallAcc = totalChoiceQuestions > 0 ? Math.round((totalChoiceCorrect / totalChoiceQuestions) * 100) : -1;
+            
+            // 排序時排除全簡答題(-1)的項目
+            let validStats = activityStats.filter(s => s.accuracy >= 0);
+            validStats.sort((a,b) => b.accuracy - a.accuracy);
+            
+            const bestAct = validStats.length > 0 ? validStats[0] : null;
+            const worstAct = validStats.length > 0 ? validStats[validStats.length - 1] : null;
 
-            let insightText = `<p class="mb-3 text-gray-700">根據目前累積的 <b>${totalResponses}</b> 筆作答數據，整體平均正確率為 <b class="text-lg ${overallAcc >= 70 ? 'text-green-600' : 'text-yellow-600'}">${overallAcc}%</b>。</p>`;
+            let insightText = `<p class="mb-3 text-gray-700">根據目前累積的 <b>${totalResponses}</b> 筆作答數據，客觀題整體平均正確率為 <b class="text-lg ${overallAcc >= 70 ? 'text-green-600' : (overallAcc===-1?'text-gray-500':'text-yellow-600')}">${overallAcc===-1?'N/A (無選擇題)':overallAcc+'%'}</b>。</p>`;
             
             if(bestAct) {
-                insightText += `<p class="mb-2 text-gray-700">✨ <b>優勢表現：</b> 學生在「<b>${bestAct.course} - ${bestAct.name}</b>」的表現最為亮眼（正確率 ${bestAct.accuracy}%），顯示該單元的教學策略非常契合學生程度。</p>`;
+                insightText += `<p class="mb-2 text-gray-700">✨ <b>優勢表現：</b> 學生在「<b>${bestAct.course} - ${bestAct.name}</b>」的客觀題表現最為亮眼（正確率 ${bestAct.accuracy}%），顯示該單元的教學策略非常契合學生程度。</p>`;
             }
             if(worstAct && worstAct.accuracy < 60) {
                 insightText += `<p class="mb-2 text-red-700 font-medium">⚠️ <b>優先關注：</b> 「<b>${worstAct.course} - ${worstAct.name}</b>」的正確率偏低（僅 ${worstAct.accuracy}%），建議可以針對此單元進行重點複習或概念釐清。</p>`;
@@ -818,11 +933,9 @@
                 insightText += `<p class="mb-2 text-gray-700">💡 <b>進階建議：</b> 「<b>${worstAct.course} - ${worstAct.name}</b>」還有進步空間（${worstAct.accuracy}%），可考慮搭配更多實例幫助學生深入理解。</p>`;
             }
 
-            // 儲存至 state 以供匯出
-            currentState.dashboardData = { activityStats, insightText, overallAcc, totalResponses, totalActivities: filteredActivities.length, bestActName: bestAct.name };
+            currentState.dashboardData = { activityStats, insightText, overallAcc, totalResponses, totalActivities: filteredActivities.length, bestActName: bestAct ? bestAct.name : 'N/A (無選擇題)' };
 
             let html = `
-                <!-- 頂部 KPI 數據卡片 -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
                         <div class="flex justify-between items-center mb-2"><span class="text-sm font-medium text-gray-500">總活動數</span><i class="fas fa-layer-group text-blue-500 opacity-80 text-lg"></i></div>
@@ -833,23 +946,21 @@
                         <span class="text-3xl font-black text-gray-800">${totalResponses}</span>
                     </div>
                     <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
-                        <div class="flex justify-between items-center mb-2"><span class="text-sm font-medium text-gray-500">整體正確率</span><i class="fas fa-bullseye ${overallAcc>=60?'text-green-500':'text-red-500'} opacity-80 text-lg"></i></div>
-                        <div class="flex items-end gap-2"><span class="text-3xl font-black ${overallAcc>=60?'text-green-600':'text-red-600'}">${overallAcc}%</span></div>
+                        <div class="flex justify-between items-center mb-2"><span class="text-sm font-medium text-gray-500">選擇題正確率</span><i class="fas fa-bullseye ${overallAcc>=60?'text-green-500':(overallAcc===-1?'text-gray-400':'text-red-500')} opacity-80 text-lg"></i></div>
+                        <div class="flex items-end gap-2"><span class="text-3xl font-black ${overallAcc>=60?'text-green-600':(overallAcc===-1?'text-gray-500':'text-red-600')}">${overallAcc===-1?'--':overallAcc+'%'}</span></div>
                     </div>
                     <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition overflow-hidden">
                         <div class="flex justify-between items-center mb-2"><span class="text-sm font-medium text-gray-500">最佳學習單元</span><i class="fas fa-trophy text-yellow-500 opacity-80 text-lg"></i></div>
-                        <span class="text-lg font-bold text-gray-800 truncate" title="${bestAct.name}">${bestAct.name}</span>
+                        <span class="text-lg font-bold text-gray-800 truncate" title="${bestAct ? bestAct.name : 'N/A'}">${bestAct ? bestAct.name : 'N/A'}</span>
                     </div>
                 </div>
 
-                <!-- AI 洞察區塊 -->
                 <div class="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 p-6 rounded-2xl shadow-sm mb-8 relative overflow-hidden">
                     <div class="absolute top-0 right-0 -mt-6 -mr-6 text-indigo-200 opacity-40"><i class="fas fa-brain text-[150px]"></i></div>
                     <h3 class="text-lg font-bold text-indigo-900 mb-4 flex items-center gap-2 relative z-10"><i class="fas fa-lightbulb text-yellow-500 text-xl"></i> 教學洞察 (Data Insights)</h3>
                     <div class="relative z-10 bg-white/60 p-4 rounded-xl border border-white backdrop-blur-sm shadow-sm">${insightText}</div>
                 </div>
 
-                <!-- 專業成效報表 -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
                         <h3 class="font-bold text-gray-800">各單元成效排行報表</h3>
@@ -861,7 +972,7 @@
                                     <th class="px-6 py-4 font-bold">排行</th>
                                     <th class="px-6 py-4 font-bold">課程 / 活動名稱</th>
                                     <th class="px-6 py-4 font-bold text-center">作答人次</th>
-                                    <th class="px-6 py-4 font-bold">正確率指標</th>
+                                    <th class="px-6 py-4 font-bold">選擇題正確率</th>
                                     <th class="px-6 py-4 font-bold text-center">狀態評估</th>
                                 </tr>
                             </thead>
@@ -869,8 +980,17 @@
             `;
             
             activityStats.forEach((stat, idx) => {
-                const barColor = stat.accuracy >= 80 ? 'bg-green-500' : (stat.accuracy >= 60 ? 'bg-blue-500' : 'bg-red-500');
-                const statusBadge = stat.accuracy >= 80 ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">精熟</span>' : (stat.accuracy >= 60 ? '<span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold border border-blue-200">達標</span>' : '<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold border border-red-200">待補強</span>');
+                let barColor, statusBadge, widthStr, valStr;
+                if(stat.accuracy === -1) {
+                    barColor = 'bg-gray-300';
+                    statusBadge = '<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold border border-gray-200">不適用 (全簡答)</span>';
+                    widthStr = '0%'; valStr = '--';
+                } else {
+                    barColor = stat.accuracy >= 80 ? 'bg-green-500' : (stat.accuracy >= 60 ? 'bg-blue-500' : 'bg-red-500');
+                    statusBadge = stat.accuracy >= 80 ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">精熟</span>' : (stat.accuracy >= 60 ? '<span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold border border-blue-200">達標</span>' : '<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold border border-red-200">待補強</span>');
+                    widthStr = `${stat.accuracy}%`; valStr = `${stat.accuracy}%`;
+                }
+
                 html += `
                                 <tr class="hover:bg-gray-50 transition">
                                     <td class="px-6 py-4 font-black text-gray-400">#${idx+1}</td>
@@ -881,10 +1001,10 @@
                                     <td class="px-6 py-4 text-center font-bold text-gray-700">${stat.responses}</td>
                                     <td class="px-6 py-4 w-1/3 min-w-[200px]">
                                         <div class="flex justify-between items-center mb-1">
-                                            <span class="text-xs font-bold ${stat.accuracy>=60?'text-gray-700':'text-red-600'}">${stat.accuracy}%</span>
+                                            <span class="text-xs font-bold ${stat.accuracy>=60?'text-gray-700':(stat.accuracy===-1?'text-gray-400':'text-red-600')}">${valStr}</span>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-2">
-                                            <div class="${barColor} h-2 rounded-full transition-all duration-1000" style="width: ${stat.accuracy}%"></div>
+                                            <div class="${barColor} h-2 rounded-full transition-all duration-1000" style="width: ${widthStr}"></div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-center">${statusBadge}</td>
@@ -951,22 +1071,43 @@
             
             if(!text && !currentState.uploadedFiles.length) return showToast('請提供內容文字或上傳檔案', 'warning');
 
-            const count = document.getElementById('create-q-count').value; 
+            const qCountVal = document.getElementById('create-q-count').value; 
+            const count = qCountVal === 'custom' ? (document.getElementById('create-q-count-custom').value || 5) : qCountVal;
             const diff = document.getElementById('create-difficulty').value;
+            const qType = document.getElementById('create-q-type').value;
+            const scenario = document.getElementById('create-scenario').value;
             
             document.getElementById('ai-loading-text').innerText = mode === 'generate' ? 'AI 正在深度解析教材...' : 'AI 正在優化與潤飾題目...';
             nextStep(3);
+
+            let typeDesc = qType === 'single_choice' ? '單選題' : (qType === 'short_answer' ? '簡答題' : '綜合題 (單選題與簡答題混合)');
+            let exactTypeStr = qType === 'mixed' ? 'single_choice 或 short_answer' : qType;
+            let formatPrompt = `嚴格以 JSON 回傳:\n{ "questions": [ { "id": "字串", "type": "${exactTypeStr}", "stem": "題幹", "options": ["若為單選題必須提供至少4個選項", "若為簡答題則保持空陣列[]"], "correctAnswer": "單選題填入正確選項文字 / 簡答題填入評分重點或參考解答", "explanation": "詳細解析", "difficulty": "${diff}" } ] }`;
 
             let prompt = ""; let parts = [];
             let fileText = currentState.uploadedFiles.filter(f=>f.isText).map(f=>f.data).join('\n');
             let combinedText = `文字內容:\n${text}\n檔案內容:\n${fileText}`;
 
-            if (mode === 'generate') {
-                prompt = `產出 ${count} 題單選題。難度: ${diff}。嚴格以 JSON 回傳:\n{ "questions": [ { "id": "字串", "type": "single_choice", "stem": "題幹", "options": ["A", "B", "C", "D"], "correctAnswer": "A", "explanation": "解析", "difficulty": "${diff}" } ] }`;
-                parts = [{text: `根據以下教材出題：\n${combinedText}`}];
+            // 若為「意見回饋」情境，徹底改變 Prompt 邏輯
+            if (scenario === 'feedback') {
+                formatPrompt = `嚴格以 JSON 回傳:\n{ "questions": [ { "id": "字串", "type": "${exactTypeStr}", "stem": "提問內容(例如：您對哪個單元最感興趣？)", "options": ["若為單選題(滿意度、意見類別等)必須提供選項", "若為簡答題(自由填寫)保持空陣列[]"], "correctAnswer": "自由發揮(不計分)", "explanation": "此題設計目的與蒐集重點", "difficulty": "不適用" } ] }`;
+                
+                if (mode === 'generate') {
+                    prompt = `根據以下內容，設計 ${count} 題${typeDesc}，用於「意見回饋與想法蒐集」。不需要刁難知識，而是著重於學生的反思、學習痛點、滿意度或對教材的建議。${formatPrompt}`;
+                    parts = [{text: `教材內容：\n${combinedText}`}];
+                } else {
+                    prompt = `你是一位專業問卷設計師。請將以下草稿優化為 ${count} 題${typeDesc}的「意見回饋問卷」。讓語氣柔和且具引導性，以獲得更真實的建議。${formatPrompt}`;
+                    parts = [{text: `問卷草稿：\n${combinedText}`}];
+                }
             } else {
-                prompt = `你是一位專業測驗專家。請將提供的「草稿或考卷檔案內容」優化。修正語句不順、提升選項鑑別度，並補齊完整解析。輸出 ${count} 題。嚴格以 JSON 回傳:\n{ "questions": [ { "id": "字串", "type": "single_choice", "stem": "題幹", "options": ["A", "B", "C", "D"], "correctAnswer": "A", "explanation": "優化後的詳細解析", "difficulty": "${diff}" } ] }`;
-                parts = [{text: `請優化以下題目內容：\n${combinedText}`}];
+                // 正常的「知識測驗」情境
+                if (mode === 'generate') {
+                    prompt = `產出 ${count} 題${typeDesc}。認知層次難度: ${diff}。${formatPrompt}`;
+                    parts = [{text: `根據以下教材出題：\n${combinedText}`}];
+                } else {
+                    prompt = `你是一位專業測驗專家。請將提供的「草稿或考卷內容」優化。修正語句不順、提升鑑別度，並補齊完整解析。輸出 ${count} 題${typeDesc}。認知層次難度: ${diff}。${formatPrompt}`;
+                    parts = [{text: `請優化以下題目內容：\n${combinedText}`}];
+                }
             }
 
             currentState.uploadedFiles.filter(f=>!f.isText).forEach(f=> parts.push({inlineData: {mimeType: f.mimeType, data: f.data}}));
@@ -978,8 +1119,56 @@
                 });
                 const res = await req.json();
                 if(res.error) throw new Error(res.error.message);
+                
                 currentState.draftQuestions = JSON.parse(res.candidates[0].content.parts[0].text.replace(/```json/g,'').replace(/```/g,'').trim()).questions;
-                document.getElementById('draft-questions-container').innerHTML = currentState.draftQuestions.map((q,i) => `<div class="p-4 border rounded-lg bg-white mb-2"><h4 class="font-bold text-gray-800">Q${i+1}: ${q.stem}</h4><p class="text-sm text-green-700 font-bold mt-1 bg-green-50 inline-block px-2 py-1 rounded">正解: ${q.correctAnswer}</p><p class="text-sm text-gray-500 mt-2">解析: ${q.explanation}</p></div>`).join('');
+                
+                // 【關鍵修正 1】強制重新配發唯一 ID，避免 AI 產出重複的 ID 導致選擇題 radio name 衝突
+                currentState.draftQuestions.forEach((q, idx) => {
+                    q.id = 'gen_' + Date.now() + '_' + idx;
+                });
+                
+                document.getElementById('draft-questions-container').innerHTML = currentState.draftQuestions.map((q,i) => {
+                    const isChoice = q.type !== 'short_answer' && q.options && q.options.length > 0;
+                    
+                    // 升級：產生可編輯的選項與輸入框
+                    let previewOptions = '';
+                    if(isChoice) {
+                        previewOptions = `<div class="mt-3 space-y-2">${q.options.map((o, optIdx)=>`
+                            <div class="flex items-center p-2.5 bg-gray-50 border border-gray-200 rounded-lg">
+                                <input type="radio" disabled class="mr-3 w-4 h-4 text-gray-400 cursor-not-allowed"> 
+                                <span class="text-gray-700 text-sm editable-field w-full outline-none hover:bg-white hover:ring-1 hover:ring-blue-300 rounded px-1.5 py-0.5 transition cursor-text" contenteditable="true" data-qidx="${i}" data-optidx="${optIdx}">${o}</span>
+                            </div>`).join('')}
+                        </div>`;
+                    } else {
+                        previewOptions = `<div class="mt-3"><textarea disabled class="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-400 cursor-not-allowed" rows="2" placeholder="此處為學生簡答輸入區..."></textarea></div>`;
+                    }
+                    
+                    return `<div class="p-5 border border-gray-200 rounded-xl bg-white mb-3 shadow-sm relative group transition hover:border-blue-300">
+                        <!-- 滑鼠移入時顯示的提示 -->
+                        <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition text-xs text-blue-700 font-bold bg-blue-100 px-3 py-1.5 rounded-lg shadow-sm border border-blue-200 z-10 pointer-events-none">
+                            <i class="fas fa-edit"></i> 點擊文字即可直接修改
+                        </div>
+                        
+                        <h4 class="font-bold text-gray-800 text-lg flex items-start pr-32">
+                            <span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded mr-2 mt-1 shrink-0">${isChoice?'選擇':'簡答'}</span>
+                            <span class="shrink-0 mr-1 mt-0.5">Q${i+1}: </span>
+                            <span class="editable-field outline-none hover:bg-blue-50 hover:ring-1 hover:ring-blue-300 rounded px-1.5 py-0.5 transition w-full cursor-text" contenteditable="true" data-qidx="${i}" data-field="stem">${q.stem}</span>
+                        </h4>
+                        
+                        ${previewOptions}
+                        
+                        <div class="mt-4 pt-3 border-t border-gray-100">
+                            <div class="flex items-start gap-2 mb-2">
+                                <span class="text-sm text-green-800 font-bold bg-green-100 px-2 py-1 rounded shrink-0 mt-0.5">${isChoice?(scenario==='feedback'?'建議選項':'正解'):(scenario==='feedback'?'開放回答':'參考解答')}:</span>
+                                <span class="text-sm text-green-700 font-medium editable-field outline-none hover:bg-green-50 hover:ring-1 hover:ring-green-300 rounded px-1.5 py-0.5 transition w-full cursor-text" contenteditable="true" data-qidx="${i}" data-field="correctAnswer">${q.correctAnswer}</span>
+                            </div>
+                            <div class="flex items-start gap-2 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                                <span class="text-sm text-gray-600 font-bold shrink-0 mt-0.5">${scenario==='feedback'?'提問目的':'解析'}:</span>
+                                <span class="text-sm text-gray-500 editable-field outline-none hover:bg-white hover:ring-1 hover:ring-gray-300 rounded px-1.5 py-0.5 transition w-full cursor-text" contenteditable="true" data-qidx="${i}" data-field="explanation">${q.explanation}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
                 nextStep(4);
             } catch(e) { 
                 showToast('AI 產生失敗，請退回重試或檢查 Key', 'error'); 
@@ -989,12 +1178,30 @@
 
         async function publishActivity() {
             if(!document.getElementById('confirm-review-check').checked) return showToast('請勾選確認', 'warning');
-            const act = { id: 'act_'+Date.now(), code: generateId(), ownerId: currentState.user.uid, courseName: document.getElementById('create-course-name').value||'課程', activityName: document.getElementById('create-activity-name').value||'測驗', status: 'open', questions: currentState.draftQuestions, createdAt: Date.now() };
+            
+            // 【重要升級】在發布前，抓取畫面上老師手動修改過的文字，並同步回 draftQuestions 陣列
+            document.querySelectorAll('.editable-field').forEach(el => {
+                const qIdx = el.getAttribute('data-qidx');
+                const field = el.getAttribute('data-field');
+                const optIdx = el.getAttribute('data-optidx');
+                const newText = el.innerText.trim();
+
+                if (qIdx !== null && currentState.draftQuestions[qIdx]) {
+                    if (field) { // 題幹、正解、解析
+                        currentState.draftQuestions[qIdx][field] = newText;
+                    } else if (optIdx !== null) { // 選擇題選項
+                        currentState.draftQuestions[qIdx].options[optIdx] = newText;
+                    }
+                }
+            });
+
+            const act = { id: 'act_'+Date.now(), code: generateId(), ownerId: currentState.user.uid, courseName: document.getElementById('create-course-name').value||'課程', activityName: document.getElementById('create-activity-name').value||'活動', status: 'open', questions: currentState.draftQuestions, createdAt: Date.now() };
             currentState.activities.push(act);
             try { await setDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), act); await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code), {id: act.id, ownerId: act.ownerId, code: act.code, courseName: act.courseName, activityName: act.activityName, status: act.status, questions: act.questions}); } catch(e){}
             
             document.getElementById('create-course-name').value = ''; document.getElementById('create-activity-name').value = ''; document.getElementById('create-material').value = '';
             document.getElementById('confirm-review-check').checked = false; currentState.uploadedFiles = []; renderFiles();
+            document.getElementById('create-q-count').value = '5'; toggleCustomCount(); document.getElementById('create-q-count-custom').value = '';
             
             showToast('發布成功', 'success'); openLiveActivity(act.id);
         }
@@ -1006,7 +1213,7 @@
             document.getElementById('qrcode').innerHTML = ''; new QRCode(document.getElementById('qrcode'), {text: `${window.location.origin}${window.location.pathname}?code=${act.code}`, width:180, height:180});
             navigate('activity-live');
             
-            if(currentState.unsubscribeLive) currentState.unsubscribeLive();
+            if(currentState.unsubscribeLive) { currentState.unsubscribeLive(); currentState.unsubscribeLive = null; }
             
             currentState.unsubscribeLive = onSnapshot(
                 collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses'), 
@@ -1016,7 +1223,7 @@
                         currentState.responses = []; 
                         snap.forEach(d=>currentState.responses.push(d.data()));
                     },
-                    error: (err) => { console.log('Listener closed.'); }
+                    error: (err) => { console.log('Listener closed/permission denied due to logout.'); }
                 }
             );
         }
@@ -1037,10 +1244,25 @@
 
             currentState.currentActivity = act; currentState.studentInfo = { sid, name, dept, grade };
             document.getElementById('quiz-course-title').innerText = act.courseName; document.getElementById('quiz-student-id').innerText = sid; document.getElementById('quiz-student-name').innerText = name;
-            document.getElementById('quiz-questions-container').innerHTML = act.questions.map((q,i) => `
-                <div class="bg-gray-50 p-5 border border-gray-200 rounded-xl mb-4 shadow-sm"><h3 class="font-bold mb-4 text-lg text-gray-800">Q${i+1}. ${q.stem}</h3><div class="space-y-3">
-                ${q.options.map(o => `<label class="flex items-center p-3 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition"><input type="radio" name="q_${q.id}" value="${o}" class="mr-3 w-4 h-4 text-blue-600"> <span class="text-gray-700">${o}</span></label>`).join('')}
-                </div></div>`).join('');
+            
+            document.getElementById('quiz-questions-container').innerHTML = act.questions.map((q,i) => {
+                const isChoice = q.type !== 'short_answer' && q.options && q.options.length > 0;
+                let inputHtml = '';
+                if(isChoice) {
+                    inputHtml = q.options.map(o => {
+                        // 【關鍵修正 2】將選項中的雙引號轉譯，避免破壞 HTML value 屬性
+                        const safeVal = typeof o === 'string' ? o.replace(/"/g, '&quot;') : o;
+                        return `<label class="flex items-center p-3 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition"><input type="radio" name="q_${q.id}" value="${safeVal}" class="mr-3 w-4 h-4 text-blue-600"> <span class="text-gray-700">${o}</span></label>`;
+                    }).join('');
+                } else {
+                    inputHtml = `<textarea name="q_${q.id}" class="w-full p-4 border border-gray-300 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" rows="4" placeholder="請在此輸入您的回覆..."></textarea>`;
+                }
+                return `
+                    <div class="bg-gray-50 p-5 border border-gray-200 rounded-xl mb-4 shadow-sm">
+                        <h3 class="font-bold mb-4 text-lg text-gray-800"><span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2 align-middle">${isChoice?'選擇':'簡答'}</span>Q${i+1}. ${q.stem}</h3>
+                        <div class="space-y-3">${inputHtml}</div>
+                    </div>`;
+            }).join('');
             
             document.getElementById('quiz-questions-container').classList.remove('hidden'); document.getElementById('btn-submit-quiz').classList.remove('hidden'); document.getElementById('quiz-success-msg').classList.add('hidden');
             navigate('student-quiz');
@@ -1048,8 +1270,16 @@
 
         async function submitQuiz() {
             const act = currentState.currentActivity; let ans = {}; let all = true;
-            act.questions.forEach(q => { const sel = document.querySelector(`input[name="q_${q.id}"]:checked`); if(sel) ans[q.id] = sel.value; else all = false; });
-            if(!all) return showToast('請回答所有問題', 'warning');
+            act.questions.forEach(q => { 
+                if(q.type === 'short_answer' || !q.options || q.options.length === 0) {
+                    const textEl = document.querySelector(`textarea[name="q_${q.id}"]`);
+                    if(textEl && textEl.value.trim()) ans[q.id] = textEl.value.trim(); else all = false;
+                } else {
+                    const sel = document.querySelector(`input[name="q_${q.id}"]:checked`); 
+                    if(sel) ans[q.id] = sel.value; else all = false; 
+                }
+            });
+            if(!all) return showToast('請回答/填寫所有問題', 'warning');
             
             const uid = auth.currentUser ? auth.currentUser.uid : 's_'+Date.now();
             const payload = { 
@@ -1068,23 +1298,46 @@
             document.getElementById('quiz-questions-container').classList.add('hidden'); document.getElementById('btn-submit-quiz').classList.add('hidden'); document.getElementById('quiz-success-msg').classList.remove('hidden');
         }
 
-        function endActivityAndAnalyze() { viewAnalysis(currentState.currentActivity.id); }
+        function endActivityAndAnalyze() { 
+            if(currentState.unsubscribeLive) { currentState.unsubscribeLive(); currentState.unsubscribeLive = null; }
+            viewAnalysis(currentState.currentActivity.id); 
+        }
         
         async function viewAnalysis(id) {
             const act = currentState.activities.find(a=>a.id===id); if(!act) return; currentState.currentActivity = act;
 
             try { const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses')); if(!snap.empty) { currentState.responses = []; snap.forEach(d=>currentState.responses.push(d.data())); } } catch(e){}
             
-            const tot = currentState.responses.length; let scoreSum = 0;
-            let qStats = act.questions.map(q => ({id:q.id, stem:q.stem, correct:0}));
+            const tot = currentState.responses.length; let scoreSum = 0; let choiceQCount = 0;
+            
+            let qStats = act.questions.map(q => {
+                const isChoice = q.type !== 'short_answer' && q.options && q.options.length > 0;
+                if(isChoice) choiceQCount++;
+                return {id:q.id, stem:q.stem, isChoice: isChoice, correct:0, totalAns:0};
+            });
+
             currentState.responses.forEach(r => {
-                let uScore=0; act.questions.forEach((q,i) => { if(r.answers[q.id]===q.correctAnswer) { uScore++; qStats[i].correct++; } });
+                let uScore=0; 
+                act.questions.forEach((q,i) => { 
+                    if(qStats[i].isChoice) {
+                        if(r.answers[q.id]===q.correctAnswer) { uScore++; qStats[i].correct++; } 
+                    } else {
+                        if(r.answers[q.id]) qStats[i].totalAns++;
+                    }
+                });
                 scoreSum += uScore;
             });
-            const avg = tot>0 ? Math.round((scoreSum/(tot*act.questions.length))*100) : 0;
+            const avg = (tot>0 && choiceQCount>0) ? Math.round((scoreSum/(tot*choiceQCount))*100) : -1;
             
-            document.getElementById('stat-total-responses').innerText = tot; document.getElementById('stat-avg-score').innerText = avg+'%';
-            document.getElementById('stat-questions-breakdown').innerHTML = qStats.map((q,i) => `<div class="bg-gray-50 p-3 rounded border"><p class="text-sm font-bold truncate text-gray-700">Q${i+1}. ${q.stem}</p><p class="text-xs text-gray-500 mt-1">答對人數: <span class="font-bold text-blue-600">${q.correct}</span> / ${tot}</p></div>`).join('');
+            document.getElementById('stat-total-responses').innerText = tot; 
+            document.getElementById('stat-avg-score').innerText = avg === -1 ? 'N/A' : avg+'%';
+            document.getElementById('stat-questions-breakdown').innerHTML = qStats.map((q,i) => {
+                if(q.isChoice) {
+                    return `<div class="bg-gray-50 p-3 rounded border"><p class="text-sm font-bold truncate text-gray-700"><span class="text-xs bg-gray-200 px-1 rounded mr-1">選擇</span>Q${i+1}. ${q.stem}</p><p class="text-xs text-gray-500 mt-1">完全符合設定人數: <span class="font-bold text-blue-600">${q.correct}</span> / ${tot}</p></div>`;
+                } else {
+                    return `<div class="bg-gray-50 p-3 rounded border"><p class="text-sm font-bold truncate text-gray-700"><span class="text-xs bg-blue-100 text-blue-800 px-1 rounded mr-1">簡答</span>Q${i+1}. ${q.stem}</p><p class="text-xs text-gray-500 mt-1">已提交回覆: <span class="font-bold text-blue-600">${q.totalAns}</span> / ${tot}</p></div>`;
+                }
+            }).join('');
             
             navigate('analysis');
             if(act.analysis) { document.getElementById('analysis-trigger-box').classList.add('hidden'); document.getElementById('analysis-loading').classList.add('hidden'); document.getElementById('analysis-content').classList.remove('hidden'); document.getElementById('ai-summary').innerText = act.analysis.ai.summary; document.getElementById('ai-mastered').innerHTML = act.analysis.ai.masteredConcepts.map(c=>`<li>${c}</li>`).join(''); document.getElementById('ai-actions').innerHTML = act.analysis.ai.priorityActions.map(c=>`<li>${c}</li>`).join(''); }
@@ -1104,10 +1357,14 @@
             document.getElementById('analysis-loading').classList.remove('hidden');
             
             const act = currentState.currentActivity; 
-            const prompt = `分析資料JSON回傳:{ "summary": "摘要", "masteredConcepts": ["概念"], "priorityActions": ["行動"] }`;
+            
+            // 整理全部作答紀錄供 AI 參考
+            const respDataStr = JSON.stringify(currentState.responses.map(r => r.answers));
+            const prompt = `分析資料JSON回傳:{ "summary": "摘要", "masteredConcepts": ["亮點或主流意見"], "priorityActions": ["後續建議行動"] }`;
+            
             try {
                 const req = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${currentState.apiKey}`, {
-                    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{role:"user",parts:[{text: `分析此課程狀況: ${act.courseName}`}]}], systemInstruction:{parts:[{text:prompt}]}, generationConfig:{responseMimeType:"application/json"}})
+                    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{role:"user",parts:[{text: `分析此活動狀況: ${act.courseName}，以下是學生的回覆陣列：${respDataStr}`}]}], systemInstruction:{parts:[{text:prompt}]}, generationConfig:{responseMimeType:"application/json"}})
                 });
                 const res = await req.json();
                 if(res.error) throw new Error(res.error.message);
@@ -1130,25 +1387,41 @@
 
         function downloadExcelReport() {
             const act = currentState.currentActivity; const resps = currentState.responses;
-            if(!act || resps.length === 0) return showToast('目前沒有作答資料可供匯出', 'warning');
-            let headers = ['課程名稱', '活動名稱', '科系', '年級', '學號', '學生姓名', '總答對', '總題數', '得分(%)'];
-            act.questions.forEach((q, i) => { headers.push(`Q${i+1} 作答`); headers.push(`Q${i+1} 結果 (O/X)`); });
+            if(!act || resps.length === 0) return showToast('目前沒有資料可供匯出', 'warning');
+            
+            let choiceQCount = 0;
+            act.questions.forEach(q => { if(q.type !== 'short_answer' && q.options && q.options.length > 0) choiceQCount++; });
+
+            let headers = ['課程名稱', '活動名稱', '科系', '年級', '學號', '學生姓名', '客觀題符合', '客觀題總數', '得分(%)'];
+            act.questions.forEach((q, i) => { headers.push(`Q${i+1} 回覆內容`); headers.push(`Q${i+1} 結果 (O/X)`); });
+            
             let dataRows = [];
             resps.forEach(r => {
                 let correctCount = 0; let qDetails = [];
-                act.questions.forEach(q => { const studentAns = r.answers[q.id] || '未作答'; const isCorrect = studentAns === q.correctAnswer; if(isCorrect) correctCount++; qDetails.push(studentAns); qDetails.push(isCorrect ? 'O' : 'X'); });
-                const scorePercent = Math.round((correctCount / act.questions.length) * 100);
-                let row = [act.courseName, act.activityName, r.department || '無資料', r.grade || '無資料', r.studentId || '無資料', r.nickname || '匿名', correctCount, act.questions.length, scorePercent];
+                act.questions.forEach(q => { 
+                    const studentAns = r.answers[q.id] || '未作答'; 
+                    qDetails.push(studentAns); 
+                    
+                    if(q.type === 'short_answer' || !q.options || q.options.length === 0) {
+                        qDetails.push('需人工閱卷');
+                    } else {
+                        const isCorrect = studentAns === q.correctAnswer; 
+                        if(isCorrect) correctCount++; 
+                        qDetails.push(isCorrect ? 'O' : 'X'); 
+                    }
+                });
+                const scorePercent = choiceQCount > 0 ? Math.round((correctCount / choiceQCount) * 100) : 0;
+                let row = [act.courseName, act.activityName, r.department || '無資料', r.grade || '無資料', r.studentId || '無資料', r.nickname || '匿名', correctCount, choiceQCount, scorePercent];
                 dataRows.push(row.concat(qDetails));
             });
             
             const ws = XLSX.utils.aoa_to_sheet([headers, ...dataRows]); 
             
-            let wscols = [ {wch: 15}, {wch: 25}, {wch: 15}, {wch: 10}, {wch: 15}, {wch: 15}, {wch: 10}, {wch: 10}, {wch: 10} ];
+            let wscols = [ {wch: 15}, {wch: 25}, {wch: 15}, {wch: 10}, {wch: 15}, {wch: 15}, {wch: 12}, {wch: 12}, {wch: 10} ];
             act.questions.forEach(() => { wscols.push({wch: 35}); wscols.push({wch: 15}); });
             ws['!cols'] = wscols;
 
-            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "作答明細"); XLSX.writeFile(wb, `${act.courseName}_${act.activityName}_作答明細.xlsx`);
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "回覆明細"); XLSX.writeFile(wb, `${act.courseName}_${act.activityName}_回覆明細.xlsx`);
             showToast('作答明細已完美排版並匯出！', 'success');
         }
         
@@ -1156,15 +1429,25 @@
             const act = currentState.currentActivity; 
             if(!act || !act.analysis) return showToast('無完整的 AI 分析報告可供下載', 'warning'); 
             
-            let questionsHtml = act.questions.map((q, i) => `
-                <div style="margin-bottom: 20px;">
-                    <p style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">Q${i+1}. ${q.stem}</p>
-                    <ul style="list-style-type: none; padding-left: 15px; margin-top: 0;">
-                        ${q.options.map(o => `<li style="${o === q.correctAnswer ? 'color: #166534; font-weight: bold;' : 'color: #4b5563;'} margin-bottom: 4px;">${o === q.correctAnswer ? '【正解】' : '○'} ${o}</li>`).join('')}
-                    </ul>
-                    <p style="color: #6b7280; font-size: 14px; margin-top: 8px; border-left: 3px solid #e5e7eb; padding-left: 10px;">解析: ${q.explanation || '無'}</p>
-                </div>
-            `).join('');
+            let questionsHtml = act.questions.map((q, i) => {
+                const isChoice = q.type !== 'short_answer' && q.options && q.options.length > 0;
+                let ansHtml = '';
+                if(isChoice) {
+                    ansHtml = `<ul style="list-style-type: none; padding-left: 15px; margin-top: 0;">
+                            ${q.options.map(o => `<li style="${o === q.correctAnswer ? 'color: #166534; font-weight: bold;' : 'color: #4b5563;'} margin-bottom: 4px;">${o === q.correctAnswer ? '【正解/設定】' : '○'} ${o}</li>`).join('')}
+                        </ul>`;
+                } else {
+                    ansHtml = `<p style="color: #166534; font-weight: bold; padding-left: 15px; margin-top: 0;">【參考解答/開放回覆】: <br><span style="font-weight:normal; color:#374151;">${q.correctAnswer}</span></p>`;
+                }
+                
+                return `
+                    <div style="margin-bottom: 20px;">
+                        <p style="font-weight: bold; font-size: 16px; margin-bottom: 8px;"><span style="font-size: 12px; background: #e5e7eb; padding: 2px 6px; border-radius: 4px; margin-right: 5px;">${isChoice?'選擇':'簡答'}</span> Q${i+1}. ${q.stem}</p>
+                        ${ansHtml}
+                        <p style="color: #6b7280; font-size: 14px; margin-top: 8px; border-left: 3px solid #e5e7eb; padding-left: 10px;">解析/目的: ${q.explanation || '無'}</p>
+                    </div>
+                `;
+            }).join('');
 
             const html = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -1172,24 +1455,24 @@
                 <body style="font-family: '微軟正黑體', Arial, sans-serif;">
                     <h1 style="color: #1e3a8a; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; text-align: center;">${act.courseName} - ${act.activityName}</h1>
                     
-                    <h2 style="color: #374151; background-color: #f3f4f6; padding: 10px; margin-top: 30px;">一、測驗題庫與解答</h2>
+                    <h2 style="color: #374151; background-color: #f3f4f6; padding: 10px; margin-top: 30px;">一、測驗題庫與解答設定</h2>
                     <div style="padding: 10px;">${questionsHtml}</div>
 
                     <h2 style="color: #6b21a8; background-color: #f3f4f6; padding: 10px; margin-top: 30px;">二、AI 班級理解分析摘要</h2>
                     <p style="line-height: 1.8; font-size: 15px; padding: 0 10px;">${act.analysis.ai.summary}</p>
                     
-                    <h3 style="color: #15803d; margin-top: 25px; padding-left: 10px;">三、班級已掌握概念</h3>
+                    <h3 style="color: #15803d; margin-top: 25px; padding-left: 10px;">三、班級已掌握概念 / 主流意見</h3>
                     <ul style="line-height: 1.8; font-size: 15px;">
                         ${act.analysis.ai.masteredConcepts.map(c => `<li>${c}</li>`).join('')}
                     </ul>
                     
-                    <h3 style="color: #b45309; margin-top: 25px; padding-left: 10px;">四、建議優先補強行動</h3>
+                    <h3 style="color: #b45309; margin-top: 25px; padding-left: 10px;">四、建議優先補強行動 / 改善方案</h3>
                     <ul style="line-height: 1.8; font-size: 15px;">
                         ${act.analysis.ai.priorityActions.map(c => `<li>${c}</li>`).join('')}
                     </ul>
                     
                     <p style="margin-top: 50px; font-size: 12px; color: #9ca3af; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px;">
-                        本教學分析報告由 TONY STUDIO AI 課堂系統自動生成 | 產出時間: ${new Date().toLocaleString()}
+                        本報告由 TONY STUDIO AI 課堂系統自動生成 | 產出時間: ${new Date().toLocaleString()}
                     </p>
                 </body>
                 </html>
@@ -1213,7 +1496,7 @@
                     <td style="border: 1px solid #d1d5db; padding: 8px; text-align: center;">${i + 1}</td>
                     <td style="border: 1px solid #d1d5db; padding: 8px;"><b>${stat.name}</b><br><span style="color: #6b7280; font-size: 12px;">${stat.course}</span></td>
                     <td style="border: 1px solid #d1d5db; padding: 8px; text-align: center;">${stat.responses}</td>
-                    <td style="border: 1px solid #d1d5db; padding: 8px; text-align: center;">${stat.accuracy}%</td>
+                    <td style="border: 1px solid #d1d5db; padding: 8px; text-align: center;">${stat.accuracy === -1 ? '不適用(全簡答)' : stat.accuracy+'%'}</td>
                 </tr>
             `).join('');
 
@@ -1229,7 +1512,7 @@
                         <tr>
                             <td style="padding: 10px; border: 1px solid #e5e7eb;">總活動數: <b style="font-size: 18px;">${data.totalActivities}</b></td>
                             <td style="padding: 10px; border: 1px solid #e5e7eb;">累計作答人次: <b style="font-size: 18px;">${data.totalResponses}</b></td>
-                            <td style="padding: 10px; border: 1px solid #e5e7eb;">整體平均正確率: <b style="font-size: 18px; color: ${data.overallAcc >= 60 ? '#16a34a' : '#dc2626'}">${data.overallAcc}%</b></td>
+                            <td style="padding: 10px; border: 1px solid #e5e7eb;">整體平均正確率(排除簡答題): <b style="font-size: 18px; color: ${data.overallAcc >= 60 ? '#16a34a' : (data.overallAcc===-1?'#6b7280':'#dc2626')}">${data.overallAcc===-1?'N/A':data.overallAcc+'%'}</b></td>
                         </tr>
                     </table>
 
@@ -1245,7 +1528,7 @@
                                 <th style="border: 1px solid #d1d5db; padding: 8px;">排行</th>
                                 <th style="border: 1px solid #d1d5db; padding: 8px;">活動名稱</th>
                                 <th style="border: 1px solid #d1d5db; padding: 8px;">作答人次</th>
-                                <th style="border: 1px solid #d1d5db; padding: 8px;">正確率</th>
+                                <th style="border: 1px solid #d1d5db; padding: 8px;">選擇題正確率</th>
                             </tr>
                         </thead>
                         <tbody>
