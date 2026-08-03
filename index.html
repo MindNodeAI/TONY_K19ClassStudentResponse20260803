@@ -36,7 +36,6 @@
     </style>
 </head>
 <body>
-    <!-- 導覽列 -->
     <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
@@ -62,7 +61,7 @@
 
     <main class="flex-grow w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 relative">
         
-        <!-- View 1: API Key Setup -->
+        <!-- API Key Setup -->
         <section id="view-api-key" class="view-section active max-w-xl mx-auto mt-10">
             <div class="glass-panel p-8 rounded-2xl">
                 <div class="text-center mb-6">
@@ -90,7 +89,7 @@
             </div>
         </section>
 
-        <!-- View 2: Auth -->
+        <!-- Authentication -->
         <section id="view-auth" class="view-section max-w-md mx-auto mt-10">
             <div class="glass-panel p-8 rounded-2xl">
                 <h2 class="text-2xl font-bold text-center text-gray-800 mb-2" id="auth-title">教師登入</h2>
@@ -109,7 +108,7 @@
             </div>
         </section>
 
-        <!-- View: Student Entry (Updated with Student ID) -->
+        <!-- Student Entry -->
         <section id="view-student-entry" class="view-section max-w-md mx-auto mt-10">
              <div class="glass-panel p-8 rounded-2xl text-center">
                 <i class="fas fa-qrcode text-5xl text-blue-500 mb-4"></i>
@@ -127,13 +126,14 @@
             </div>
         </section>
 
-        <!-- View 3: Teacher Dashboard -->
+        <!-- Teacher Dashboard -->
         <section id="view-dashboard" class="view-section max-w-5xl mx-auto">
             <div class="flex justify-between items-center mb-8">
                 <div><h1 class="text-3xl font-bold text-gray-800">活動管理控制台</h1></div>
                 <div class="flex gap-2">
-                    <button onclick="exportData()" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2"><i class="fas fa-download"></i> 離線備份</button>
-                    <button onclick="navigate('create-activity')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold shadow-md flex items-center gap-2"><i class="fas fa-plus"></i> 建立新活動</button>
+                    <button onclick="exportData()" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2"><i class="fas fa-download"></i> 離線備份</button>
+                    <button onclick="loadOverallDashboard()" class="bg-green-600 hover:bg-green-700 transition text-white px-5 py-2 rounded-lg font-semibold shadow-md flex items-center gap-2"><i class="fas fa-chart-pie"></i> 總體成效看板</button>
+                    <button onclick="navigate('create-activity')" class="bg-blue-600 hover:bg-blue-700 transition text-white px-5 py-2 rounded-lg font-semibold shadow-md flex items-center gap-2"><i class="fas fa-plus"></i> 建立新活動</button>
                 </div>
             </div>
             <div id="dashboard-stats" class="mb-8"></div>
@@ -143,7 +143,23 @@
             </div>
         </section>
 
-        <!-- View: Admin Dashboard -->
+        <!-- Overall Dashboard (Statistics) -->
+        <section id="view-overall-dashboard" class="view-section max-w-5xl mx-auto">
+            <div class="flex justify-between items-center mb-8 border-b pb-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3"><i class="fas fa-chart-pie text-green-600"></i> 總體成效看板</h1>
+                    <p class="text-gray-500 mt-1">匯總您所有活動的學習數據與排名</p>
+                </div>
+                <div>
+                    <button onclick="navigate('dashboard')" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-50 transition"><i class="fas fa-arrow-left"></i> 返回控制台</button>
+                </div>
+            </div>
+            <div id="overall-dashboard-content">
+                <!-- Data will be injected here -->
+            </div>
+        </section>
+
+        <!-- System Admin Dashboard -->
         <section id="view-admin" class="view-section max-w-6xl mx-auto">
             <div class="flex justify-between items-center mb-8 border-b pb-4">
                 <div>
@@ -189,27 +205,43 @@
             </div>
         </section>
 
-        <!-- View 4: Create Activity Wizard (UI/UX 徹底重構版) -->
+        <!-- Admin View Teacher's Activities -->
+        <section id="view-admin-teacher-activities" class="view-section max-w-5xl mx-auto">
+            <div class="flex justify-between items-center mb-8 border-b pb-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3"><i class="fas fa-folder-open text-blue-600"></i> 教師活動庫</h1>
+                    <p class="text-gray-500 mt-1">目前正在檢視 <span id="admin-viewing-teacher-name" class="font-bold text-blue-700"></span> 的活動清單</p>
+                </div>
+                <div>
+                    <button onclick="navigate('admin')" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-50 transition"><i class="fas fa-arrow-left"></i> 返回系統後台</button>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50"><h3 class="font-semibold text-gray-800">建立的活動列表</h3></div>
+                <div id="admin-teacher-activities-list" class="divide-y divide-gray-100"></div>
+            </div>
+        </section>
+
+        <!-- Create Activity Wizard -->
         <section id="view-create-activity" class="view-section max-w-4xl mx-auto">
             <div class="glass-panel p-6 sm:p-8 rounded-2xl">
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="text-2xl font-bold text-gray-800">建立新活動</h2>
-                    <button onclick="navigateHome()" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button>
+                    <button onclick="navigate('dashboard')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button>
                 </div>
                 
                 <!-- Wizard Step 1 -->
                 <div id="wizard-step-1" class="wizard-step">
                     <div class="space-y-5">
-                        <input type="text" id="create-course-name" class="w-full px-4 py-2 rounded-lg border border-gray-300 outline-none" placeholder="課程名稱 (例如：行銷學)">
-                        <input type="text" id="create-activity-name" class="w-full px-4 py-2 rounded-lg border border-gray-300 outline-none" placeholder="活動名稱 (例如：第三章 隨堂測驗)">
-                        <div class="flex justify-end"><button onclick="nextStep(2)" class="bg-blue-600 text-white py-2 px-6 rounded-lg font-medium">下一步</button></div>
+                        <input type="text" id="create-course-name" class="w-full px-4 py-2 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500" placeholder="課程名稱 (例如：行銷學)">
+                        <input type="text" id="create-activity-name" class="w-full px-4 py-2 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500" placeholder="活動名稱 (例如：第三章 隨堂測驗)">
+                        <div class="flex justify-end"><button onclick="nextStep(2)" class="bg-blue-600 text-white py-2 px-6 rounded-lg font-medium hover:bg-blue-700 transition">下一步</button></div>
                     </div>
                 </div>
 
-                <!-- Wizard Step 2 (包含模式切換與檔案上傳) -->
+                <!-- Wizard Step 2 -->
                 <div id="wizard-step-2" class="wizard-step hidden">
                     <div class="space-y-4">
-                        <!-- 模式切換器 -->
                         <div class="flex gap-4 mb-2 p-1 bg-gray-100 rounded-lg inline-flex">
                             <label class="flex items-center cursor-pointer px-4 py-2 rounded-md transition-colors text-sm font-medium" id="label-mode-generate" style="background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                                 <input type="radio" name="create-mode" value="generate" checked onchange="toggleCreateMode()" class="hidden"> 
@@ -221,10 +253,10 @@
                             </label>
                         </div>
 
-                        <!-- 檔案拖曳與上傳區 (僅 Generate 模式顯示) -->
+                        <!-- 檔案拖曳與上傳區 -->
                         <div id="drop-zone" class="border-2 border-dashed border-blue-300 bg-blue-50 p-6 text-center rounded-lg cursor-pointer transition hover:bg-blue-100" onclick="document.getElementById('file-upload').click()">
                             <i class="fas fa-cloud-upload-alt text-3xl text-blue-500 mb-2"></i>
-                            <p class="text-gray-700">點擊或拖曳多個教材檔案</p>
+                            <p class="text-gray-700" id="drop-zone-text">點擊或拖曳多個教材檔案</p>
                             <p class="text-sm text-gray-500 mt-1">支援 PDF, Word, Excel, CSV, 圖檔, 語音檔</p>
                             <input type="file" id="file-upload" class="hidden" multiple accept=".pdf,.docx,.xlsx,.csv,.txt,.jpg,.jpeg,.png,.webp,.mp3,.wav" onchange="handleFileUpload(event)">
                         </div>
@@ -250,6 +282,7 @@
                 <div id="wizard-step-3" class="wizard-step hidden py-12 text-center">
                     <div class="loader mx-auto mb-4"></div>
                     <h3 class="text-xl font-bold text-gray-800" id="ai-loading-text">AI 正在深度解析...</h3>
+                    <p class="text-sm text-gray-500 mt-2">這可能需要幾十秒鐘，請耐心等候。</p>
                 </div>
 
                 <!-- Wizard Step 4 (審閱並發布) -->
@@ -268,27 +301,26 @@
             </div>
         </section>
 
-        <!-- View 5: Activity Dashboard (QR Code) -->
+        <!-- Live Activity -->
         <section id="view-activity-live" class="view-section max-w-4xl mx-auto">
             <div class="glass-panel p-8 rounded-2xl text-center relative">
-                <button onclick="navigateHome()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 bg-gray-100 px-3 py-1 rounded-lg text-sm">返回</button>
+                <button onclick="navigate('dashboard')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 bg-gray-100 px-3 py-1 rounded-lg text-sm transition">返回控制台</button>
                 <h2 class="text-2xl font-bold text-gray-800" id="live-activity-name">活動名稱</h2>
-                <div class="mt-6 inline-block bg-blue-50 border border-blue-100 rounded-xl p-6">
+                <div class="mt-6 inline-block bg-blue-50 border border-blue-100 rounded-xl p-6 shadow-sm">
                     <h3 class="font-bold text-gray-700 mb-2">加入代碼</h3>
                     <div id="live-activity-code" class="text-4xl tracking-[0.2em] font-black text-blue-600 mb-4">------</div>
-                    <div id="qrcode" class="bg-white p-3 rounded-lg border border-gray-200 flex justify-center mb-4"></div>
-                    <button onclick="simulateStudent()" class="w-full bg-purple-100 hover:bg-purple-200 text-purple-700 border border-purple-200 font-bold py-2 px-3 rounded-lg transition text-sm flex justify-center items-center gap-2">
-                        <i class="fas fa-rocket"></i> 單機測試：一鍵模擬作答
-                    </button>
+                    <div id="qrcode" class="bg-white p-3 rounded-lg border border-gray-200 flex justify-center mx-auto w-[180px] h-[180px]"></div>
+                    <p class="text-gray-500 text-sm mt-3">請學生掃描 QR Code 或輸入代碼</p>
                 </div>
-                <div class="mt-8">
+                
+                <div class="mt-8 border-t pt-6">
                     <p class="text-xl">已作答人數: <span id="live-response-count" class="font-bold text-blue-600 text-3xl">0</span></p>
-                    <button onclick="endActivityAndAnalyze()" class="mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-3 px-8 rounded-xl shadow-md">結束作答並前往分析</button>
+                    <button onclick="endActivityAndAnalyze()" class="mt-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-xl shadow-md transition transform hover:scale-105">結束作答並前往分析</button>
                 </div>
             </div>
         </section>
 
-        <!-- View 6: Student Quiz -->
+        <!-- Student Quiz -->
         <section id="view-student-quiz" class="view-section max-w-3xl mx-auto mt-4">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-4 flex justify-between items-center">
                 <div><h2 class="font-bold text-gray-800" id="quiz-course-title">課程</h2></div>
@@ -303,15 +335,15 @@
             </div>
         </section>
 
-        <!-- View 7: Analysis & Reports -->
+        <!-- Analysis & Report View -->
         <section id="view-analysis" class="view-section max-w-6xl mx-auto">
             <div class="flex justify-between items-center mb-6 border-b pb-4">
-                <button onclick="navigateHome()" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2"><i class="fas fa-arrow-left"></i> 返回</button>
+                <button onclick="goBackFromAnalysis()" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-50"><i class="fas fa-arrow-left"></i> 返回</button>
                 <div class="flex gap-2">
-                    <button onclick="downloadExcelReport()" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm flex items-center gap-2">
+                    <button onclick="downloadExcelReport()" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm flex items-center gap-2 transition">
                         <i class="fas fa-file-excel"></i> 下載作答明細 (Excel)
                     </button>
-                    <button onclick="downloadWordReport()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm flex items-center gap-2">
+                    <button onclick="downloadWordReport()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm flex items-center gap-2 transition">
                         <i class="fas fa-file-word"></i> 下載 AI Word 報告
                     </button>
                 </div>
@@ -325,7 +357,7 @@
                         <div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><p class="text-xs text-gray-500 mb-1">作答人數</p><p class="text-2xl font-bold" id="stat-total-responses">0</p></div>
                         <div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><p class="text-xs text-gray-500 mb-1">平均正確率</p><p class="text-2xl font-bold text-blue-600" id="stat-avg-score">0%</p></div>
                     </div>
-                    <div id="stat-questions-breakdown" class="space-y-4 max-h-[500px] overflow-y-auto"></div>
+                    <div id="stat-questions-breakdown" class="space-y-4 max-h-[500px] overflow-y-auto pr-2"></div>
                 </div>
 
                 <!-- AI 分析區塊 -->
@@ -334,18 +366,18 @@
                         <i class="fas fa-brain text-5xl text-purple-500 mb-4"></i>
                         <h3 class="text-xl font-bold mb-2">準備生成 AI 班級分析</h3>
                         <p class="text-gray-500 text-sm mb-6">點擊下方按鈕，AI 將綜合全班作答數據，提供深入的教學建議與迷思破解。</p>
-                        <button onclick="triggerAIAnalysis()" class="bg-purple-600 hover:bg-purple-700 transition text-white font-bold py-3 px-8 rounded-full shadow-lg">開始生成 AI 分析報告</button>
+                        <button onclick="triggerAIAnalysis()" class="bg-purple-600 hover:bg-purple-700 transition text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105">開始生成 AI 分析報告</button>
                     </div>
                     
                     <div id="analysis-loading" class="hidden py-16 text-center flex-grow flex flex-col justify-center items-center">
-                        <div class="loader mx-auto mb-6"></div><h3 class="text-xl font-bold">AI 正在深度解析班級數據...</h3>
+                        <div class="loader mx-auto mb-6"></div><h3 class="text-xl font-bold text-gray-800">AI 正在深度解析班級數據...</h3>
                     </div>
                     
                     <div id="analysis-content" class="hidden space-y-6">
-                        <div><h4 class="font-bold text-lg mb-2">摘要</h4><p class="bg-blue-50 p-4 rounded-lg" id="ai-summary"></p></div>
+                        <div><h4 class="font-bold text-lg mb-2">摘要</h4><p class="bg-blue-50 p-4 rounded-lg text-gray-800" id="ai-summary"></p></div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-green-50 p-4 rounded-lg"><h4 class="font-bold mb-2">已掌握概念</h4><ul class="list-disc pl-5 text-sm" id="ai-mastered"></ul></div>
-                            <div class="bg-yellow-50 p-4 rounded-lg"><h4 class="font-bold mb-2">優先補強</h4><ul class="list-disc pl-5 text-sm" id="ai-actions"></ul></div>
+                            <div class="bg-green-50 p-4 rounded-lg"><h4 class="font-bold text-green-800 mb-2">已掌握概念</h4><ul class="list-disc pl-5 text-sm text-gray-700" id="ai-mastered"></ul></div>
+                            <div class="bg-yellow-50 p-4 rounded-lg"><h4 class="font-bold text-yellow-800 mb-2">優先補強</h4><ul class="list-disc pl-5 text-sm text-gray-700" id="ai-actions"></ul></div>
                         </div>
                     </div>
                 </div>
@@ -353,11 +385,12 @@
         </section>
     </main>
 
-    <!-- Tony Modal -->
+    <!-- Tony Modal (Enhanced Profile) -->
     <div id="modal-tony" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl relative overflow-hidden">
             <button onclick="closeTonyModal()" class="absolute top-4 right-4 bg-white/80 rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition z-10"><i class="fas fa-times"></i></button>
             <div class="md:flex h-full">
+                <!-- 左側照片與頭銜 -->
                 <div class="md:w-2/5 relative min-h-[400px]">
                     <img src="https://i.postimg.cc/Gh8Zt7SX/S_56844323.jpg" class="w-full h-full object-cover absolute inset-0">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6">
@@ -369,6 +402,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- 右側詳細經歷 -->
                 <div class="md:w-3/5 p-6 md:p-8 overflow-y-auto max-h-[85vh] bg-gray-50 text-sm space-y-6">
                     <div>
                         <h3 class="font-bold text-gray-800 text-base mb-3 border-b-2 border-blue-200 pb-1 inline-block">現職 Current</h3>
@@ -408,20 +442,23 @@
         </div>
     </div>
     
-    <!-- 自訂刪除確認彈窗 -->
+    <!-- Confirm Delete Modal -->
     <div id="modal-confirm" class="fixed inset-0 bg-black/60 z-[105] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center animation-fadeIn">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center">
             <div class="w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4"><i class="fas fa-exclamation-triangle text-2xl"></i></div>
             <h3 class="text-xl font-bold text-gray-800 mb-2" id="confirm-title">確認刪除</h3>
-            <p class="text-gray-500 mb-6 text-sm" id="confirm-message">您確定要刪除這個活動嗎？</p>
+            <p class="text-gray-500 mb-6 text-sm" id="confirm-message">您確定要執行此操作嗎？</p>
             <div class="flex gap-3 justify-center">
                 <button onclick="closeConfirmModal()" class="w-1/2 px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition">取消</button>
-                <button onclick="executeConfirmAction()" class="w-1/2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium shadow-sm transition">確定刪除</button>
+                <button onclick="executeConfirmAction()" class="w-1/2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium shadow-sm transition">確定</button>
             </div>
         </div>
     </div>
 
-    <footer class="bg-white border-t border-gray-200 mt-auto py-6"><div class="text-center text-sm text-gray-500 font-medium">© 2026 TONY STUDIO. 本教材由 TONY STUDIO 楊文澤顧問設計. All Rights Reserved.</div></footer>
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto py-6">
+        <div class="text-center text-sm text-gray-500 font-medium">© 2026 TONY STUDIO. 本教材由 TONY STUDIO 楊文澤顧問設計. All Rights Reserved.</div>
+    </footer>
     <div id="toast-container"></div>
 
     <script type="module">
@@ -429,7 +466,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration (Real SDK Keys provided)
+        // Firebase Configuration
         const firebaseConfig = { 
             apiKey: "AIzaSyDIBl4wYBulCVQOlC6hNHyCIA96dqC61N8", 
             authDomain: "k19-ai-classroom-comprehension.firebaseapp.com", 
@@ -444,24 +481,31 @@
         try { app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app); } catch (e) { console.error("Firebase init error:", e); }
 
         const APP_ID = 'k19-ai-classroom';
-        let currentState = { apiKey: '', user: null, isTeacher: false, isAdmin: false, activities: [], currentActivity: null, responses: [], draftQuestions: [], uploadedFiles: [], unsubscribeLive: null };
+        let currentState = { 
+            apiKey: '', user: null, isTeacher: false, isAdmin: false, 
+            activities: [], currentActivity: null, responses: [], 
+            draftQuestions: [], uploadedFiles: [], unsubscribeLive: null,
+            viewingTeacherId: null, viewingTeacherName: null // For Admin cross-viewing
+        };
 
-        // Expose functions to global scope
-        Object.assign(window, { navigate, navigateHome, saveApiKey, handleAuthAction, toggleAuthMode, handleLogout, openTonyModal, closeTonyModal, nextStep, prevStep, handleFileUpload, generateAIQuestions, publishActivity, studentJoinActivity, submitQuiz, simulateStudent, endActivityAndAnalyze, triggerAIAnalysis, exportData, downloadWordReport, downloadExcelReport, openLiveActivity, viewAnalysis, loadAdminDashboard, toggleUserStatus, deleteUserRecord, requestDeleteActivity, closeConfirmModal, executeConfirmAction, toggleCreateMode });
-
-        // Helper Functions
+        // --- STREAMING_CHUNK: Helper Functions & Modals ---
         function showToast(msg, type='info') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<span>${msg}</span>`; c.appendChild(t); setTimeout(() => t.remove(), 3000); }
         function generateId() { return Math.random().toString(36).substring(2,8).toUpperCase(); }
-        
         function openTonyModal() { document.getElementById('modal-tony').classList.remove('hidden'); }
         function closeTonyModal() { document.getElementById('modal-tony').classList.add('hidden'); }
+        
+        let currentConfirmAction = null;
+        function showConfirmModal(title, msg, action) { document.getElementById('confirm-title').innerText = title; document.getElementById('confirm-message').innerText = msg; currentConfirmAction = action; document.getElementById('modal-confirm').classList.remove('hidden'); }
+        function closeConfirmModal() { document.getElementById('modal-confirm').classList.add('hidden'); currentConfirmAction = null; }
+        function executeConfirmAction() { if(currentConfirmAction) currentConfirmAction(); closeConfirmModal(); }
 
-        // Navigation Logic
+        // --- STREAMING_CHUNK: Navigation Logic ---
         function navigate(viewId) { 
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); 
             const target = document.getElementById(`view-${viewId}`);
             if(target) target.classList.add('active'); 
-            if (viewId === 'dashboard' && currentState.isTeacher) loadDashboard(); 
+            
+            if (viewId === 'dashboard' && currentState.isTeacher) { currentState.viewingTeacherId = null; loadDashboard(); }
             if (viewId === 'admin' && currentState.isAdmin) loadAdminDashboard();
         }
 
@@ -472,14 +516,16 @@
             } else navigate(currentState.apiKey ? 'auth' : 'api-key');
         }
 
-        // --- STREAMING_CHUNK:Auth and Admin Logic... ---
+        // Export functions to window for HTML access
+        Object.assign(window, { navigate, navigateHome, saveApiKey, handleAuthAction, toggleAuthMode, handleLogout, openTonyModal, closeTonyModal, nextStep, prevStep, handleFileUpload, generateAIQuestions, publishActivity, studentJoinActivity, submitQuiz, endActivityAndAnalyze, triggerAIAnalysis, exportData, downloadWordReport, downloadExcelReport, openLiveActivity, viewAnalysis, goBackFromAnalysis, loadAdminDashboard, toggleUserStatus, deleteUserRecord, requestDeleteActivity, closeConfirmModal, executeConfirmAction, toggleCreateMode, loadOverallDashboard, loadAdminTeacherActivities });
+
+        // --- STREAMING_CHUNK: Auth and Initialization ---
         function initApp() {
             currentState.apiKey = localStorage.getItem('k19_api_key') || sessionStorage.getItem('k19_api_key') || '';
             if (currentState.apiKey) document.getElementById('input-api-key').value = currentState.apiKey;
             currentState.activities = JSON.parse(localStorage.getItem('k19_local_activities') || '[]');
 
             onAuthStateChanged(auth, async (user) => {
-                // 自動偵測網址中是否帶有 QR Code 的代碼
                 const urlParams = new URLSearchParams(window.location.search);
                 const joinCode = urlParams.get('code');
 
@@ -495,7 +541,8 @@
                         }
 
                         try { await setDoc(doc(db, 'artifacts', APP_ID, 'users', user.uid), { email: user.email, role: currentState.isAdmin ? 'admin' : 'teacher', lastLogin: Date.now() }, {merge: true}); } catch(e){}
-                        navigateHome();
+                        
+                        if(joinCode) navigate('student-entry'); else navigateHome();
                     } else {
                         if(joinCode) document.getElementById('student-code').value = joinCode;
                         navigate('student-entry');
@@ -505,7 +552,6 @@
                     document.getElementById('nav-auth-section').classList.add('hidden');
                     document.getElementById('nav-admin-btn').classList.add('hidden');
                     
-                    // 如果網址有代碼 (學生掃碼進來)，直接跳到學生區並自動填入
                     if(joinCode) {
                         document.getElementById('student-code').value = joinCode;
                         navigate('student-entry');
@@ -548,23 +594,15 @@
                     
                     const cred = await createUserWithEmailAndPassword(auth, email, pw);
                     await setDoc(doc(db, 'artifacts', APP_ID, 'users', cred.user.uid), { 
-                        email: email, 
-                        name: name,
-                        school: school,
-                        department: dept,
-                        role: 'teacher', 
-                        status: 'active', 
-                        createdAt: Date.now() 
+                        email: email, name: name, school: school, department: dept, role: 'teacher', status: 'active', createdAt: Date.now() 
                     });
                     showToast('註冊成功', 'success');
                 }
-            } catch (e) { 
-                showToast(e.code === 'auth/email-already-in-use' ? '此信箱已註冊' : '帳號或密碼錯誤/格式不符', 'error'); 
-            }
+            } catch (e) { showToast(e.code === 'auth/email-already-in-use' ? '此信箱已註冊' : '帳號或密碼錯誤/格式不符', 'error'); }
         }
         function handleLogout() { signOut(auth); }
 
-        // --- Admin Functions ---
+        // --- STREAMING_CHUNK: Admin Functions (Users & View Activities) ---
         async function loadAdminDashboard() {
             if(!currentState.isAdmin) return;
             const listEl = document.getElementById('admin-user-list');
@@ -585,6 +623,7 @@
                     
                     const actionBtn = isSelf ? '<span class="text-gray-400 text-xs font-bold">系統管理員</span>' : 
                         `<div class="flex gap-2 justify-end">
+                            <button onclick="loadAdminTeacherActivities('${u.uid}', '${u.name||u.email}')" class="text-xs px-3 py-1.5 rounded border bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100 font-medium transition">查看活動</button>
                             <button onclick="toggleUserStatus('${u.uid}', '${u.status}')" class="text-xs px-3 py-1.5 rounded border ${u.status === 'disabled' ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100' : 'bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100'} font-medium transition">${u.status === 'disabled' ? '恢復權限' : '停用'}</button>
                             <button onclick="deleteUserRecord('${u.uid}')" class="text-xs px-3 py-1.5 rounded border bg-red-50 border-red-300 text-red-700 hover:bg-red-100 font-medium transition">刪除</button>
                         </div>`;
@@ -601,48 +640,63 @@
                         <td class="px-6 py-4 text-right">${actionBtn}</td>
                     </tr>`;
                 }).join('');
-            } catch(e) { listEl.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">讀取失敗，請確認 Firestore Rules 是否已正確設定。</td></tr>'; }
+            } catch(e) { listEl.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">讀取失敗，請確認 Firestore Rules 是否允許管理員讀取。</td></tr>'; }
+        }
+
+        async function loadAdminTeacherActivities(uid, teacherName) {
+            currentState.viewingTeacherId = uid;
+            currentState.viewingTeacherName = teacherName;
+            document.getElementById('admin-viewing-teacher-name').innerText = teacherName;
+            
+            const listEl = document.getElementById('admin-teacher-activities-list');
+            listEl.innerHTML = '<div class="p-8 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>載入資料中...</div>';
+            navigate('admin-teacher-activities');
+
+            try {
+                const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'users', uid, 'activities'));
+                let acts = []; snap.forEach(d => acts.push(d.data()));
+                
+                // Temporarily store in currentState so viewAnalysis can find them
+                currentState.activities = acts;
+
+                if (acts.length === 0) { listEl.innerHTML = `<div class="p-8 text-center text-gray-500">此教師尚無建立任何活動</div>`; return; }
+                
+                listEl.innerHTML = acts.sort((a,b)=>b.createdAt-a.createdAt).map(act => `
+                    <div class="px-6 py-4 flex justify-between items-center hover:bg-gray-50 border-b border-gray-100 last:border-0 transition">
+                        <div>
+                            <h4 class="font-bold text-lg text-gray-800">${act.activityName} <span class="text-xs ${act.status==='open'?'bg-green-100 text-green-700':'bg-gray-200 text-gray-600'} px-2 py-0.5 rounded ml-2 align-middle">${act.status==='open'?'開放作答中':'已結束'}</span></h4>
+                            <p class="text-sm text-gray-500 mt-1">代碼: <b class="text-blue-600 tracking-wider">${act.code}</b> | 課程: ${act.courseName}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="viewAnalysis('${act.id}')" class="bg-purple-100 text-purple-700 hover:bg-purple-200 px-3 py-1.5 rounded text-sm transition font-medium">查看報告</button>
+                        </div>
+                    </div>`).join('');
+            } catch(e) { listEl.innerHTML = '<div class="p-8 text-center text-red-500">無法讀取該教師資料，權限不足。</div>'; }
         }
 
         async function toggleUserStatus(uid, currentStatus) {
             const newStatus = currentStatus === 'disabled' ? 'active' : 'disabled';
-            try { await updateDoc(doc(db, 'artifacts', APP_ID, 'users', uid), { status: newStatus }); showToast(`帳號狀態已變更`, 'success'); loadAdminDashboard(); } catch(e) { showToast('變更失敗 (請檢查 Firestore 權限)', 'error'); }
+            try { await updateDoc(doc(db, 'artifacts', APP_ID, 'users', uid), { status: newStatus }); showToast(`帳號狀態已變更`, 'success'); loadAdminDashboard(); } catch(e) { showToast('變更失敗 (權限不足)', 'error'); }
         }
 
         function deleteUserRecord(uid) {
-            showConfirmModal('確定刪除此帳號紀錄？', '注意：這將會從系統中移除該教師的權限與紀錄。', async () => {
-                try { 
-                    await deleteDoc(doc(db, 'artifacts', APP_ID, 'users', uid)); 
-                    showToast('使用者紀錄已刪除', 'success'); 
-                    loadAdminDashboard(); 
-                } catch(e) { showToast('刪除失敗 (請檢查 Firestore 權限)', 'error'); }
+            showConfirmModal('確定刪除此帳號紀錄？', '這將會從系統中移除該教師的權限與紀錄。', async () => {
+                try { await deleteDoc(doc(db, 'artifacts', APP_ID, 'users', uid)); showToast('使用者紀錄已刪除', 'success'); loadAdminDashboard(); } catch(e) { showToast('刪除失敗 (權限不足)', 'error'); }
             });
         }
 
-        // --- STREAMING_CHUNK:Dashboard & Delete Logic... ---
-        let currentConfirmAction = null;
-        function showConfirmModal(title, msg, action) {
-            document.getElementById('confirm-title').innerText = title;
-            document.getElementById('confirm-message').innerText = msg;
-            currentConfirmAction = action;
-            document.getElementById('modal-confirm').classList.remove('hidden');
-        }
-        function closeConfirmModal() { document.getElementById('modal-confirm').classList.add('hidden'); currentConfirmAction = null; }
-        function executeConfirmAction() { if(currentConfirmAction) currentConfirmAction(); closeConfirmModal(); }
-
+        // --- STREAMING_CHUNK: Teacher Dashboard ---
         async function requestDeleteActivity(id) {
             showConfirmModal('確定刪除活動？', '刪除後無法還原，所有相關的作答紀錄與報表都會一併清除。', async () => {
                 try {
-                    const act = currentState.activities.find(a => a.id === id);
-                    if(!act) return;
+                    const act = currentState.activities.find(a => a.id === id); if(!act) return;
                     if(currentState.user) {
                         await deleteDoc(doc(db, 'artifacts', APP_ID, 'users', currentState.user.uid, 'activities', id));
                         await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code));
                     }
                     currentState.activities = currentState.activities.filter(a => a.id !== id);
                     localStorage.setItem('k19_local_activities', JSON.stringify(currentState.activities));
-                    showToast('活動已成功刪除', 'success');
-                    loadDashboard();
+                    showToast('活動已成功刪除', 'success'); loadDashboard();
                 } catch(e) { showToast('刪除失敗', 'error'); }
             });
         }
@@ -650,34 +704,103 @@
         async function loadDashboard() {
             if (!currentState.user) return;
             const el = document.getElementById('activity-list');
+            el.innerHTML = '<div class="p-8 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>載入活動中...</div>';
+
             try {
                 const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'users', currentState.user.uid, 'activities'));
                 let acts = []; snap.forEach(d => acts.push(d.data()));
-                if (acts.length >= currentState.activities.length) { currentState.activities = acts; localStorage.setItem('k19_local_activities', JSON.stringify(acts)); }
+                currentState.activities = acts; 
+                localStorage.setItem('k19_local_activities', JSON.stringify(acts));
             } catch (e) {}
             
-            document.getElementById('dashboard-stats').innerHTML = `<div class="bg-white p-6 rounded-xl border flex items-center justify-between"><div><p class="text-sm text-gray-500 mb-1">活動總數</p><p class="text-3xl font-bold">${currentState.activities.length}</p></div><i class="fas fa-folder text-blue-500 text-3xl"></i></div>`;
+            document.getElementById('dashboard-stats').innerHTML = `<div class="bg-white p-6 rounded-xl border flex items-center justify-between shadow-sm"><div><p class="text-sm text-gray-500 mb-1">活動總數</p><p class="text-3xl font-bold text-gray-800">${currentState.activities.length}</p></div><i class="fas fa-folder text-blue-500 text-3xl opacity-80"></i></div>`;
             
             if (currentState.activities.length === 0) { 
-                el.innerHTML = `<div class="p-8 text-center text-gray-500">尚無活動，點擊上方按鈕建立新活動吧！</div>`; 
-                return; 
+                el.innerHTML = `<div class="p-8 text-center text-gray-500">尚無活動，點擊上方按鈕建立新活動吧！</div>`; return; 
             }
             
             el.innerHTML = currentState.activities.sort((a,b)=>b.createdAt-a.createdAt).map(act => `
-                <div class="px-6 py-4 flex justify-between items-center hover:bg-gray-50 border-b border-gray-100 last:border-0">
+                <div class="px-6 py-4 flex justify-between items-center hover:bg-gray-50 border-b border-gray-100 last:border-0 transition">
                     <div>
                         <h4 class="font-bold text-lg text-gray-800">${act.activityName} <span class="text-xs ${act.status==='open'?'bg-green-100 text-green-700':'bg-gray-200 text-gray-600'} px-2 py-0.5 rounded ml-2 align-middle">${act.status==='open'?'開放作答中':'已結束'}</span></h4>
                         <p class="text-sm text-gray-500 mt-1">代碼: <b class="text-blue-600 tracking-wider">${act.code}</b> | 課程: ${act.courseName}</p>
                     </div>
                     <div class="flex gap-2">
-                        ${act.status==='open' ? `<button onclick="openLiveActivity('${act.id}')" class="bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1.5 rounded text-sm transition font-medium">管理</button>` : ''}
-                        <button onclick="viewAnalysis('${act.id}')" class="bg-purple-100 text-purple-700 hover:bg-purple-200 px-3 py-1.5 rounded text-sm transition font-medium">報告</button>
+                        ${act.status==='open' ? `<button onclick="openLiveActivity('${act.id}')" class="bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1.5 rounded text-sm transition font-medium">管理課堂</button>` : ''}
+                        <button onclick="viewAnalysis('${act.id}')" class="bg-purple-100 text-purple-700 hover:bg-purple-200 px-3 py-1.5 rounded text-sm transition font-medium">查看報告</button>
                         <button onclick="requestDeleteActivity('${act.id}')" class="bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded text-sm transition" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>`).join('');
         }
 
-        // --- STREAMING_CHUNK:Create Activity Wizard Logic... ---
+        // --- STREAMING_CHUNK: Overall Dashboard ---
+        async function loadOverallDashboard() {
+            navigate('overall-dashboard');
+            const container = document.getElementById('overall-dashboard-content');
+            container.innerHTML = '<div class="flex justify-center py-20"><div class="loader"></div></div>';
+            
+            if(!currentState.activities || currentState.activities.length === 0) {
+                container.innerHTML = '<div class="text-center py-20 text-gray-500 bg-white rounded-xl border">尚無活動數據，請先建立活動讓學生作答！</div>';
+                return;
+            }
+
+            let totalResponses = 0; let totalCorrect = 0; let totalQuestions = 0; let activityStats = [];
+
+            for (const act of currentState.activities) {
+                try {
+                    const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses'));
+                    const respCount = snap.size; let actCorrect = 0; let actTotalQ = respCount * act.questions.length;
+                    
+                    snap.forEach(doc => {
+                        const r = doc.data();
+                        act.questions.forEach(q => { if (r.answers[q.id] === q.correctAnswer) actCorrect++; });
+                    });
+
+                    totalResponses += respCount; totalCorrect += actCorrect; totalQuestions += actTotalQ;
+                    const actAcc = actTotalQ > 0 ? Math.round((actCorrect / actTotalQ) * 100) : 0;
+                    activityStats.push({ name: act.activityName, course: act.courseName, responses: respCount, accuracy: actAcc });
+                } catch(e) {}
+            }
+
+            const overallAcc = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+            
+            let html = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm text-center transform transition hover:scale-[1.01]">
+                        <p class="text-gray-500 mb-2 font-medium">系統累計作答人次</p>
+                        <p class="text-5xl font-black text-blue-600">${totalResponses}</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm text-center transform transition hover:scale-[1.01]">
+                        <p class="text-gray-500 mb-2 font-medium">全活動整體平均正確率</p>
+                        <p class="text-5xl font-black text-green-600">${overallAcc}%</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50"><h3 class="font-bold text-gray-800">各活動成效排行 (依正確率)</h3></div>
+                    <div class="p-6 space-y-6">
+            `;
+            
+            activityStats.sort((a,b) => b.accuracy - a.accuracy).forEach((stat, idx) => {
+                const barColor = stat.accuracy >= 80 ? 'bg-green-500' : (stat.accuracy >= 60 ? 'bg-blue-500' : 'bg-yellow-500');
+                html += `
+                    <div>
+                        <div class="flex justify-between mb-1 items-end">
+                            <span class="text-sm font-bold text-gray-700">${idx+1}. ${stat.course} - ${stat.name} <span class="text-gray-400 font-normal ml-2 text-xs">(${stat.responses} 人作答)</span></span>
+                            <span class="text-sm font-bold ${stat.accuracy>=60?'text-blue-600':'text-red-500'}">${stat.accuracy}%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-3">
+                            <div class="${barColor} h-3 rounded-full transition-all duration-1000" style="width: ${stat.accuracy}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if(activityStats.length === 0) html += `<div class="text-center text-gray-500 py-4">無詳細作答紀錄</div>`;
+            html += `</div></div>`;
+            container.innerHTML = html;
+        }
+
+        // --- STREAMING_CHUNK: Create Activity Wizard & AI ---
         function nextStep(s) { document.querySelectorAll('.wizard-step').forEach(e=>e.classList.add('hidden')); document.getElementById(`wizard-step-${s}`).classList.remove('hidden'); }
         function prevStep(s) { nextStep(s); }
         
@@ -727,10 +850,7 @@
             const mode = document.querySelector('input[name="create-mode"]:checked').value;
             const text = document.getElementById('create-material').value; 
             
-            // 現在不管哪種模式，只要有「文字」或「檔案」其中一個就可以送出
-            if(!text && !currentState.uploadedFiles.length) {
-                return showToast('請提供內容文字或上傳檔案', 'warning');
-            }
+            if(!text && !currentState.uploadedFiles.length) return showToast('請提供內容文字或上傳檔案', 'warning');
 
             const count = document.getElementById('create-q-count').value; 
             const diff = document.getElementById('create-difficulty').value;
@@ -738,22 +858,18 @@
             document.getElementById('ai-loading-text').innerText = mode === 'generate' ? 'AI 正在深度解析教材...' : 'AI 正在優化與潤飾題目...';
             nextStep(3);
 
-            let prompt = "";
-            let parts = [];
-            
-            // 統合文字與文本類檔案的內容
+            let prompt = ""; let parts = [];
             let fileText = currentState.uploadedFiles.filter(f=>f.isText).map(f=>f.data).join('\n');
             let combinedText = `文字內容:\n${text}\n檔案內容:\n${fileText}`;
 
             if (mode === 'generate') {
-                prompt = `產出 ${count} 題單選題。難度: ${diff}。嚴格以 JSON 回傳 (不含 markdown):\n{ "questions": [ { "id": "字串", "type": "single_choice", "stem": "題幹", "options": ["A", "B", "C", "D"], "correctAnswer": "A", "explanation": "解析", "difficulty": "${diff}" } ] }`;
+                prompt = `產出 ${count} 題單選題。難度: ${diff}。嚴格以 JSON 回傳:\n{ "questions": [ { "id": "字串", "type": "single_choice", "stem": "題幹", "options": ["A", "B", "C", "D"], "correctAnswer": "A", "explanation": "解析", "difficulty": "${diff}" } ] }`;
                 parts = [{text: `根據以下教材出題：\n${combinedText}`}];
             } else {
-                prompt = `你是一位專業測驗專家。請將提供的「草稿或考卷檔案內容」進行優化。修正語句不順、提升選項鑑別度，並補齊完整解析。輸出 ${count} 題。嚴格以 JSON 回傳:\n{ "questions": [ { "id": "字串", "type": "single_choice", "stem": "題幹", "options": ["A", "B", "C", "D"], "correctAnswer": "A", "explanation": "優化後的詳細解析", "difficulty": "${diff}" } ] }`;
+                prompt = `你是一位專業測驗專家。請將提供的「草稿或考卷檔案內容」優化。修正語句不順、提升選項鑑別度，並補齊完整解析。輸出 ${count} 題。嚴格以 JSON 回傳:\n{ "questions": [ { "id": "字串", "type": "single_choice", "stem": "題幹", "options": ["A", "B", "C", "D"], "correctAnswer": "A", "explanation": "優化後的詳細解析", "difficulty": "${diff}" } ] }`;
                 parts = [{text: `請優化以下題目內容：\n${combinedText}`}];
             }
 
-            // 將非純文字檔 (PDF、圖片、語音) 一併放入 Prompt 中，兩種模式均可讀取
             currentState.uploadedFiles.filter(f=>!f.isText).forEach(f=> parts.push({inlineData: {mimeType: f.mimeType, data: f.data}}));
 
             try {
@@ -764,10 +880,10 @@
                 const res = await req.json();
                 if(res.error) throw new Error(res.error.message);
                 currentState.draftQuestions = JSON.parse(res.candidates[0].content.parts[0].text.replace(/```json/g,'').replace(/```/g,'').trim()).questions;
-                document.getElementById('draft-questions-container').innerHTML = currentState.draftQuestions.map((q,i) => `<div class="p-4 border rounded-lg bg-white mb-2"><h4 class="font-bold">Q${i+1}: ${q.stem}</h4><p class="text-sm text-green-600 font-bold mt-1">答: ${q.correctAnswer}</p></div>`).join('');
+                document.getElementById('draft-questions-container').innerHTML = currentState.draftQuestions.map((q,i) => `<div class="p-4 border rounded-lg bg-white mb-2"><h4 class="font-bold text-gray-800">Q${i+1}: ${q.stem}</h4><p class="text-sm text-green-700 font-bold mt-1 bg-green-50 inline-block px-2 py-1 rounded">正解: ${q.correctAnswer}</p><p class="text-sm text-gray-500 mt-2">解析: ${q.explanation}</p></div>`).join('');
                 nextStep(4);
             } catch(e) { 
-                showToast('AI 產生失敗，請檢查內容或重新嘗試', 'error'); 
+                showToast('AI 產生失敗，可能是內容過長或 Key 錯誤', 'error'); 
                 prevStep(2); 
             }
         }
@@ -776,7 +892,7 @@
             if(!document.getElementById('confirm-review-check').checked) return showToast('請勾選確認', 'warning');
             const act = { id: 'act_'+Date.now(), code: generateId(), ownerId: currentState.user.uid, courseName: document.getElementById('create-course-name').value||'課程', activityName: document.getElementById('create-activity-name').value||'測驗', status: 'open', questions: currentState.draftQuestions, createdAt: Date.now() };
             currentState.activities.push(act); localStorage.setItem('k19_local_activities', JSON.stringify(currentState.activities));
-            try { await setDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), act); await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code), {id: act.id, code: act.code, courseName: act.courseName, activityName: act.activityName, status: act.status, questions: act.questions}); } catch(e){}
+            try { await setDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), act); await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code), {id: act.id, ownerId: act.ownerId, code: act.code, courseName: act.courseName, activityName: act.activityName, status: act.status, questions: act.questions}); } catch(e){}
             
             document.getElementById('create-course-name').value = ''; document.getElementById('create-activity-name').value = ''; document.getElementById('create-material').value = '';
             document.getElementById('confirm-review-check').checked = false; currentState.uploadedFiles = []; renderFiles();
@@ -784,25 +900,18 @@
             showToast('發布成功', 'success'); openLiveActivity(act.id);
         }
 
-        // --- STREAMING_CHUNK:Student Join & Live Sync... ---
+        // --- STREAMING_CHUNK: Student Join & Live Sync ---
         function openLiveActivity(id) {
             const act = currentState.activities.find(a=>a.id===id); if(!act) return;
             currentState.currentActivity = act;
             document.getElementById('live-activity-name').innerText = act.activityName; document.getElementById('live-activity-code').innerText = act.code;
-            document.getElementById('qrcode').innerHTML = ''; new QRCode(document.getElementById('qrcode'), {text: `${window.location.origin}${window.location.pathname}?code=${act.code}`, width:150, height:150});
+            document.getElementById('qrcode').innerHTML = ''; new QRCode(document.getElementById('qrcode'), {text: `${window.location.origin}${window.location.pathname}?code=${act.code}`, width:180, height:180});
             navigate('activity-live');
+            
             if(currentState.unsubscribeLive) currentState.unsubscribeLive();
             currentState.unsubscribeLive = onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses'), snap => {
                 document.getElementById('live-response-count').innerText = snap.size; currentState.responses = []; snap.forEach(d=>currentState.responses.push(d.data()));
             });
-        }
-
-        function simulateStudent() {
-            if(!currentState.currentActivity) return showToast('無效活動', 'error');
-            document.getElementById('student-code').value = currentState.currentActivity.code;
-            document.getElementById('student-id-number').value = 'S' + Math.floor(Math.random() * 10000);
-            document.getElementById('student-nickname').value = '測試員_' + Math.floor(Math.random() * 100);
-            studentJoinActivity();
         }
 
         async function studentJoinActivity() {
@@ -819,8 +928,8 @@
             currentState.currentActivity = act; currentState.studentInfo = { sid, name };
             document.getElementById('quiz-course-title').innerText = act.courseName; document.getElementById('quiz-student-id').innerText = sid; document.getElementById('quiz-student-name').innerText = name;
             document.getElementById('quiz-questions-container').innerHTML = act.questions.map((q,i) => `
-                <div class="bg-gray-50 p-4 border rounded-lg mb-4"><h3 class="font-bold mb-3">Q${i+1}. ${q.stem}</h3><div class="space-y-2">
-                ${q.options.map(o => `<label class="flex items-center p-2 bg-white border rounded cursor-pointer hover:bg-blue-50"><input type="radio" name="q_${q.id}" value="${o}" class="mr-2"> ${o}</label>`).join('')}
+                <div class="bg-gray-50 p-5 border border-gray-200 rounded-xl mb-4 shadow-sm"><h3 class="font-bold mb-4 text-lg text-gray-800">Q${i+1}. ${q.stem}</h3><div class="space-y-3">
+                ${q.options.map(o => `<label class="flex items-center p-3 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition"><input type="radio" name="q_${q.id}" value="${o}" class="mr-3 w-4 h-4 text-blue-600"> <span class="text-gray-700">${o}</span></label>`).join('')}
                 </div></div>`).join('');
             
             document.getElementById('quiz-questions-container').classList.remove('hidden'); document.getElementById('btn-submit-quiz').classList.remove('hidden'); document.getElementById('quiz-success-msg').classList.add('hidden');
@@ -835,24 +944,17 @@
             const uid = auth.currentUser ? auth.currentUser.uid : 's_'+Date.now();
             const payload = { studentUid: uid, studentId: currentState.studentInfo.sid, nickname: currentState.studentInfo.name, answers: ans, submittedAt: Date.now() };
             currentState.responses.push(payload); 
-            
-            // 將單機測試的資料也寫入 localStorage 確保沙盒測試能讀取
-            localStorage.setItem('k19_mock_responses_' + act.code, JSON.stringify(currentState.responses));
 
             try { await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses', uid), payload); } catch(e){}
             
             document.getElementById('quiz-questions-container').classList.add('hidden'); document.getElementById('btn-submit-quiz').classList.add('hidden'); document.getElementById('quiz-success-msg').classList.remove('hidden');
         }
 
-        // --- STREAMING_CHUNK:Analysis & Export Logic... ---
+        // --- STREAMING_CHUNK: Analysis & Export ---
         function endActivityAndAnalyze() { viewAnalysis(currentState.currentActivity.id); }
         
         async function viewAnalysis(id) {
             const act = currentState.activities.find(a=>a.id===id); if(!act) return; currentState.currentActivity = act;
-            
-            // 沙盒備援讀取
-            let localResps = JSON.parse(localStorage.getItem('k19_mock_responses_' + act.code) || '[]');
-            if(localResps.length > 0) currentState.responses = localResps;
 
             try { const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses')); if(!snap.empty) { currentState.responses = []; snap.forEach(d=>currentState.responses.push(d.data())); } } catch(e){}
             
@@ -865,15 +967,21 @@
             const avg = tot>0 ? Math.round((scoreSum/(tot*act.questions.length))*100) : 0;
             
             document.getElementById('stat-total-responses').innerText = tot; document.getElementById('stat-avg-score').innerText = avg+'%';
-            document.getElementById('stat-questions-breakdown').innerHTML = qStats.map((q,i) => `<div class="bg-gray-50 p-3 rounded border"><p class="text-sm font-bold truncate">Q${i+1}. ${q.stem}</p><p class="text-xs text-gray-500">答對人數: ${q.correct} / ${tot}</p></div>`).join('');
+            document.getElementById('stat-questions-breakdown').innerHTML = qStats.map((q,i) => `<div class="bg-gray-50 p-3 rounded border"><p class="text-sm font-bold truncate text-gray-700">Q${i+1}. ${q.stem}</p><p class="text-xs text-gray-500 mt-1">答對人數: <span class="font-bold text-blue-600">${q.correct}</span> / ${tot}</p></div>`).join('');
             
             navigate('analysis');
-            if(act.analysis) { document.getElementById('analysis-trigger-box').classList.add('hidden'); document.getElementById('analysis-loading').classList.add('hidden'); document.getElementById('analysis-content').classList.remove('hidden'); document.getElementById('ai-summary').innerText = act.analysis.ai.summary; }
+            if(act.analysis) { document.getElementById('analysis-trigger-box').classList.add('hidden'); document.getElementById('analysis-loading').classList.add('hidden'); document.getElementById('analysis-content').classList.remove('hidden'); document.getElementById('ai-summary').innerText = act.analysis.ai.summary; document.getElementById('ai-mastered').innerHTML = act.analysis.ai.masteredConcepts.map(c=>`<li>${c}</li>`).join(''); document.getElementById('ai-actions').innerHTML = act.analysis.ai.priorityActions.map(c=>`<li>${c}</li>`).join(''); }
             else { document.getElementById('analysis-trigger-box').classList.remove('hidden'); document.getElementById('analysis-loading').classList.add('hidden'); document.getElementById('analysis-content').classList.add('hidden'); }
         }
 
+        function goBackFromAnalysis() {
+            if (currentState.isAdmin && currentState.viewingTeacherId) { navigate('admin-teacher-activities'); } 
+            else { navigate('dashboard'); }
+        }
+
         async function triggerAIAnalysis() {
-            if(!currentState.responses.length) return showToast('尚無作答資料，請先讓學生作答！', 'warning');
+            if(!currentState.responses.length) return showToast('尚無作答資料，AI 需要數據才能分析！', 'warning');
+            if(!currentState.apiKey) return showToast('缺少 API Key，請回首頁填寫', 'error');
             
             document.getElementById('analysis-trigger-box').classList.add('hidden'); 
             document.getElementById('analysis-loading').classList.remove('hidden');
@@ -888,8 +996,14 @@
                 if(res.error) throw new Error(res.error.message);
 
                 const ai = JSON.parse(res.candidates[0].content.parts[0].text.replace(/```json/g,'').replace(/```/g,'').trim());
-                act.analysis = { ai }; localStorage.setItem('k19_local_activities', JSON.stringify(currentState.activities));
+                act.analysis = { ai }; 
+                localStorage.setItem('k19_local_activities', JSON.stringify(currentState.activities));
                 
+                // If viewing own, save to Firestore. Admin viewing others avoids overwriting to keep it simple.
+                if(currentState.user && currentState.user.uid === act.ownerId) {
+                    try { await updateDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), { analysis: act.analysis }); } catch(e){}
+                }
+
                 document.getElementById('analysis-loading').classList.add('hidden'); document.getElementById('analysis-content').classList.remove('hidden');
                 document.getElementById('ai-summary').innerText = ai.summary;
                 document.getElementById('ai-mastered').innerHTML = ai.masteredConcepts.map(c=>`<li>${c}</li>`).join('');
@@ -899,6 +1013,7 @@
             }
         }
 
+        // Excel Export (Formatted Column Widths)
         function downloadExcelReport() {
             const act = currentState.currentActivity; const resps = currentState.responses;
             if(!act || resps.length === 0) return showToast('目前沒有作答資料可供匯出', 'warning');
@@ -912,8 +1027,16 @@
                 let row = [act.courseName, act.activityName, r.studentId || '無資料', r.nickname || '匿名', correctCount, act.questions.length, scorePercent];
                 dataRows.push(row.concat(qDetails));
             });
-            const ws = XLSX.utils.aoa_to_sheet([headers, ...dataRows]); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "作答明細"); XLSX.writeFile(wb, `${act.courseName}_${act.activityName}_作答明細.xlsx`);
-            showToast('作答明細已匯出！', 'success');
+            
+            const ws = XLSX.utils.aoa_to_sheet([headers, ...dataRows]); 
+            
+            // Set Column Widths for better Excel formatting
+            let wscols = [ {wch: 15}, {wch: 25}, {wch: 15}, {wch: 15}, {wch: 10}, {wch: 10}, {wch: 10} ];
+            act.questions.forEach(() => { wscols.push({wch: 35}); wscols.push({wch: 15}); });
+            ws['!cols'] = wscols;
+
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "作答明細"); XLSX.writeFile(wb, `${act.courseName}_${act.activityName}_作答明細.xlsx`);
+            showToast('作答明細已完美排版並匯出！', 'success');
         }
 
         function exportData() { const el = document.createElement('a'); el.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentState.activities)); el.download = "backup.json"; el.click(); }
