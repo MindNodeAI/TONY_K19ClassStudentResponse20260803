@@ -140,7 +140,7 @@
 
         <!-- Teacher Dashboard -->
         <section id="view-dashboard" class="view-section max-w-5xl mx-auto">
-            <div class="flex justify-between items-center mb-8">
+            <div class="flex justify-between items-center mb-8 border-b pb-4">
                 <div><h1 class="text-3xl font-bold text-gray-800">活動管理控制台</h1></div>
                 <div class="flex gap-2">
                     <button onclick="loadOverallDashboard()" class="bg-green-600 hover:bg-green-700 transition text-white px-5 py-2 rounded-lg font-semibold shadow-md flex items-center gap-2"><i class="fas fa-chart-pie"></i> 總體成效看板</button>
@@ -155,14 +155,22 @@
         </section>
 
         <!-- Overall Dashboard (Statistics) -->
-        <section id="view-overall-dashboard" class="view-section max-w-5xl mx-auto">
-            <div class="flex justify-between items-center mb-8 border-b pb-4">
+        <section id="view-overall-dashboard" class="view-section max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b pb-4 gap-4">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3"><i class="fas fa-chart-pie text-green-600"></i> 總體成效看板</h1>
                     <p class="text-gray-500 mt-1">匯總您所有活動的學習數據與排名</p>
                 </div>
-                <div>
-                    <button onclick="navigate('dashboard')" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-50 transition"><i class="fas fa-arrow-left"></i> 返回控制台</button>
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="flex items-center gap-2 bg-white p-2 rounded-lg border border-gray-300 shadow-sm">
+                        <span class="text-sm text-gray-500 font-medium">期間:</span>
+                        <input type="date" id="filter-start-date" class="text-sm border-none outline-none text-gray-700 bg-transparent cursor-pointer">
+                        <span class="text-gray-400">-</span>
+                        <input type="date" id="filter-end-date" class="text-sm border-none outline-none text-gray-700 bg-transparent cursor-pointer">
+                        <button onclick="loadOverallDashboard()" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1 rounded text-sm font-medium transition">篩選</button>
+                    </div>
+                    <button onclick="downloadOverallWordReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition font-medium"><i class="fas fa-file-word"></i> 匯出總結報告</button>
+                    <button onclick="navigate('dashboard')" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-50 transition"><i class="fas fa-arrow-left"></i> 返回</button>
                 </div>
             </div>
             <div id="overall-dashboard-content">
@@ -495,7 +503,8 @@
             apiKey: '', user: null, isTeacher: false, isAdmin: false, 
             activities: [], currentActivity: null, responses: [], 
             draftQuestions: [], uploadedFiles: [], unsubscribeLive: null,
-            viewingTeacherId: null, viewingTeacherName: null
+            viewingTeacherId: null, viewingTeacherName: null,
+            dashboardData: null // 存放整體看板篩選後的資料供匯出使用
         };
 
         function showToast(msg, type='info') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<span>${msg}</span>`; c.appendChild(t); setTimeout(() => t.remove(), 3000); }
@@ -516,7 +525,6 @@
         function executeConfirmAction() { if(currentConfirmAction) currentConfirmAction(); closeConfirmModal(); }
 
         function navigate(viewId) {
-            // 安全移除監聽器，防止權限錯誤
             if(currentState.unsubscribeLive) { currentState.unsubscribeLive(); currentState.unsubscribeLive = null; }
             
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); 
@@ -534,8 +542,7 @@
             } else navigate(currentState.apiKey ? 'auth' : 'api-key');
         }
 
-        // Export to window for HTML access
-        Object.assign(window, { navigate, navigateHome, saveApiKey, handleAuthAction, toggleAuthMode, handleLogout, openTonyModal, closeTonyModal, toggleVisibility, nextStep, prevStep, handleFileUpload, generateAIQuestions, publishActivity, studentJoinActivity, submitQuiz, endActivityAndAnalyze, triggerAIAnalysis, downloadWordReport, downloadExcelReport, openLiveActivity, viewAnalysis, goBackFromAnalysis, loadAdminDashboard, toggleUserStatus, deleteUserRecord, requestDeleteActivity, closeConfirmModal, executeConfirmAction, toggleCreateMode, loadOverallDashboard, loadAdminTeacherActivities });
+        Object.assign(window, { navigate, navigateHome, saveApiKey, handleAuthAction, toggleAuthMode, handleLogout, openTonyModal, closeTonyModal, toggleVisibility, nextStep, prevStep, handleFileUpload, generateAIQuestions, publishActivity, studentJoinActivity, submitQuiz, endActivityAndAnalyze, triggerAIAnalysis, downloadWordReport, downloadExcelReport, openLiveActivity, viewAnalysis, goBackFromAnalysis, loadAdminDashboard, toggleUserStatus, deleteUserRecord, requestDeleteActivity, closeConfirmModal, executeConfirmAction, toggleCreateMode, loadOverallDashboard, loadAdminTeacherActivities, downloadOverallWordReport });
 
         function initApp() {
             currentState.apiKey = localStorage.getItem('k19_api_key') || sessionStorage.getItem('k19_api_key') || '';
@@ -558,7 +565,8 @@
 
                         try { await setDoc(doc(db, 'artifacts', APP_ID, 'users', user.uid), { email: user.email, role: currentState.isAdmin ? 'admin' : 'teacher', lastLogin: Date.now() }, {merge: true}); } catch(e){}
                         
-                        if(joinCode) navigate('student-entry'); else navigateHome();
+                        if(joinCode) { document.getElementById('student-code').value = joinCode; navigate('student-entry'); } 
+                        else navigateHome();
                     } else {
                         if(joinCode) document.getElementById('student-code').value = joinCode;
                         navigate('student-entry');
@@ -750,14 +758,26 @@
             const container = document.getElementById('overall-dashboard-content');
             container.innerHTML = '<div class="flex justify-center py-20"><div class="loader"></div></div>';
             
-            if(!currentState.activities || currentState.activities.length === 0) {
-                container.innerHTML = '<div class="text-center py-20 text-gray-500 bg-white rounded-xl border">尚無活動數據，請先建立活動讓學生作答！</div>';
+            // 處理期間篩選
+            const startDateStr = document.getElementById('filter-start-date').value;
+            const endDateStr = document.getElementById('filter-end-date').value;
+            const startDate = startDateStr ? new Date(startDateStr).getTime() : 0;
+            const endDate = endDateStr ? new Date(endDateStr).setHours(23, 59, 59, 999) : Infinity;
+
+            const filteredActivities = currentState.activities.filter(a => {
+                const t = a.createdAt || 0;
+                return t >= startDate && t <= endDate;
+            });
+
+            if(filteredActivities.length === 0) {
+                container.innerHTML = '<div class="text-center py-20 text-gray-500 bg-white rounded-2xl border border-gray-200 shadow-sm"><i class="fas fa-folder-open text-5xl mb-4 text-gray-300"></i><p class="text-lg font-medium">此期間內尚無活動數據。</p></div>';
+                currentState.dashboardData = null;
                 return;
             }
 
             let totalResponses = 0; let totalCorrect = 0; let totalQuestions = 0; let activityStats = [];
 
-            for (const act of currentState.activities) {
+            for (const act of filteredActivities) {
                 try {
                     const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses'));
                     const respCount = snap.size; let actCorrect = 0; let actTotalQ = respCount * act.questions.length;
@@ -769,45 +789,114 @@
 
                     totalResponses += respCount; totalCorrect += actCorrect; totalQuestions += actTotalQ;
                     const actAcc = actTotalQ > 0 ? Math.round((actCorrect / actTotalQ) * 100) : 0;
-                    activityStats.push({ name: act.activityName, course: act.courseName, responses: respCount, accuracy: actAcc });
+                    
+                    if (respCount > 0) {
+                        activityStats.push({ name: act.activityName, course: act.courseName, responses: respCount, accuracy: actAcc });
+                    }
                 } catch(e) {}
             }
 
+            if(activityStats.length === 0) {
+                container.innerHTML = '<div class="text-center py-20 text-gray-500 bg-white rounded-2xl border border-gray-200 shadow-sm"><i class="fas fa-user-graduate text-5xl mb-4 text-gray-300"></i><p class="text-lg font-medium">活動已發布，等待學生送出作答後即可觀看成效報表！</p></div>';
+                currentState.dashboardData = null;
+                return;
+            }
+
             const overallAcc = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+            activityStats.sort((a,b) => b.accuracy - a.accuracy);
+            const bestAct = activityStats[0];
+            const worstAct = activityStats[activityStats.length - 1];
+
+            let insightText = `<p class="mb-3 text-gray-700">根據目前累積的 <b>${totalResponses}</b> 筆作答數據，整體平均正確率為 <b class="text-lg ${overallAcc >= 70 ? 'text-green-600' : 'text-yellow-600'}">${overallAcc}%</b>。</p>`;
             
+            if(bestAct) {
+                insightText += `<p class="mb-2 text-gray-700">✨ <b>優勢表現：</b> 學生在「<b>${bestAct.course} - ${bestAct.name}</b>」的表現最為亮眼（正確率 ${bestAct.accuracy}%），顯示該單元的教學策略非常契合學生程度。</p>`;
+            }
+            if(worstAct && worstAct.accuracy < 60) {
+                insightText += `<p class="mb-2 text-red-700 font-medium">⚠️ <b>優先關注：</b> 「<b>${worstAct.course} - ${worstAct.name}</b>」的正確率偏低（僅 ${worstAct.accuracy}%），建議可以針對此單元進行重點複習或概念釐清。</p>`;
+            } else if (worstAct && worstAct.accuracy >= 60 && worstAct.accuracy < 80) {
+                insightText += `<p class="mb-2 text-gray-700">💡 <b>進階建議：</b> 「<b>${worstAct.course} - ${worstAct.name}</b>」還有進步空間（${worstAct.accuracy}%），可考慮搭配更多實例幫助學生深入理解。</p>`;
+            }
+
+            // 儲存至 state 以供匯出
+            currentState.dashboardData = { activityStats, insightText, overallAcc, totalResponses, totalActivities: filteredActivities.length, bestActName: bestAct.name };
+
             let html = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm text-center transform transition hover:scale-[1.01]">
-                        <p class="text-gray-500 mb-2 font-medium">系統累計作答人次</p>
-                        <p class="text-5xl font-black text-blue-600">${totalResponses}</p>
+                <!-- 頂部 KPI 數據卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                        <div class="flex justify-between items-center mb-2"><span class="text-sm font-medium text-gray-500">總活動數</span><i class="fas fa-layer-group text-blue-500 opacity-80 text-lg"></i></div>
+                        <span class="text-3xl font-black text-gray-800">${filteredActivities.length}</span>
                     </div>
-                    <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm text-center transform transition hover:scale-[1.01]">
-                        <p class="text-gray-500 mb-2 font-medium">全活動整體平均正確率</p>
-                        <p class="text-5xl font-black text-green-600">${overallAcc}%</p>
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                        <div class="flex justify-between items-center mb-2"><span class="text-sm font-medium text-gray-500">累計作答人次</span><i class="fas fa-users text-purple-500 opacity-80 text-lg"></i></div>
+                        <span class="text-3xl font-black text-gray-800">${totalResponses}</span>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                        <div class="flex justify-between items-center mb-2"><span class="text-sm font-medium text-gray-500">整體正確率</span><i class="fas fa-bullseye ${overallAcc>=60?'text-green-500':'text-red-500'} opacity-80 text-lg"></i></div>
+                        <div class="flex items-end gap-2"><span class="text-3xl font-black ${overallAcc>=60?'text-green-600':'text-red-600'}">${overallAcc}%</span></div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition overflow-hidden">
+                        <div class="flex justify-between items-center mb-2"><span class="text-sm font-medium text-gray-500">最佳學習單元</span><i class="fas fa-trophy text-yellow-500 opacity-80 text-lg"></i></div>
+                        <span class="text-lg font-bold text-gray-800 truncate" title="${bestAct.name}">${bestAct.name}</span>
                     </div>
                 </div>
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50"><h3 class="font-bold text-gray-800">各活動成效排行 (依正確率)</h3></div>
-                    <div class="p-6 space-y-6">
+
+                <!-- AI 洞察區塊 -->
+                <div class="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 p-6 rounded-2xl shadow-sm mb-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-6 -mr-6 text-indigo-200 opacity-40"><i class="fas fa-brain text-[150px]"></i></div>
+                    <h3 class="text-lg font-bold text-indigo-900 mb-4 flex items-center gap-2 relative z-10"><i class="fas fa-lightbulb text-yellow-500 text-xl"></i> 教學洞察 (Data Insights)</h3>
+                    <div class="relative z-10 bg-white/60 p-4 rounded-xl border border-white backdrop-blur-sm shadow-sm">${insightText}</div>
+                </div>
+
+                <!-- 專業成效報表 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800">各單元成效排行報表</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left text-gray-600">
+                            <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-6 py-4 font-bold">排行</th>
+                                    <th class="px-6 py-4 font-bold">課程 / 活動名稱</th>
+                                    <th class="px-6 py-4 font-bold text-center">作答人次</th>
+                                    <th class="px-6 py-4 font-bold">正確率指標</th>
+                                    <th class="px-6 py-4 font-bold text-center">狀態評估</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
             `;
             
-            activityStats.sort((a,b) => b.accuracy - a.accuracy).forEach((stat, idx) => {
-                const barColor = stat.accuracy >= 80 ? 'bg-green-500' : (stat.accuracy >= 60 ? 'bg-blue-500' : 'bg-yellow-500');
+            activityStats.forEach((stat, idx) => {
+                const barColor = stat.accuracy >= 80 ? 'bg-green-500' : (stat.accuracy >= 60 ? 'bg-blue-500' : 'bg-red-500');
+                const statusBadge = stat.accuracy >= 80 ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">精熟</span>' : (stat.accuracy >= 60 ? '<span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold border border-blue-200">達標</span>' : '<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold border border-red-200">待補強</span>');
                 html += `
-                    <div>
-                        <div class="flex justify-between mb-1 items-end">
-                            <span class="text-sm font-bold text-gray-700">${idx+1}. ${stat.course} - ${stat.name} <span class="text-gray-400 font-normal ml-2 text-xs">(${stat.responses} 人作答)</span></span>
-                            <span class="text-sm font-bold ${stat.accuracy>=60?'text-blue-600':'text-red-500'}">${stat.accuracy}%</span>
-                        </div>
-                        <div class="w-full bg-gray-100 rounded-full h-3">
-                            <div class="${barColor} h-3 rounded-full transition-all duration-1000" style="width: ${stat.accuracy}%"></div>
-                        </div>
-                    </div>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 font-black text-gray-400">#${idx+1}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="font-bold text-gray-800 text-base">${stat.name}</div>
+                                        <div class="text-xs text-gray-500 mt-1"><i class="fas fa-book-open mr-1"></i>${stat.course}</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center font-bold text-gray-700">${stat.responses}</td>
+                                    <td class="px-6 py-4 w-1/3 min-w-[200px]">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-xs font-bold ${stat.accuracy>=60?'text-gray-700':'text-red-600'}">${stat.accuracy}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="${barColor} h-2 rounded-full transition-all duration-1000" style="width: ${stat.accuracy}%"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">${statusBadge}</td>
+                                </tr>
                 `;
             });
 
-            if(activityStats.length === 0) html += `<div class="text-center text-gray-500 py-4">無詳細作答紀錄</div>`;
-            html += `</div></div>`;
+            html += `               </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
             container.innerHTML = html;
         }
 
@@ -919,7 +1008,6 @@
             
             if(currentState.unsubscribeLive) currentState.unsubscribeLive();
             
-            // 安全監聽機制
             currentState.unsubscribeLive = onSnapshot(
                 collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses'), 
                 {
@@ -928,7 +1016,7 @@
                         currentState.responses = []; 
                         snap.forEach(d=>currentState.responses.push(d.data()));
                     },
-                    error: (err) => { console.log('Listener disconnected gracefully'); }
+                    error: (err) => { console.log('Listener closed.'); }
                 }
             );
         }
@@ -1040,7 +1128,6 @@
             }
         }
 
-        // Excel Export (Formatted Column Widths & Dept/Grade)
         function downloadExcelReport() {
             const act = currentState.currentActivity; const resps = currentState.responses;
             if(!act || resps.length === 0) return showToast('目前沒有作答資料可供匯出', 'warning');
@@ -1065,7 +1152,6 @@
             showToast('作答明細已完美排版並匯出！', 'success');
         }
         
-        // Full AI Word Report Generation
         function downloadWordReport() { 
             const act = currentState.currentActivity; 
             if(!act || !act.analysis) return showToast('無完整的 AI 分析報告可供下載', 'warning'); 
@@ -1113,6 +1199,72 @@
             el.href = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html); 
             el.download = `${act.courseName}_${act.activityName}_AI分析報告.doc`; 
             el.click(); 
+        }
+
+        function downloadOverallWordReport() {
+            const data = currentState.dashboardData;
+            if(!data || data.activityStats.length === 0) return showToast('目前無數據可供匯出', 'warning');
+            
+            const startDateStr = document.getElementById('filter-start-date').value || '啟用日';
+            const endDateStr = document.getElementById('filter-end-date').value || '至今';
+
+            let tableRows = data.activityStats.map((stat, i) => `
+                <tr>
+                    <td style="border: 1px solid #d1d5db; padding: 8px; text-align: center;">${i + 1}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 8px;"><b>${stat.name}</b><br><span style="color: #6b7280; font-size: 12px;">${stat.course}</span></td>
+                    <td style="border: 1px solid #d1d5db; padding: 8px; text-align: center;">${stat.responses}</td>
+                    <td style="border: 1px solid #d1d5db; padding: 8px; text-align: center;">${stat.accuracy}%</td>
+                </tr>
+            `).join('');
+
+            const html = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head><meta charset='utf-8'><title>總體教學成效總結報告</title></head>
+                <body style="font-family: '微軟正黑體', Arial, sans-serif; line-height: 1.6;">
+                    <h1 style="color: #1e3a8a; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; text-align: center;">總體教學成效總結報告</h1>
+                    <p style="text-align: right; color: #6b7280; font-size: 14px;">統計期間：${startDateStr} ~ ${endDateStr}</p>
+                    
+                    <h2 style="color: #374151; background-color: #f3f4f6; padding: 10px; margin-top: 20px;">一、整體 KPI 數據</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #e5e7eb;">總活動數: <b style="font-size: 18px;">${data.totalActivities}</b></td>
+                            <td style="padding: 10px; border: 1px solid #e5e7eb;">累計作答人次: <b style="font-size: 18px;">${data.totalResponses}</b></td>
+                            <td style="padding: 10px; border: 1px solid #e5e7eb;">整體平均正確率: <b style="font-size: 18px; color: ${data.overallAcc >= 60 ? '#16a34a' : '#dc2626'}">${data.overallAcc}%</b></td>
+                        </tr>
+                    </table>
+
+                    <h2 style="color: #6b21a8; background-color: #f3f4f6; padding: 10px; margin-top: 20px;">二、AI 教學數據洞察 (Insights)</h2>
+                    <div style="border: 1px solid #d8b4fe; padding: 15px; background-color: #faf5ff; margin-bottom: 20px;">
+                        ${data.insightText}
+                    </div>
+
+                    <h2 style="color: #15803d; background-color: #f3f4f6; padding: 10px; margin-top: 20px;">三、各單元成效排行</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <thead>
+                            <tr style="background-color: #e5e7eb;">
+                                <th style="border: 1px solid #d1d5db; padding: 8px;">排行</th>
+                                <th style="border: 1px solid #d1d5db; padding: 8px;">活動名稱</th>
+                                <th style="border: 1px solid #d1d5db; padding: 8px;">作答人次</th>
+                                <th style="border: 1px solid #d1d5db; padding: 8px;">正確率</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                    
+                    <p style="margin-top: 50px; font-size: 12px; color: #9ca3af; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+                        本報告由 TONY STUDIO AI 課堂系統自動生成 | 產出時間: ${new Date().toLocaleString()}
+                    </p>
+                </body>
+                </html>
+            `;
+            
+            const el = document.createElement("a"); 
+            el.href = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html); 
+            el.download = `教學成效總結報告_${startDateStr}至${endDateStr}.doc`; 
+            el.click(); 
+            showToast('總結報告已匯出！', 'success');
         }
 
         window.addEventListener('DOMContentLoaded', () => { initApp(); });
