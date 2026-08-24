@@ -1113,7 +1113,7 @@
             currentState.uploadedFiles.filter(f=>!f.isText).forEach(f=> parts.push({inlineData: {mimeType: f.mimeType, data: f.data}}));
 
             try {
-                const req = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${currentState.apiKey}`, {
+                const req = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent?key=${currentState.apiKey}`, {
                     method: 'POST', headers: {'Content-Type':'application/json'},
                     body: JSON.stringify({contents: [{role: "user", parts}], systemInstruction: {parts: [{text: prompt}]}, generationConfig: {responseMimeType: "application/json"}})
                 });
@@ -1363,7 +1363,7 @@
             const prompt = `分析資料JSON回傳:{ "summary": "摘要", "masteredConcepts": ["亮點或主流意見"], "priorityActions": ["後續建議行動"] }`;
             
             try {
-                const req = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${currentState.apiKey}`, {
+                const req = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent?key=${currentState.apiKey}`, {
                     method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{role:"user",parts:[{text: `分析此活動狀況: ${act.courseName}，以下是學生的回覆陣列：${respDataStr}`}]}], systemInstruction:{parts:[{text:prompt}]}, generationConfig:{responseMimeType:"application/json"}})
                 });
                 const res = await req.json();
