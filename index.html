@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-TW" data-immersive-translate-page-theme="light"><head>
+<html lang="zh-TW" data-immersive-translate-page-theme="light">
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AI 課堂互動與理解分析 Web App</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,21 +20,27 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
+        html, body {
+            overflow-x: hidden;
+            overscroll-behavior-y: none;
+            width: 100%;
+            position: relative;
+        }
+
         body { 
             font-family: 'Inter', system-ui, -apple-system, sans-serif; 
             background-color: #f8fafc; 
             color: #1e293b; 
             display: flex; 
             flex-direction: column; 
-            min-height: 100vh; 
+            min-height: 100vh;
+            min-height: 100dvh; 
         }
         
-        /* 視圖切換動畫 */
         .view-section { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* 玻璃擬物化面板 */
         .glass-panel { 
             background: rgba(255, 255, 255, 0.85); 
             backdrop-filter: blur(12px); 
@@ -42,13 +49,11 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); 
         }
         
-        /* 捲軸美化 */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* Loading 動畫 */
         .loader { 
             border: 3px solid #f1f5f9; 
             border-radius: 50%; 
@@ -59,7 +64,6 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Toast 通知系統 */
         #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; }
         .toast { 
             padding: 14px 24px; 
@@ -77,12 +81,10 @@
         .toast.warning { background: #f59e0b; border-left: 4px solid #d97706; }
         @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
-        /* 可編輯欄位 UI */
         .edit-active-field[contenteditable="true"]:empty:before { content: attr(placeholder); color: #94a3b8; cursor: text; }
         .editable-field:hover { outline: 1px dashed #cbd5e1; cursor: text; background: rgba(255,255,255,0.7); }
         .editable-field:focus { outline: 2px solid #60a5fa; background: #fff; cursor: text; border-radius: 4px; box-shadow: 0 0 0 3px rgba(96,165,250,0.2); }
         
-        /* AI 報告文字排版 */
         .ai-typography { line-height: 1.7; font-size: 0.95rem; }
         .ai-typography b, .ai-typography strong { 
             color: #1e40af; 
@@ -96,7 +98,7 @@
         
         #chartjs-tooltip { font-family: 'Inter', sans-serif !important; }
     </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.inset-y-0{top:0px;bottom:0px}.-left-3{left:-0.75rem}.-right-10{right:-2.5rem}.-top-10{top:-2.5rem}.left-0{left:0px}.right-0{right:0px}.right-4{right:1rem}.right-6{right:1.5rem}.top-0{top:0px}.top-20{top:5rem}.top-4{top:1rem}.top-6{top:1.5rem}.top-8{top:2rem}.-bottom-4{bottom:-1rem}.-right-4{right:-1rem}.right-2{right:0.5rem}.top-2{top:0.5rem}.z-10{z-index:10}.z-40{z-index:40}.z-50{z-index:50}.z-\[100\]{z-index:100}.z-\[105\]{z-index:105}.z-\[106\]{z-index:106}.-mx-4{margin-left:-1rem;margin-right:-1rem}.mx-auto{margin-left:auto;margin-right:auto}.mx-2{margin-left:0.5rem;margin-right:0.5rem}.-mb-4{margin-bottom:-1rem}.-mr-10{margin-right:-2.5rem}.-mt-10{margin-top:-2.5rem}.mb-1{margin-bottom:0.25rem}.mb-12{margin-bottom:3rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-5{margin-bottom:1.25rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-1{margin-left:0.25rem}.mr-1{margin-right:0.25rem}.mr-2{margin-right:0.5rem}.mr-2\.5{margin-right:0.625rem}.mr-3{margin-right:0.75rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-10{margin-top:2.5rem}.mt-2{margin-top:0.5rem}.mt-3{margin-top:0.75rem}.mt-4{margin-top:1rem}.mt-6{margin-top:1.5rem}.mt-8{margin-top:2rem}.mt-auto{margin-top:auto}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.aspect-video{aspect-ratio:16 / 9}.h-10{height:2.5rem}.h-12{height:3rem}.h-16{height:4rem}.h-2{height:0.5rem}.h-20{height:5rem}.h-24{height:6rem}.h-3{height:0.75rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-8{height:2rem}.h-\[220px\]{height:220px}.h-full{height:100%}.max-h-32{max-height:8rem}.max-h-\[50vh\]{max-height:50vh}.max-h-\[55vh\]{max-height:55vh}.max-h-\[90vh\]{max-height:90vh}.max-h-48{max-height:12rem}.min-h-\[300px\]{min-height:300px}.min-h-\[600px\]{min-height:600px}.w-1{width:0.25rem}.w-1\/2{width:50%}.w-10{width:2.5rem}.w-16{width:4rem}.w-20{width:5rem}.w-24{width:6rem}.w-3{width:0.75rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-8{width:2rem}.w-\[220px\]{width:220px}.w-auto{width:auto}.w-full{width:100%}.min-w-full{min-width:100%}.max-w-3xl{max-width:48rem}.max-w-4xl{max-width:56rem}.max-w-5xl{max-width:64rem}.max-w-6xl{max-width:72rem}.max-w-7xl{max-width:80rem}.max-w-md{max-width:28rem}.max-w-sm{max-width:24rem}.max-w-xl{max-width:36rem}.max-w-lg{max-width:32rem}.shrink-0{flex-shrink:0}.flex-grow{flex-grow:1}.-rotate-3{--tw-rotate:-3deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-rotate-6{--tw-rotate:-6deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.rotate-3{--tw-rotate:3deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.rotate-6{--tw-rotate:6deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.rotate-12{--tw-rotate:12deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes ping{75%, 100%{transform:scale(2);opacity:0}}.animate-ping{animation:ping 1s cubic-bezier(0, 0, 0.2, 1) infinite}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-5{gap:1.25rem}.gap-6{gap:1.5rem}.space-x-4 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-10 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2.5rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.space-y-8 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem * var(--tw-space-y-reverse))}.divide-y > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px * var(--tw-divide-y-reverse))}.divide-slate-100 > :not([hidden]) ~ :not([hidden]){--tw-divide-opacity:1;border-color:rgb(241 245 249 / var(--tw-divide-opacity, 1))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.scroll-smooth{scroll-behavior:smooth}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.rounded-r-full{border-top-right-radius:9999px;border-bottom-right-radius:9999px}.rounded-bl-full{border-bottom-left-radius:9999px}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-t-8{border-top-width:8px}.border-dashed{border-style:dashed}.border-none{border-style:none}.border-amber-200{--tw-border-opacity:1;border-color:rgb(253 230 138 / var(--tw-border-opacity, 1))}.border-amber-300{--tw-border-opacity:1;border-color:rgb(252 211 77 / var(--tw-border-opacity, 1))}.border-amber-400{--tw-border-opacity:1;border-color:rgb(251 191 36 / var(--tw-border-opacity, 1))}.border-blue-100{--tw-border-opacity:1;border-color:rgb(219 234 254 / var(--tw-border-opacity, 1))}.border-blue-300{--tw-border-opacity:1;border-color:rgb(147 197 253 / var(--tw-border-opacity, 1))}.border-blue-600{--tw-border-opacity:1;border-color:rgb(37 99 235 / var(--tw-border-opacity, 1))}.border-emerald-100{--tw-border-opacity:1;border-color:rgb(209 250 229 / var(--tw-border-opacity, 1))}.border-emerald-200{--tw-border-opacity:1;border-color:rgb(167 243 208 / var(--tw-border-opacity, 1))}.border-emerald-400{--tw-border-opacity:1;border-color:rgb(52 211 153 / var(--tw-border-opacity, 1))}.border-emerald-500{--tw-border-opacity:1;border-color:rgb(16 185 129 / var(--tw-border-opacity, 1))}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.border-slate-100{--tw-border-opacity:1;border-color:rgb(241 245 249 / var(--tw-border-opacity, 1))}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-slate-300{--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity, 1))}.border-violet-200{--tw-border-opacity:1;border-color:rgb(221 214 254 / var(--tw-border-opacity, 1))}.border-white{--tw-border-opacity:1;border-color:rgb(255 255 255 / var(--tw-border-opacity, 1))}.border-white\/80{border-color:rgb(255 255 255 / 0.8)}.border-blue-200{--tw-border-opacity:1;border-color:rgb(191 219 254 / var(--tw-border-opacity, 1))}.border-red-200{--tw-border-opacity:1;border-color:rgb(254 202 202 / var(--tw-border-opacity, 1))}.bg-amber-100{--tw-bg-opacity:1;background-color:rgb(254 243 199 / var(--tw-bg-opacity, 1))}.bg-amber-50\/50{background-color:rgb(255 251 235 / 0.5)}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11 / var(--tw-bg-opacity, 1))}.bg-blue-100{--tw-bg-opacity:1;background-color:rgb(219 234 254 / var(--tw-bg-opacity, 1))}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-blue-50\/50{background-color:rgb(239 246 255 / 0.5)}.bg-blue-500{--tw-bg-opacity:1;background-color:rgb(59 130 246 / var(--tw-bg-opacity, 1))}.bg-blue-600{--tw-bg-opacity:1;background-color:rgb(37 99 235 / var(--tw-bg-opacity, 1))}.bg-blue-600\/90{background-color:rgb(37 99 235 / 0.9)}.bg-emerald-100{--tw-bg-opacity:1;background-color:rgb(209 250 229 / var(--tw-bg-opacity, 1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245 / var(--tw-bg-opacity, 1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129 / var(--tw-bg-opacity, 1))}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105 / var(--tw-bg-opacity, 1))}.bg-emerald-600\/90{background-color:rgb(5 150 105 / 0.9)}.bg-green-400{--tw-bg-opacity:1;background-color:rgb(74 222 128 / var(--tw-bg-opacity, 1))}.bg-green-500{--tw-bg-opacity:1;background-color:rgb(34 197 94 / var(--tw-bg-opacity, 1))}.bg-red-50{--tw-bg-opacity:1;background-color:rgb(254 242 242 / var(--tw-bg-opacity, 1))}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity, 1))}.bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-slate-900\/60{background-color:rgb(15 23 42 / 0.6)}.bg-transparent{background-color:transparent}.bg-violet-100{--tw-bg-opacity:1;background-color:rgb(237 233 254 / var(--tw-bg-opacity, 1))}.bg-violet-50{--tw-bg-opacity:1;background-color:rgb(245 243 255 / var(--tw-bg-opacity, 1))}.bg-violet-600\/90{background-color:rgb(124 58 237 / 0.9)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/20{background-color:rgb(255 255 255 / 0.2)}.bg-white\/50{background-color:rgb(255 255 255 / 0.5)}.bg-white\/80{background-color:rgb(255 255 255 / 0.8)}.bg-white\/90{background-color:rgb(255 255 255 / 0.9)}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.bg-red-500{--tw-bg-opacity:1;background-color:rgb(239 68 68 / var(--tw-bg-opacity, 1))}.bg-gradient-to-b{background-image:linear-gradient(to bottom, var(--tw-gradient-stops))}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.bg-gradient-to-t{background-image:linear-gradient(to top, var(--tw-gradient-stops))}.bg-gradient-to-tr{background-image:linear-gradient(to top right, var(--tw-gradient-stops))}.from-blue-100{--tw-gradient-from:#dbeafe var(--tw-gradient-from-position);--tw-gradient-to:rgb(219 234 254 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-blue-50{--tw-gradient-from:#eff6ff var(--tw-gradient-from-position);--tw-gradient-to:rgb(239 246 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-green-400{--tw-gradient-from:#4ade80 var(--tw-gradient-from-position);--tw-gradient-to:rgb(74 222 128 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-slate-900{--tw-gradient-from:#0f172a var(--tw-gradient-from-position);--tw-gradient-to:rgb(15 23 42 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-violet-600{--tw-gradient-from:#7c3aed var(--tw-gradient-from-position);--tw-gradient-to:rgb(124 58 237 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.via-slate-900\/40{--tw-gradient-to:rgb(15 23 42 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), rgb(15 23 42 / 0.4) var(--tw-gradient-via-position), var(--tw-gradient-to)}.to-emerald-500{--tw-gradient-to:#10b981 var(--tw-gradient-to-position)}.to-fuchsia-600{--tw-gradient-to:#c026d3 var(--tw-gradient-to-position)}.to-indigo-100{--tw-gradient-to:#e0e7ff var(--tw-gradient-to-position)}.to-transparent{--tw-gradient-to:transparent var(--tw-gradient-to-position)}.to-white{--tw-gradient-to:#fff var(--tw-gradient-to-position)}.object-cover{object-fit:cover}.p-1{padding:0.25rem}.p-10{padding:2.5rem}.p-12{padding:3rem}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-1{padding-left:0.25rem;padding-right:0.25rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.px-8{padding-left:2rem;padding-right:2rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-20{padding-top:5rem;padding-bottom:5rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}.pb-4{padding-bottom:1rem}.pb-5{padding-bottom:1.25rem}.pb-6{padding-bottom:1.5rem}.pb-8{padding-bottom:2rem}.pr-10{padding-right:2.5rem}.pr-2{padding-right:0.5rem}.pr-4{padding-right:1rem}.pt-2{padding-top:0.5rem}.pt-4{padding-top:1rem}.pt-5{padding-top:1.25rem}.pt-6{padding-top:1.5rem}.pb-3{padding-bottom:0.75rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-6xl{font-size:3.75rem;line-height:1}.text-\[150px\]{font-size:150px}.text-\[200px\]{font-size:200px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.text-\[100px\]{font-size:100px}.font-black{font-weight:900}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-relaxed{line-height:1.625}.tracking-\[0\.2em\]{letter-spacing:0.2em}.tracking-\[0\.4em\]{letter-spacing:0.4em}.tracking-tight{letter-spacing:-0.025em}.tracking-wide{letter-spacing:0.025em}.tracking-wider{letter-spacing:0.05em}.tracking-widest{letter-spacing:0.1em}.text-amber-600{--tw-text-opacity:1;color:rgb(217 119 6 / var(--tw-text-opacity, 1))}.text-amber-800{--tw-text-opacity:1;color:rgb(146 64 14 / var(--tw-text-opacity, 1))}.text-amber-900{--tw-text-opacity:1;color:rgb(120 53 15 / var(--tw-text-opacity, 1))}.text-blue-200{--tw-text-opacity:1;color:rgb(191 219 254 / var(--tw-text-opacity, 1))}.text-blue-50{--tw-text-opacity:1;color:rgb(239 246 255 / var(--tw-text-opacity, 1))}.text-blue-500{--tw-text-opacity:1;color:rgb(59 130 246 / var(--tw-text-opacity, 1))}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-blue-700{--tw-text-opacity:1;color:rgb(29 78 216 / var(--tw-text-opacity, 1))}.text-blue-800{--tw-text-opacity:1;color:rgb(30 64 175 / var(--tw-text-opacity, 1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183 / var(--tw-text-opacity, 1))}.text-emerald-500{--tw-text-opacity:1;color:rgb(16 185 129 / var(--tw-text-opacity, 1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105 / var(--tw-text-opacity, 1))}.text-emerald-800{--tw-text-opacity:1;color:rgb(6 95 70 / var(--tw-text-opacity, 1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-violet-300{--tw-text-opacity:1;color:rgb(196 181 253 / var(--tw-text-opacity, 1))}.text-violet-500{--tw-text-opacity:1;color:rgb(139 92 246 / var(--tw-text-opacity, 1))}.text-violet-600{--tw-text-opacity:1;color:rgb(124 58 237 / var(--tw-text-opacity, 1))}.text-violet-700{--tw-text-opacity:1;color:rgb(109 40 217 / var(--tw-text-opacity, 1))}.text-violet-900{--tw-text-opacity:1;color:rgb(76 29 149 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-white\/80{color:rgb(255 255 255 / 0.8)}.text-amber-700{--tw-text-opacity:1;color:rgb(180 83 9 / var(--tw-text-opacity, 1))}.text-emerald-700{--tw-text-opacity:1;color:rgb(4 120 87 / var(--tw-text-opacity, 1))}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28 / var(--tw-text-opacity, 1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.opacity-10{opacity:0.1}.opacity-30{opacity:0.3}.opacity-50{opacity:0.5}.opacity-75{opacity:0.75}.opacity-80{opacity:0.8}.opacity-0{opacity:0}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-inner{--tw-shadow:inset 0 2px 4px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:inset 0 2px 4px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.drop-shadow-sm{--tw-drop-shadow:drop-shadow(0 1px 1px rgb(0 0 0 / 0.05));filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-200{transition-duration:200ms}.duration-300{transition-duration:300ms}.last\:border-0:last-child{border-width:0px}.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-amber-400:hover{--tw-border-opacity:1;border-color:rgb(251 191 36 / var(--tw-border-opacity, 1))}.hover\:border-blue-400:hover{--tw-border-opacity:1;border-color:rgb(96 165 250 / var(--tw-border-opacity, 1))}.hover\:border-red-400:hover{--tw-border-opacity:1;border-color:rgb(248 113 113 / var(--tw-border-opacity, 1))}.hover\:border-violet-300:hover{--tw-border-opacity:1;border-color:rgb(196 181 253 / var(--tw-border-opacity, 1))}.hover\:bg-amber-600:hover{--tw-bg-opacity:1;background-color:rgb(217 119 6 / var(--tw-bg-opacity, 1))}.hover\:bg-blue-50:hover{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.hover\:bg-blue-700:hover{--tw-bg-opacity:1;background-color:rgb(29 78 216 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-100:hover{--tw-bg-opacity:1;background-color:rgb(209 250 229 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-50:hover{--tw-bg-opacity:1;background-color:rgb(236 253 245 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-600:hover{--tw-bg-opacity:1;background-color:rgb(5 150 105 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-700:hover{--tw-bg-opacity:1;background-color:rgb(4 120 87 / var(--tw-bg-opacity, 1))}.hover\:bg-red-700:hover{--tw-bg-opacity:1;background-color:rgb(185 28 28 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-100:hover{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-200:hover{--tw-bg-opacity:1;background-color:rgb(226 232 240 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-50:hover{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-900:hover{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.hover\:bg-violet-100:hover{--tw-bg-opacity:1;background-color:rgb(237 233 254 / var(--tw-bg-opacity, 1))}.hover\:bg-violet-50:hover{--tw-bg-opacity:1;background-color:rgb(245 243 255 / var(--tw-bg-opacity, 1))}.hover\:bg-amber-100:hover{--tw-bg-opacity:1;background-color:rgb(254 243 199 / var(--tw-bg-opacity, 1))}.hover\:bg-blue-100:hover{--tw-bg-opacity:1;background-color:rgb(219 234 254 / var(--tw-bg-opacity, 1))}.hover\:bg-red-100:hover{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}.hover\:bg-red-50:hover{--tw-bg-opacity:1;background-color:rgb(254 242 242 / var(--tw-bg-opacity, 1))}.hover\:bg-violet-200:hover{--tw-bg-opacity:1;background-color:rgb(221 214 254 / var(--tw-bg-opacity, 1))}.hover\:bg-red-600:hover{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity, 1))}.hover\:text-blue-600:hover{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.hover\:text-blue-800:hover{--tw-text-opacity:1;color:rgb(30 64 175 / var(--tw-text-opacity, 1))}.hover\:text-slate-600:hover{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.hover\:text-slate-700:hover{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.hover\:text-slate-800:hover{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.hover\:text-violet-800:hover{--tw-text-opacity:1;color:rgb(91 33 182 / var(--tw-text-opacity, 1))}.hover\:text-amber-700:hover{--tw-text-opacity:1;color:rgb(180 83 9 / var(--tw-text-opacity, 1))}.hover\:text-blue-700:hover{--tw-text-opacity:1;color:rgb(29 78 216 / var(--tw-text-opacity, 1))}.hover\:text-red-600:hover{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}.hover\:shadow:hover{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.hover\:shadow-lg:hover{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.focus\:border-blue-500:focus{--tw-border-opacity:1;border-color:rgb(59 130 246 / var(--tw-border-opacity, 1))}.focus\:border-green-500:focus{--tw-border-opacity:1;border-color:rgb(34 197 94 / var(--tw-border-opacity, 1))}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-4:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-amber-500\/20:focus{--tw-ring-color:rgb(245 158 11 / 0.2)}.focus\:ring-blue-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(59 130 246 / var(--tw-ring-opacity, 1))}.focus\:ring-blue-500\/20:focus{--tw-ring-color:rgb(59 130 246 / 0.2)}.focus\:ring-emerald-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(16 185 129 / var(--tw-ring-opacity, 1))}.focus\:ring-green-500\/20:focus{--tw-ring-color:rgb(34 197 94 / 0.2)}.focus\:ring-emerald-500\/20:focus{--tw-ring-color:rgb(16 185 129 / 0.2)}.active\:scale-95:active{--tw-scale-x:.95;--tw-scale-y:.95;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:scale-105{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:scale-110{--tw-scale-x:1.1;--tw-scale-y:1.1;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group\/img:hover .group-hover\/img\:opacity-100{opacity:1}@media (min-width: 640px){.sm\:mx-0{margin-left:0px;margin-right:0px}.sm\:mb-0{margin-bottom:0px}.sm\:block{display:block}.sm\:flex-row{flex-direction:row}.sm\:items-center{align-items:center}.sm\:gap-4{gap:1rem}.sm\:border-l{border-left-width:1px}.sm\:border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.sm\:p-10{padding:2.5rem}.sm\:p-6{padding:1.5rem}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:pl-4{padding-left:1rem}}@media (min-width: 768px){.md\:min-h-full{min-height:100%}.md\:w-2\/5{width:40%}.md\:w-3\/5{width:60%}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:items-center{align-items:center}.md\:p-10{padding:2.5rem}}@media (min-width: 1024px){.lg\:col-span-1{grid-column:span 1 / span 1}.lg\:col-span-3{grid-column:span 3 / span 3}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:gap-8{gap:2rem}.lg\:p-8{padding:2rem}.lg\:px-8{padding-left:2rem;padding-right:2rem}}</style><style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.inset-y-0{top:0px;bottom:0px}.-bottom-4{bottom:-1rem}.-left-3{left:-0.75rem}.-right-10{right:-2.5rem}.-right-4{right:-1rem}.-top-10{top:-2.5rem}.left-0{left:0px}.right-0{right:0px}.right-2{right:0.5rem}.right-4{right:1rem}.right-6{right:1.5rem}.top-0{top:0px}.top-2{top:0.5rem}.top-20{top:5rem}.top-4{top:1rem}.top-6{top:1.5rem}.top-8{top:2rem}.z-10{z-index:10}.z-40{z-index:40}.z-50{z-index:50}.z-\[100\]{z-index:100}.z-\[105\]{z-index:105}.z-\[106\]{z-index:106}.-mx-4{margin-left:-1rem;margin-right:-1rem}.mx-2{margin-left:0.5rem;margin-right:0.5rem}.mx-auto{margin-left:auto;margin-right:auto}.-mb-4{margin-bottom:-1rem}.-mr-10{margin-right:-2.5rem}.-mt-10{margin-top:-2.5rem}.mb-1{margin-bottom:0.25rem}.mb-12{margin-bottom:3rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-5{margin-bottom:1.25rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-1{margin-left:0.25rem}.mr-1{margin-right:0.25rem}.mr-2{margin-right:0.5rem}.mr-2\.5{margin-right:0.625rem}.mr-3{margin-right:0.75rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-10{margin-top:2.5rem}.mt-2{margin-top:0.5rem}.mt-3{margin-top:0.75rem}.mt-4{margin-top:1rem}.mt-6{margin-top:1.5rem}.mt-8{margin-top:2rem}.mt-auto{margin-top:auto}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.aspect-video{aspect-ratio:16 / 9}.h-10{height:2.5rem}.h-12{height:3rem}.h-16{height:4rem}.h-2{height:0.5rem}.h-20{height:5rem}.h-24{height:6rem}.h-3{height:0.75rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-8{height:2rem}.h-\[220px\]{height:220px}.h-full{height:100%}.max-h-32{max-height:8rem}.max-h-\[50vh\]{max-height:50vh}.max-h-\[55vh\]{max-height:55vh}.max-h-\[90vh\]{max-height:90vh}.max-h-48{max-height:12rem}.max-h-64{max-height:16rem}.min-h-\[300px\]{min-height:300px}.min-h-\[600px\]{min-height:600px}.w-1{width:0.25rem}.w-10{width:2.5rem}.w-16{width:4rem}.w-20{width:5rem}.w-24{width:6rem}.w-3{width:0.75rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-8{width:2rem}.w-\[220px\]{width:220px}.w-auto{width:auto}.w-full{width:100%}.w-1\/2{width:50%}.min-w-full{min-width:100%}.max-w-3xl{max-width:48rem}.max-w-4xl{max-width:56rem}.max-w-5xl{max-width:64rem}.max-w-6xl{max-width:72rem}.max-w-7xl{max-width:80rem}.max-w-lg{max-width:32rem}.max-w-md{max-width:28rem}.max-w-xl{max-width:36rem}.max-w-sm{max-width:24rem}.shrink-0{flex-shrink:0}.flex-grow{flex-grow:1}.-rotate-3{--tw-rotate:-3deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-rotate-6{--tw-rotate:-6deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.rotate-12{--tw-rotate:12deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.rotate-3{--tw-rotate:3deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.rotate-6{--tw-rotate:6deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes ping{75%, 100%{transform:scale(2);opacity:0}}.animate-ping{animation:ping 1s cubic-bezier(0, 0, 0.2, 1) infinite}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-5{gap:1.25rem}.gap-6{gap:1.5rem}.space-x-4 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-10 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2.5rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.space-y-8 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem * var(--tw-space-y-reverse))}.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse))}.divide-y > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px * var(--tw-divide-y-reverse))}.divide-slate-100 > :not([hidden]) ~ :not([hidden]){--tw-divide-opacity:1;border-color:rgb(241 245 249 / var(--tw-divide-opacity, 1))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.scroll-smooth{scroll-behavior:smooth}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.rounded-r-full{border-top-right-radius:9999px;border-bottom-right-radius:9999px}.rounded-bl-full{border-bottom-left-radius:9999px}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-t-8{border-top-width:8px}.border-dashed{border-style:dashed}.border-none{border-style:none}.border-amber-200{--tw-border-opacity:1;border-color:rgb(253 230 138 / var(--tw-border-opacity, 1))}.border-amber-300{--tw-border-opacity:1;border-color:rgb(252 211 77 / var(--tw-border-opacity, 1))}.border-amber-400{--tw-border-opacity:1;border-color:rgb(251 191 36 / var(--tw-border-opacity, 1))}.border-blue-100{--tw-border-opacity:1;border-color:rgb(219 234 254 / var(--tw-border-opacity, 1))}.border-blue-200{--tw-border-opacity:1;border-color:rgb(191 219 254 / var(--tw-border-opacity, 1))}.border-blue-300{--tw-border-opacity:1;border-color:rgb(147 197 253 / var(--tw-border-opacity, 1))}.border-blue-600{--tw-border-opacity:1;border-color:rgb(37 99 235 / var(--tw-border-opacity, 1))}.border-emerald-100{--tw-border-opacity:1;border-color:rgb(209 250 229 / var(--tw-border-opacity, 1))}.border-emerald-200{--tw-border-opacity:1;border-color:rgb(167 243 208 / var(--tw-border-opacity, 1))}.border-emerald-400{--tw-border-opacity:1;border-color:rgb(52 211 153 / var(--tw-border-opacity, 1))}.border-emerald-500{--tw-border-opacity:1;border-color:rgb(16 185 129 / var(--tw-border-opacity, 1))}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.border-red-200{--tw-border-opacity:1;border-color:rgb(254 202 202 / var(--tw-border-opacity, 1))}.border-slate-100{--tw-border-opacity:1;border-color:rgb(241 245 249 / var(--tw-border-opacity, 1))}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-slate-300{--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity, 1))}.border-violet-200{--tw-border-opacity:1;border-color:rgb(221 214 254 / var(--tw-border-opacity, 1))}.border-white{--tw-border-opacity:1;border-color:rgb(255 255 255 / var(--tw-border-opacity, 1))}.border-white\/80{border-color:rgb(255 255 255 / 0.8)}.bg-amber-100{--tw-bg-opacity:1;background-color:rgb(254 243 199 / var(--tw-bg-opacity, 1))}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.bg-amber-50\/50{background-color:rgb(255 251 235 / 0.5)}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11 / var(--tw-bg-opacity, 1))}.bg-blue-100{--tw-bg-opacity:1;background-color:rgb(219 234 254 / var(--tw-bg-opacity, 1))}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-blue-50\/50{background-color:rgb(239 246 255 / 0.5)}.bg-blue-500{--tw-bg-opacity:1;background-color:rgb(59 130 246 / var(--tw-bg-opacity, 1))}.bg-blue-600{--tw-bg-opacity:1;background-color:rgb(37 99 235 / var(--tw-bg-opacity, 1))}.bg-blue-600\/90{background-color:rgb(37 99 235 / 0.9)}.bg-emerald-100{--tw-bg-opacity:1;background-color:rgb(209 250 229 / var(--tw-bg-opacity, 1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245 / var(--tw-bg-opacity, 1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129 / var(--tw-bg-opacity, 1))}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105 / var(--tw-bg-opacity, 1))}.bg-emerald-600\/90{background-color:rgb(5 150 105 / 0.9)}.bg-green-400{--tw-bg-opacity:1;background-color:rgb(74 222 128 / var(--tw-bg-opacity, 1))}.bg-green-500{--tw-bg-opacity:1;background-color:rgb(34 197 94 / var(--tw-bg-opacity, 1))}.bg-red-50{--tw-bg-opacity:1;background-color:rgb(254 242 242 / var(--tw-bg-opacity, 1))}.bg-red-500{--tw-bg-opacity:1;background-color:rgb(239 68 68 / var(--tw-bg-opacity, 1))}.bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-slate-900\/60{background-color:rgb(15 23 42 / 0.6)}.bg-transparent{background-color:transparent}.bg-violet-100{--tw-bg-opacity:1;background-color:rgb(237 233 254 / var(--tw-bg-opacity, 1))}.bg-violet-50{--tw-bg-opacity:1;background-color:rgb(245 243 255 / var(--tw-bg-opacity, 1))}.bg-violet-600\/90{background-color:rgb(124 58 237 / 0.9)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/20{background-color:rgb(255 255 255 / 0.2)}.bg-white\/50{background-color:rgb(255 255 255 / 0.5)}.bg-white\/80{background-color:rgb(255 255 255 / 0.8)}.bg-white\/90{background-color:rgb(255 255 255 / 0.9)}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity, 1))}.bg-black{--tw-bg-opacity:1;background-color:rgb(0 0 0 / var(--tw-bg-opacity, 1))}.bg-gradient-to-b{background-image:linear-gradient(to bottom, var(--tw-gradient-stops))}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.bg-gradient-to-t{background-image:linear-gradient(to top, var(--tw-gradient-stops))}.bg-gradient-to-tr{background-image:linear-gradient(to top right, var(--tw-gradient-stops))}.from-blue-100{--tw-gradient-from:#dbeafe var(--tw-gradient-from-position);--tw-gradient-to:rgb(219 234 254 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-blue-50{--tw-gradient-from:#eff6ff var(--tw-gradient-from-position);--tw-gradient-to:rgb(239 246 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-green-400{--tw-gradient-from:#4ade80 var(--tw-gradient-from-position);--tw-gradient-to:rgb(74 222 128 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-slate-900{--tw-gradient-from:#0f172a var(--tw-gradient-from-position);--tw-gradient-to:rgb(15 23 42 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-violet-600{--tw-gradient-from:#7c3aed var(--tw-gradient-from-position);--tw-gradient-to:rgb(124 58 237 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.via-slate-900\/40{--tw-gradient-to:rgb(15 23 42 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), rgb(15 23 42 / 0.4) var(--tw-gradient-via-position), var(--tw-gradient-to)}.to-emerald-500{--tw-gradient-to:#10b981 var(--tw-gradient-to-position)}.to-fuchsia-600{--tw-gradient-to:#c026d3 var(--tw-gradient-to-position)}.to-indigo-100{--tw-gradient-to:#e0e7ff var(--tw-gradient-to-position)}.to-transparent{--tw-gradient-to:transparent var(--tw-gradient-to-position)}.to-white{--tw-gradient-to:#fff var(--tw-gradient-to-position)}.object-cover{object-fit:cover}.p-1{padding:0.25rem}.p-10{padding:2.5rem}.p-12{padding:3rem}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-1{padding-left:0.25rem;padding-right:0.25rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.px-8{padding-left:2rem;padding-right:2rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-20{padding-top:5rem;padding-bottom:5rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}.pb-3{padding-bottom:0.75rem}.pb-4{padding-bottom:1rem}.pb-5{padding-bottom:1.25rem}.pb-6{padding-bottom:1.5rem}.pb-8{padding-bottom:2rem}.pr-10{padding-right:2.5rem}.pr-2{padding-right:0.5rem}.pr-4{padding-right:1rem}.pt-2{padding-top:0.5rem}.pt-4{padding-top:1rem}.pt-5{padding-top:1.25rem}.pt-6{padding-top:1.5rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-6xl{font-size:3.75rem;line-height:1}.text-\[100px\]{font-size:100px}.text-\[150px\]{font-size:150px}.text-\[200px\]{font-size:200px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-black{font-weight:900}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-relaxed{line-height:1.625}.tracking-\[0\.2em\]{letter-spacing:0.2em}.tracking-\[0\.4em\]{letter-spacing:0.4em}.tracking-tight{letter-spacing:-0.025em}.tracking-wide{letter-spacing:0.025em}.tracking-wider{letter-spacing:0.05em}.tracking-widest{letter-spacing:0.1em}.text-amber-600{--tw-text-opacity:1;color:rgb(217 119 6 / var(--tw-text-opacity, 1))}.text-amber-700{--tw-text-opacity:1;color:rgb(180 83 9 / var(--tw-text-opacity, 1))}.text-amber-800{--tw-text-opacity:1;color:rgb(146 64 14 / var(--tw-text-opacity, 1))}.text-amber-900{--tw-text-opacity:1;color:rgb(120 53 15 / var(--tw-text-opacity, 1))}.text-blue-200{--tw-text-opacity:1;color:rgb(191 219 254 / var(--tw-text-opacity, 1))}.text-blue-50{--tw-text-opacity:1;color:rgb(239 246 255 / var(--tw-text-opacity, 1))}.text-blue-500{--tw-text-opacity:1;color:rgb(59 130 246 / var(--tw-text-opacity, 1))}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-blue-700{--tw-text-opacity:1;color:rgb(29 78 216 / var(--tw-text-opacity, 1))}.text-blue-800{--tw-text-opacity:1;color:rgb(30 64 175 / var(--tw-text-opacity, 1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183 / var(--tw-text-opacity, 1))}.text-emerald-500{--tw-text-opacity:1;color:rgb(16 185 129 / var(--tw-text-opacity, 1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105 / var(--tw-text-opacity, 1))}.text-emerald-700{--tw-text-opacity:1;color:rgb(4 120 87 / var(--tw-text-opacity, 1))}.text-emerald-800{--tw-text-opacity:1;color:rgb(6 95 70 / var(--tw-text-opacity, 1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28 / var(--tw-text-opacity, 1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-violet-300{--tw-text-opacity:1;color:rgb(196 181 253 / var(--tw-text-opacity, 1))}.text-violet-600{--tw-text-opacity:1;color:rgb(124 58 237 / var(--tw-text-opacity, 1))}.text-violet-700{--tw-text-opacity:1;color:rgb(109 40 217 / var(--tw-text-opacity, 1))}.text-violet-900{--tw-text-opacity:1;color:rgb(76 29 149 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-white\/80{color:rgb(255 255 255 / 0.8)}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-violet-500{--tw-text-opacity:1;color:rgb(139 92 246 / var(--tw-text-opacity, 1))}.opacity-0{opacity:0}.opacity-10{opacity:0.1}.opacity-30{opacity:0.3}.opacity-50{opacity:0.5}.opacity-75{opacity:0.75}.opacity-80{opacity:0.8}.shadow{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-inner{--tw-shadow:inset 0 2px 4px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:inset 0 2px 4px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.drop-shadow-sm{--tw-drop-shadow:drop-shadow(0 1px 1px rgb(0 0 0 / 0.05));filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-200{transition-duration:200ms}.duration-300{transition-duration:300ms}.last\:border-0:last-child{border-width:0px}.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-amber-400:hover{--tw-border-opacity:1;border-color:rgb(251 191 36 / var(--tw-border-opacity, 1))}.hover\:border-blue-400:hover{--tw-border-opacity:1;border-color:rgb(96 165 250 / var(--tw-border-opacity, 1))}.hover\:border-red-400:hover{--tw-border-opacity:1;border-color:rgb(248 113 113 / var(--tw-border-opacity, 1))}.hover\:border-violet-300:hover{--tw-border-opacity:1;border-color:rgb(196 181 253 / var(--tw-border-opacity, 1))}.hover\:bg-amber-100:hover{--tw-bg-opacity:1;background-color:rgb(254 243 199 / var(--tw-bg-opacity, 1))}.hover\:bg-amber-600:hover{--tw-bg-opacity:1;background-color:rgb(217 119 6 / var(--tw-bg-opacity, 1))}.hover\:bg-blue-100:hover{--tw-bg-opacity:1;background-color:rgb(219 234 254 / var(--tw-bg-opacity, 1))}.hover\:bg-blue-50:hover{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.hover\:bg-blue-700:hover{--tw-bg-opacity:1;background-color:rgb(29 78 216 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-100:hover{--tw-bg-opacity:1;background-color:rgb(209 250 229 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-50:hover{--tw-bg-opacity:1;background-color:rgb(236 253 245 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-600:hover{--tw-bg-opacity:1;background-color:rgb(5 150 105 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-700:hover{--tw-bg-opacity:1;background-color:rgb(4 120 87 / var(--tw-bg-opacity, 1))}.hover\:bg-red-100:hover{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}.hover\:bg-red-50:hover{--tw-bg-opacity:1;background-color:rgb(254 242 242 / var(--tw-bg-opacity, 1))}.hover\:bg-red-600:hover{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-100:hover{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-200:hover{--tw-bg-opacity:1;background-color:rgb(226 232 240 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-50:hover{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-900:hover{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.hover\:bg-violet-100:hover{--tw-bg-opacity:1;background-color:rgb(237 233 254 / var(--tw-bg-opacity, 1))}.hover\:bg-violet-200:hover{--tw-bg-opacity:1;background-color:rgb(221 214 254 / var(--tw-bg-opacity, 1))}.hover\:bg-violet-50:hover{--tw-bg-opacity:1;background-color:rgb(245 243 255 / var(--tw-bg-opacity, 1))}.hover\:bg-red-700:hover{--tw-bg-opacity:1;background-color:rgb(185 28 28 / var(--tw-bg-opacity, 1))}.hover\:text-amber-700:hover{--tw-text-opacity:1;color:rgb(180 83 9 / var(--tw-text-opacity, 1))}.hover\:text-blue-600:hover{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.hover\:text-blue-700:hover{--tw-text-opacity:1;color:rgb(29 78 216 / var(--tw-text-opacity, 1))}.hover\:text-blue-800:hover{--tw-text-opacity:1;color:rgb(30 64 175 / var(--tw-text-opacity, 1))}.hover\:text-red-600:hover{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.hover\:text-slate-600:hover{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.hover\:text-slate-700:hover{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.hover\:text-slate-800:hover{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.hover\:text-violet-800:hover{--tw-text-opacity:1;color:rgb(91 33 182 / var(--tw-text-opacity, 1))}.hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}.hover\:shadow:hover{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.hover\:shadow-lg:hover{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.focus\:border-blue-500:focus{--tw-border-opacity:1;border-color:rgb(59 130 246 / var(--tw-border-opacity, 1))}.focus\:border-green-500:focus{--tw-border-opacity:1;border-color:rgb(34 197 94 / var(--tw-border-opacity, 1))}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-4:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-amber-500\/20:focus{--tw-ring-color:rgb(245 158 11 / 0.2)}.focus\:ring-blue-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(59 130 246 / var(--tw-ring-opacity, 1))}.focus\:ring-blue-500\/20:focus{--tw-ring-color:rgb(59 130 246 / 0.2)}.focus\:ring-emerald-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(16 185 129 / var(--tw-ring-opacity, 1))}.focus\:ring-emerald-500\/20:focus{--tw-ring-color:rgb(16 185 129 / 0.2)}.focus\:ring-green-500\/20:focus{--tw-ring-color:rgb(34 197 94 / 0.2)}.active\:scale-95:active{--tw-scale-x:.95;--tw-scale-y:.95;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:scale-105{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:scale-110{--tw-scale-x:1.1;--tw-scale-y:1.1;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group\/img:hover .group-hover\/img\:opacity-100{opacity:1}@media (min-width: 640px){.sm\:mx-0{margin-left:0px;margin-right:0px}.sm\:mb-0{margin-bottom:0px}.sm\:block{display:block}.sm\:flex-row{flex-direction:row}.sm\:items-center{align-items:center}.sm\:gap-4{gap:1rem}.sm\:border-l{border-left-width:1px}.sm\:border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.sm\:p-10{padding:2.5rem}.sm\:p-6{padding:1.5rem}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:pl-4{padding-left:1rem}}@media (min-width: 768px){.md\:min-h-full{min-height:100%}.md\:w-2\/5{width:40%}.md\:w-3\/5{width:60%}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:items-center{align-items:center}.md\:p-10{padding:2.5rem}}@media (min-width: 1024px){.lg\:col-span-1{grid-column:span 1 / span 1}.lg\:col-span-3{grid-column:span 3 / span 3}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:gap-8{gap:2rem}.lg\:p-8{padding:2rem}.lg\:px-8{padding-left:2rem;padding-right:2rem}}</style><style data-id="immersive-translate-input-injected-css"></style></head>
+</head>
 <body>
     <nav class="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -106,14 +108,14 @@
                     <span class="font-extrabold text-xl text-slate-800 tracking-tight hidden sm:block">AI Classroom</span>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button id="nav-admin-btn" onclick="navigate('admin')" class="text-sm font-bold text-violet-600 hover:text-violet-800 transition flex items-center gap-1.5 bg-violet-50 hover:bg-violet-100 px-3 py-1.5 rounded-lg border border-violet-200">
+                    <button id="nav-admin-btn" onclick="navigate('admin')" class="text-sm font-bold text-violet-600 hover:text-violet-800 transition flex items-center gap-1.5 bg-violet-50 hover:bg-violet-100 px-3 py-1.5 rounded-lg border border-violet-200 hidden">
                         <i class="fas fa-crown"></i> 系統後台
                     </button>
                     <button onclick="openTonyModal()" class="text-sm font-medium text-slate-500 hover:text-blue-600 transition flex items-center gap-1.5">
                         <i class="fas fa-id-card"></i> 顧問簡介
                     </button>
-                    <div id="nav-auth-section" class="flex items-center space-x-4">
-                        <span id="nav-user-email" class="text-sm text-slate-600 font-medium hidden sm:block">mindnodeai@gmail.com</span>
+                    <div id="nav-auth-section" class="flex items-center space-x-4 hidden">
+                        <span id="nav-user-email" class="text-sm text-slate-600 font-medium hidden sm:block">teacher@school.edu</span>
                         <button onclick="handleLogout()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 py-1.5 px-3 rounded-md transition font-medium">登出</button>
                     </div>
                 </div>
@@ -122,8 +124,8 @@
     </nav>
 
     <main class="flex-grow w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 relative">
-        <!-- 登入與首頁等視圖 (隱藏與顯示由 JS 控制) -->
-        <section id="view-api-key" class="view-section max-w-xl mx-auto mt-10">
+        
+        <section id="view-api-key" class="view-section max-w-xl mx-auto mt-10 active">
             <div class="glass-panel p-8 rounded-2xl">
                 <div class="text-center mb-8">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600 mb-4 shadow-sm transform -rotate-6"><i class="fas fa-key text-2xl transform rotate-6"></i></div>
@@ -183,7 +185,6 @@
             </div>
         </section>
 
-        <!-- 學生進入畫面 -->
         <section id="view-student-entry" class="view-section max-w-md mx-auto mt-10">
              <div class="glass-panel p-8 rounded-2xl text-center">
                 <div class="w-20 h-20 mx-auto bg-gradient-to-tr from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg mb-6 transform rotate-3">
@@ -213,7 +214,6 @@
             </div>
         </section>
 
-        <!-- 教師主控台 -->
         <section id="view-dashboard" class="view-section max-w-6xl mx-auto">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-slate-200 pb-5 gap-4">
                 <div>
@@ -226,238 +226,17 @@
                 </div>
             </div>
             
-            <div id="dashboard-stats" class="mb-8"><div class="bg-white p-6 rounded-3xl border border-slate-200 flex items-center justify-between shadow-sm relative overflow-hidden"><div class="relative z-10"><p class="text-sm text-slate-500 font-bold uppercase tracking-wider mb-2">建立的活動總數</p><p class="text-5xl font-black text-slate-800">13</p></div><i class="fas fa-layer-group text-blue-50 text-[100px] absolute -right-4 -bottom-4 transform rotate-12"></i></div></div>
+            <div id="dashboard-stats" class="mb-8"></div>
             
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
                     <h3 class="font-bold text-slate-700 text-sm tracking-wide uppercase">近期活動列表</h3>
                 </div>
                 <div id="activity-list" class="divide-y divide-slate-100">
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3">第三周 敘事力三 <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">MIZ2Y7</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">短影音製作及剪輯 (四技大一)</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1790695298131')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1790695298131')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1790695298131')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1790695298131')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1790695298131')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
                 </div>
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3">第二周 敘事力二 <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">GWYAS7</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">短影音製作及剪輯 (四技大一)</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1790694098722')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1790694098722')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1790694098722')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1790694098722')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1790694098722')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3">第二周 敘事力一 <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">LP30YP</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">短影音製作及剪輯 (四技大一)</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1790518960861')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1790518960861')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1790518960861')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1790518960861')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1790518960861')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3">第二周 短影音經驗調查 (四技大一) <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">ZXBBZN</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">短影音製作及剪輯 (四技大一)</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1790093422342')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1790093422342')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1790093422342')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1790093422342')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1790093422342')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3">為何選龍華科大數位行銷系? <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">FOBBB0</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">行銷管理第一周</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1789709010479')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1789709010479')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1789709010479')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1789709010479')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1789709010479')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3">第一周 短影音經驗調查 <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">SHQD63</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">短影音製作及剪輯 (國專一)</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1789698392710')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1789698392710')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1789698392710')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1789698392710')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1789698392710')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3">你的購物流程 <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">J96ZZO</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">行銷管理第一周</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1789685124713')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1789685124713')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1789685124713')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1789685124713')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1789685124713')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3">第6門課 <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">CY9T54</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">Viber Coding</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1786761643771')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1786761643771')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1786761643771')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1786761643771')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1786761643771')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3">第五堂課--實作應用程式 <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">KMH8E7</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">Viber Coding</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1786727859236')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1786727859236')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1786727859236')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1786727859236')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1786727859236')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3">第三堂: AI工具流程與Prompt (大二) <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">MCIQGU</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">Vibe Coding：AI 協作應用系統設計: 第三堂</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1785758060371')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1785758060371')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1785758060371')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1785758060371')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1785758060371')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3"> 第三堂: AI工具流程與Prompt <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">8BE552</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">Vibe Coding：AI 協作應用系統設計: 第三堂</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1785756931389')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1785756931389')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1785756931389')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1785756931389')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1785756931389')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3">第二堂: 行銷需求與系統拆解 <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">2I874V</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">Vibe Coding：AI 協作應用系統設計</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1785733598618')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1785733598618')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1785733598618')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1785733598618')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1785733598618')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-6 flex flex-col md:flex-row justify-between md:items-center hover:bg-slate-50 border-b border-slate-100 last:border-0 transition duration-300 gap-5">
-                    <div>
-                        <h4 class="font-black text-xl text-slate-800 flex items-center gap-3">第一堂: Vibe Coding應用概念 <span class="text-xs bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm border px-2.5 py-1 rounded-md font-bold tracking-wide">開放作答中</span></h4>
-                        <p class="text-sm text-slate-500 mt-2 font-medium bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200">代碼: <b class="text-blue-700 tracking-widest font-mono text-base ml-1">X31H2L</b> <span class="mx-2 text-slate-300">|</span> 課程: <span class="font-bold text-slate-600">Vibe Coding：AI 協作應用系統設計</span></p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                        <div class="flex gap-2 items-center">
-                            <button onclick="openLiveActivity('act_1785732826118')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>
-                            <button onclick="editActivity('act_1785732826118')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
-                            <button onclick="duplicateActivity('act_1785732826118')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
-                            <button onclick="requestDeleteActivity('act_1785732826118')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                        <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
-                            <button onclick="viewAnalysis('act_1785732826118')" class="bg-violet-100 text-violet-700 border border-violet-200 hover:bg-violet-200 hover:border-violet-300 px-5 py-2.5 rounded-xl text-sm transition font-black flex items-center gap-2 shadow-sm active:scale-95"><i class="fas fa-chart-bar"></i> 查看分析報表</button>
-                        </div>
-                    </div>
-                </div></div>
             </div>
         </section>
 
-        <!-- 總體看板 -->
         <section id="view-overall-dashboard" class="view-section max-w-6xl mx-auto">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-slate-200 pb-5 gap-4">
                 <div>
@@ -482,7 +261,6 @@
             <div id="overall-dashboard-content"></div>
         </section>
 
-        <!-- 系統管理後台 -->
         <section id="view-admin" class="view-section max-w-6xl mx-auto">
             <div class="flex justify-between items-center mb-8 border-b border-slate-200 pb-5">
                 <div>
@@ -502,14 +280,14 @@
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <p class="text-sm text-slate-500 font-bold uppercase tracking-wider mb-1">總註冊人數</p>
-                        <p class="text-4xl font-black text-violet-700" id="admin-stat-users">2</p>
+                        <p class="text-4xl font-black text-violet-700" id="admin-stat-users">0</p>
                     </div>
                     <div class="w-16 h-16 rounded-full bg-violet-50 text-violet-300 flex items-center justify-center text-3xl"><i class="fas fa-users"></i></div>
                 </div>
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <p class="text-sm text-slate-500 font-bold uppercase tracking-wider mb-1">活躍教師數</p>
-                        <p class="text-4xl font-black text-emerald-600" id="admin-stat-active">2</p>
+                        <p class="text-4xl font-black text-emerald-600" id="admin-stat-active">0</p>
                     </div>
                     <div class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-300 flex items-center justify-center text-3xl"><i class="fas fa-user-check"></i></div>
                 </div>
@@ -529,13 +307,12 @@
                                 <th class="px-6 py-4 font-bold text-right">操作管理</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-user-list" class="divide-y divide-slate-100"><tr class="hover:bg-slate-50 border-b border-slate-100 transition"><td class="px-6 py-4"><div class="font-black text-slate-800 text-base">未提供</div><div class="text-xs text-slate-500 font-medium">未知 - 未知</div></td><td class="px-6 py-4"><div class="text-sm font-bold text-slate-700">citypilotai@gmail.com</div><div class="text-xs text-slate-400 font-mono mt-0.5">1bl3xFF4a7Nf7vUHIO7pA6oeQkp1</div></td><td class="px-6 py-4 text-sm font-medium text-slate-600">2026/8/3</td><td class="px-6 py-4 text-xs font-black text-slate-500">教師</td><td class="px-6 py-4"><span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold border border-emerald-200">啟用中</span></td><td class="px-6 py-4 text-right"><div class="flex gap-2 justify-end"><button onclick="loadAdminTeacherActivities('1bl3xFF4a7Nf7vUHIO7pA6oeQkp1', 'citypilotai@gmail.com')" class="text-xs px-3 py-1.5 rounded-lg border bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 font-bold transition">查看活動</button><button onclick="toggleUserStatus('1bl3xFF4a7Nf7vUHIO7pA6oeQkp1', 'active')" class="text-xs px-3 py-1.5 rounded-lg border bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100 font-bold transition">停用</button><button onclick="deleteUserRecord('1bl3xFF4a7Nf7vUHIO7pA6oeQkp1')" class="text-xs px-3 py-1.5 rounded-lg border bg-red-50 border-red-200 text-red-700 hover:bg-red-100 font-bold transition">刪除</button></div></td></tr><tr class="hover:bg-slate-50 border-b border-slate-100 transition"><td class="px-6 py-4"><div class="font-black text-slate-800 text-base">未提供</div><div class="text-xs text-slate-500 font-medium">未知 - 未知</div></td><td class="px-6 py-4"><div class="text-sm font-bold text-slate-700">mindnodeai@gmail.com</div><div class="text-xs text-slate-400 font-mono mt-0.5">VQu4wikZmZPY8bu8LluCegYa9Z22</div></td><td class="px-6 py-4 text-sm font-medium text-slate-600">未知</td><td class="px-6 py-4 text-xs font-black text-violet-600"><i class="fas fa-crown"></i> 管理員</td><td class="px-6 py-4"><span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold border border-emerald-200">啟用中</span></td><td class="px-6 py-4 text-right"><span class="text-slate-400 text-xs font-black tracking-widest">SYSTEM ADMIN</span></td></tr></tbody>
+                        <tbody id="admin-user-list" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- 檢視教師活動 (管理員用) -->
         <section id="view-admin-teacher-activities" class="view-section max-w-5xl mx-auto">
             <div class="flex justify-between items-center mb-8 border-b border-slate-200 pb-5">
                 <div>
@@ -555,7 +332,6 @@
             </div>
         </section>
 
-        <!-- 建立活動 Wizard -->
         <section id="view-create-activity" class="view-section max-w-4xl mx-auto">
             <div class="glass-panel p-6 sm:p-10 rounded-3xl border border-white/80 shadow-xl relative overflow-hidden">
                 <div class="absolute top-0 right-0 -mt-10 -mr-10 text-blue-50 opacity-50 pointer-events-none"><i class="fas fa-magic text-[200px]"></i></div>
@@ -682,8 +458,7 @@
             </div>
         </section>
 
-        <!-- 獨立的編輯活動介面 -->
-        <section id="view-edit-activity" class="view-section max-w-4xl mx-auto mt-4 active">
+        <section id="view-edit-activity" class="view-section max-w-4xl mx-auto mt-4">
             <div class="glass-panel p-6 sm:p-10 rounded-3xl border-t-8 border-amber-400 shadow-xl">
                 <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-5">
                     <h2 class="text-2xl font-black text-amber-900 flex items-center gap-3"><i class="fas fa-edit bg-amber-100 p-2 rounded-lg text-amber-600"></i> 編輯活動內容</h2>
@@ -708,167 +483,171 @@
                     <i class="fas fa-list-ol text-slate-400"></i>
                     <h3 class="font-bold text-slate-700 text-sm">題目列表 (點擊白色區塊即可修改，也可為題目加入多媒體)</h3>
                 </div>
-                <div id="edit-questions-container" class="space-y-6 max-h-[55vh] overflow-y-auto pr-2 pb-4 scroll-smooth"><div class="p-6 border-2 border-slate-200 rounded-2xl bg-white mb-6 relative shadow-sm hover:border-amber-400 transition duration-300">
-                    <h4 class="font-black text-slate-700 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
-                        <span class="bg-slate-800 text-white px-3 py-1 rounded-lg text-sm shadow-md">Q1</span>
-                        <span class="text-sm font-bold bg-slate-100 text-slate-500 px-2.5 py-1 rounded-md border border-slate-200">簡答題</span>
-                    </h4>
-                    
-                    <div class="mb-2">
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">題目內容 (題幹)</label>
-                        <div class="edit-active-field w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 outline-none text-slate-800 font-bold transition text-lg" contenteditable="true" data-qidx="0" data-field="stem">請觀察所提供的影片，並寫下你認為影片中有哪些細節、氛圍或觀點是最值得被提出來討論或分享的？&nbsp; (看見細節，說清楚畫面，連結元素，解讀意義，提出問題)</div>
-                    </div>
-                    
-                    <div class="mb-4 flex gap-2">
-                        <button onclick="triggerQuestionImageUpload('edit', 0)" class="text-xs bg-white text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 font-bold transition shadow-sm flex items-center gap-1.5"><i class="fas fa-upload"></i> 更換圖/影</button>
-                        <button onclick="promptYouTubeUrl('edit', 0)" class="text-xs bg-white text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg border border-red-200 font-bold transition shadow-sm flex items-center gap-1.5"><i class="fab fa-youtube"></i> 加入 YouTube</button>
-                    </div>
-                    
-                    <div class="mt-3 relative inline-block group/img"><video src="https://firebasestorage.googleapis.com/v0/b/k19-ai-classroom-comprehension.firebasestorage.app/o/k19-media%2F1790695869126_2050%20%E7%A2%B3%E6%BD%AE%E4%B8%96%E4%BB%A3.mp4?alt=media&amp;token=e9be1da3-215f-42e7-9602-737933cfaa93" controls="" class="max-h-64 rounded-lg shadow-sm border border-slate-200 bg-black"></video><button onclick="removeQuestionMedia('edit', 0)" class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full opacity-0 group-hover/img:opacity-100 transition shadow flex items-center justify-center" title="移除多媒體"><i class="fas fa-trash"></i></button></div>
-                    
-                    
-                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5 pt-5 border-t border-slate-100">
-                        <div>
-                            <label class="block text-xs font-black text-emerald-600 uppercase tracking-wide mb-2">參考解答 (供閱卷參考)</label>
-                            <div class="edit-active-field w-full p-3 bg-emerald-50 border border-emerald-200 rounded-xl focus:ring-4 focus:ring-emerald-500/20 outline-none text-sm text-emerald-800 font-bold transition" contenteditable="true" data-qidx="0" data-field="correctAnswer">自由發揮(不計分)</div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-black text-blue-600 uppercase tracking-wide mb-2">解題說明 / 觀念解析</label>
-                            <div class="edit-active-field w-full p-3 bg-blue-50 border border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 outline-none text-sm text-blue-800 font-medium transition" contenteditable="true" data-qidx="0" data-field="explanation">本題為開放式意見回饋題，旨在引導受訪者進行圖像觀察，並分享個人獨特的洞察、感受或值得探討的議題。</div>
-                        </div>
-                    </div>
-                </div></div>
+                <div id="edit-questions-container" class="space-y-6 max-h-[55vh] overflow-y-auto pr-2 pb-4 scroll-smooth"></div>
             </div>
         </section>
 
-        <!-- 投影/活動等待畫面 -->
-        <section id="view-activity-live" class="view-section max-w-4xl mx-auto">
-            <div class="glass-panel p-10 rounded-3xl text-center relative shadow-2xl border border-white">
-                <button onclick="navigate('dashboard')" class="absolute top-6 right-6 text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fas fa-times"></i> 關閉投影</button>
-                
-                <p class="text-sm font-bold text-blue-600 tracking-widest uppercase mb-2">SCAN TO JOIN</p>
-                <h2 class="text-4xl font-black text-slate-800 mb-8" id="live-activity-name">活動名稱</h2>
-                
-                <div class="inline-block bg-gradient-to-b from-blue-50 to-white border border-blue-100 rounded-3xl p-8 shadow-lg relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-2 bg-blue-500"></div>
-                    <h3 class="font-black text-slate-600 mb-2 uppercase tracking-wide">輸入活動代碼</h3>
-                    <div id="live-activity-code" class="text-6xl tracking-[0.2em] font-black text-blue-600 mb-6 drop-shadow-sm font-mono">------</div>
-                    <div class="flex justify-center mb-2">
-                        <div id="qrcode" class="bg-white p-4 rounded-2xl border-2 border-slate-100 shadow-sm flex justify-center w-[220px] h-[220px]"></div>
-                    </div>
-                    <p class="text-slate-500 text-sm font-medium mt-4"><i class="fas fa-mobile-alt mr-1"></i> 請學生使用手機掃描 QR Code 或至首頁輸入代碼</p>
-                </div>
-                
-                <div class="mt-10 max-w-md mx-auto">
-                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm mb-6 flex items-center justify-between">
-                        <span class="font-bold text-slate-600">已成功進入作答人數</span>
-                        <div class="flex items-center gap-3"><span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span> <span id="live-response-count" class="font-black text-blue-600 text-4xl">0</span></div>
-                    </div>
-                    
-                    <button onclick="endActivityAndAnalyze()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 px-8 rounded-2xl shadow-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 text-lg">結束作答並前往分析 <i class="fas fa-chart-line"></i></button>
-                </div>
-            </div>
-        </section>
-
-        <!-- 學生作答畫面 -->
-        <section id="view-student-quiz" class="view-section max-w-3xl mx-auto mt-4">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-6 flex justify-between items-center sticky top-20 z-40 backdrop-blur-md bg-white/90">
-                <div>
-                    <h2 class="font-black text-slate-800 text-lg" id="quiz-course-title">課程</h2>
-                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wider mt-0.5" id="quiz-activity-title">活動</p>
-                </div>
-                <div class="text-right text-sm">
-                    <span class="bg-slate-100 text-slate-600 font-bold px-2.5 py-1 rounded-md text-xs border border-slate-200 mr-2" id="quiz-student-id">學號</span>
-                    <span class="font-black text-slate-800" id="quiz-student-name">姓名</span>
-                </div>
-            </div>
-            
-            <div id="quiz-questions-container" class="space-y-5"></div>
-            
-            <div class="mt-8 mb-12 pb-8">
-                <button id="btn-submit-quiz" onclick="submitQuiz()" class="w-full bg-emerald-500 hover:bg-emerald-600 transition text-white font-black py-4 rounded-2xl shadow-lg text-lg transform active:scale-95 flex justify-center items-center gap-2"><i class="fas fa-check-double"></i> 確定送出答案</button>
-            </div>
-            
-            <div id="quiz-success-msg" class="hidden mt-10 text-center p-12 bg-white rounded-3xl border border-emerald-100 shadow-xl relative overflow-hidden">
-                <div class="absolute inset-0 bg-emerald-50 opacity-50"></div>
-                <div class="relative z-10">
-                    <div class="w-24 h-24 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner"><i class="fas fa-check text-5xl"></i></div>
-                    <h2 class="text-3xl font-black text-slate-800 mb-3">作答已成功送出！</h2>
-                    <p class="text-slate-500 font-medium mb-8">請看大螢幕，等待老師展示全班分析結果。</p>
-                    <button onclick="navigateHome()" class="bg-white border-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 px-8 rounded-xl transition active:scale-95">返回首頁</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- AI 分析報告畫面 -->
-        <section id="view-analysis" class="view-section max-w-6xl mx-auto">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-slate-200 pb-5 gap-4">
-                <button onclick="goBackFromAnalysis()" class="bg-white border border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl flex items-center gap-2 hover:bg-slate-50 font-bold transition shadow-sm"><i class="fas fa-arrow-left"></i> 返回</button>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="triggerAIAnalysis(true)" id="btn-regenerate-analysis" class="hidden bg-white border border-violet-200 hover:bg-violet-50 text-violet-700 font-bold py-2 px-4 rounded-xl shadow-sm flex items-center gap-2 transition"><i class="fas fa-sync-alt"></i> 重新生成分析</button>
-                    <button onclick="downloadExcelReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl shadow-sm flex items-center gap-2 transition"><i class="fas fa-file-excel"></i> 作答明細</button>
-                    <button onclick="downloadWordReport()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl shadow-sm flex items-center gap-2 transition"><i class="fas fa-file-word"></i> 匯出專業報告</button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-                <!-- 左側側邊欄 -->
-                <div class="lg:col-span-1 space-y-6">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full flex items-start justify-end p-3"><i class="fas fa-users text-blue-200 text-xl"></i></div>
-                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4">參與概況</h3>
-                        <p class="text-5xl font-black text-slate-800" id="stat-total-responses">0</p>
-                        <p class="text-sm text-slate-500 mt-2 font-medium">總作答人數</p>
-                    </div>
-
-                    <div id="analysis-trigger-box" class="bg-gradient-to-br from-violet-600 to-fuchsia-600 p-8 rounded-3xl shadow-lg text-center relative overflow-hidden">
-                        <div class="absolute -top-10 -right-10 text-white opacity-10"><i class="fas fa-brain text-[150px]"></i></div>
-                        <div class="relative z-10">
-                            <div class="w-16 h-16 bg-white/20 rounded-2xl backdrop-blur-sm flex items-center justify-center mx-auto mb-6"><i class="fas fa-bolt text-3xl text-white"></i></div>
-                            <h3 class="text-xl font-black text-white mb-3">啟動 AI 深度診斷</h3>
-                            <p class="text-white/80 text-sm mb-6 font-medium leading-relaxed">Gemini 將綜合圖片、影片與全班作答內容，產出多模態專業洞察報告。</p>
-                            <button onclick="triggerAIAnalysis()" class="w-full bg-white text-violet-700 hover:bg-slate-50 transition font-black py-3.5 rounded-xl shadow-md active:scale-95">立即生成報告</button>
-                        </div>
-                    </div>
-
-                    <div id="analysis-loading" class="hidden bg-white p-10 rounded-3xl shadow-sm border border-slate-200 text-center">
-                        <div class="loader mx-auto mb-6"></div>
-                        <h3 class="text-lg font-black text-slate-800 mb-2">Gemini 3.8 Flash</h3>
-                        <p class="text-sm font-medium text-slate-500">正在進行多模態運算與診斷...</p>
-                    </div>
-                </div>
-
-                <!-- 右側主內容 -->
-                <div class="lg:col-span-3 bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200 min-h-[600px]">
-                    <div id="analysis-content-empty" class="h-full flex flex-col items-center justify-center text-slate-400 py-20">
-                        <i class="fas fa-chart-area text-6xl mb-6 opacity-30"></i>
-                        <p class="text-lg font-bold">點擊左側按鈕開始生成逐題分析報告</p>
-                    </div>
-
-                    <div id="analysis-content" class="hidden space-y-10">
-                        <!-- 總結區塊 -->
-                        <div class="bg-slate-50 border border-slate-200 p-8 rounded-2xl relative">
-                            <div class="absolute -left-3 top-8 w-1 h-12 bg-blue-500 rounded-r-full"></div>
-                            <h4 class="font-black text-xl mb-5 text-slate-800 flex items-center gap-2"><i class="fas fa-chalkboard-teacher text-blue-600"></i> 教學成效總結</h4>
-                            <div class="text-slate-700 ai-typography" id="ai-summary"></div>
-                        </div>
-
-                        <!-- 逐題分析 -->
-                        <div>
-                            <h4 class="font-black text-2xl mb-6 text-slate-800 pb-4 border-b border-slate-200">逐題分佈圖表與診斷</h4>
-                            <div id="ai-question-analyses" class="space-y-8"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
 
-    <!-- 全局隱藏的圖片/影片上傳 input (用於單題附圖) -->
+    <!-- 這是全新設計的深色沉浸式大螢幕投影模式！我們使用了 fixed inset-0 覆蓋全螢幕 -->
+    <section id="view-activity-live" class="view-section fixed inset-0 z-[100] bg-slate-950 overflow-y-auto w-full h-full">
+        <!-- 炫光背景效果 -->
+        <div class="fixed top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="fixed bottom-[-20%] right-[-10%] w-[40vw] h-[40vw] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div class="min-h-screen w-full flex flex-col items-center justify-center p-6 md:p-12 relative z-10">
+            <!-- 關閉按鈕 -->
+            <button onclick="navigate('dashboard')" class="absolute top-6 right-6 md:top-10 md:right-10 text-slate-400 hover:text-white bg-white/10 hover:bg-white/20 px-6 py-3 rounded-2xl text-sm font-bold transition flex items-center gap-2 backdrop-blur-md border border-white/10">
+                <i class="fas fa-times text-lg"></i> 關閉投影
+            </button>
+            
+            <div class="w-full max-w-7xl mx-auto flex flex-col items-center mt-10">
+                <!-- 標題區 -->
+                <div class="text-center mb-12 md:mb-20">
+                    <div class="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-400 font-bold text-sm mb-6 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                        <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span></span> LIVE 互動進行中
+                    </div>
+                    <h2 class="text-5xl md:text-7xl font-black text-white tracking-tight drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]" id="live-activity-name">活動名稱</h2>
+                </div>
+
+                <!-- 雙欄內容區 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 w-full items-center max-w-6xl">
+                    
+                    <!-- 左側: QR Code -->
+                    <div class="flex flex-col items-center justify-center p-10 md:p-14 bg-white/5 border border-white/10 rounded-[3rem] backdrop-blur-xl shadow-2xl relative group w-full">
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-[3rem] opacity-50 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
+                        <p class="text-blue-300 font-bold tracking-widest uppercase mb-8 text-lg"><i class="fas fa-camera text-blue-400 mr-2"></i>Scan QR Code</p>
+                        <div class="bg-white p-5 rounded-[2rem] shadow-[0_0_50px_rgba(59,130,246,0.3)] transform transition hover:scale-105 duration-300">
+                            <div id="qrcode" class="flex justify-center w-[280px] h-[280px]"></div>
+                        </div>
+                    </div>
+
+                    <!-- 右側: 代碼與控制 -->
+                    <div class="flex flex-col justify-center items-center lg:items-start text-center lg:text-left w-full">
+                        <h3 class="text-slate-400 font-bold uppercase tracking-widest text-xl mb-4">輸入活動代碼</h3>
+                        <div id="live-activity-code" class="text-7xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 font-mono tracking-[0.2em] mb-12 drop-shadow-[0_0_30px_rgba(99,102,241,0.4)]">------</div>
+                        
+                        <!-- 數據儀表板 -->
+                        <div class="w-full max-w-md bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-md mb-10 flex items-center justify-between shadow-xl">
+                            <div>
+                                <span class="block text-slate-400 font-bold text-sm uppercase tracking-wider mb-2">已連線學生人數</span>
+                                <div class="flex items-center gap-3">
+                                    <span class="relative flex h-4 w-4">
+                                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                      <span class="relative inline-flex rounded-full h-4 w-4 bg-green-500"></span>
+                                    </span>
+                                    <span class="text-green-400 font-medium text-lg uppercase tracking-wide">Connected</span>
+                                </div>
+                            </div>
+                            <span id="live-response-count" class="font-black text-white text-7xl drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">0</span>
+                        </div>
+
+                        <!-- 控制按鈕 -->
+                        <div class="flex flex-col sm:flex-row w-full max-w-md gap-4">
+                            <button onclick="clearActivityResponses()" class="sm:flex-1 bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 text-slate-300 hover:text-red-400 font-bold py-4 px-6 rounded-2xl transition duration-300 flex items-center justify-center gap-2 active:scale-95 shadow-lg">
+                                <i class="fas fa-eraser"></i> 歸零
+                            </button>
+                            <button onclick="endActivityAndAnalyze()" class="sm:flex-[2] bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-black py-4 px-6 rounded-2xl shadow-[0_0_30px_rgba(79,70,229,0.5)] hover:shadow-[0_0_50px_rgba(79,70,229,0.8)] transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                結束並分析 <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="view-student-quiz" class="view-section max-w-3xl mx-auto mt-4 p-4 sm:p-6 lg:p-8">
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-6 flex justify-between items-center sticky top-20 z-40 backdrop-blur-md bg-white/90">
+            <div>
+                <h2 class="font-black text-slate-800 text-lg" id="quiz-course-title">課程</h2>
+                <p class="text-xs font-bold text-blue-600 uppercase tracking-wider mt-0.5" id="quiz-activity-title">活動</p>
+            </div>
+            <div class="text-right text-sm">
+                <span class="bg-slate-100 text-slate-600 font-bold px-2.5 py-1 rounded-md text-xs border border-slate-200 mr-2" id="quiz-student-id">學號</span>
+                <span class="font-black text-slate-800" id="quiz-student-name">姓名</span>
+            </div>
+        </div>
+        
+        <div id="quiz-questions-container" class="space-y-5"></div>
+        
+        <div class="mt-8 mb-12 pb-8">
+            <button id="btn-submit-quiz" onclick="submitQuiz()" class="w-full bg-emerald-500 hover:bg-emerald-600 transition text-white font-black py-4 rounded-2xl shadow-lg text-lg transform active:scale-95 flex justify-center items-center gap-2"><i class="fas fa-check-double"></i> 確定送出答案</button>
+        </div>
+        
+        <div id="quiz-success-msg" class="hidden mt-10 text-center p-12 bg-white rounded-3xl border border-emerald-100 shadow-xl relative overflow-hidden">
+            <div class="absolute inset-0 bg-emerald-50 opacity-50"></div>
+            <div class="relative z-10">
+                <div class="w-24 h-24 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner"><i class="fas fa-check text-5xl"></i></div>
+                <h2 class="text-3xl font-black text-slate-800 mb-3">作答已成功送出！</h2>
+                <p class="text-slate-500 font-medium mb-8">請看大螢幕，等待老師展示全班分析結果。</p>
+                <button onclick="navigateHome()" class="bg-white border-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 px-8 rounded-xl transition active:scale-95">返回首頁</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="view-analysis" class="view-section max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-slate-200 pb-5 gap-4">
+            <button onclick="goBackFromAnalysis()" class="bg-white border border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl flex items-center gap-2 hover:bg-slate-50 font-bold transition shadow-sm"><i class="fas fa-arrow-left"></i> 返回</button>
+            <div class="flex flex-wrap gap-2">
+                <button onclick="triggerAIAnalysis(true)" id="btn-regenerate-analysis" class="hidden bg-white border border-violet-200 hover:bg-violet-50 text-violet-700 font-bold py-2 px-4 rounded-xl shadow-sm flex items-center gap-2 transition"><i class="fas fa-sync-alt"></i> 重新生成分析</button>
+                <button onclick="downloadExcelReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl shadow-sm flex items-center gap-2 transition"><i class="fas fa-file-excel"></i> 作答明細</button>
+                <button onclick="downloadWordReport()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl shadow-sm flex items-center gap-2 transition"><i class="fas fa-file-word"></i> 匯出專業報告</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full flex items-start justify-end p-3"><i class="fas fa-users text-blue-200 text-xl"></i></div>
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4">參與概況</h3>
+                    <p class="text-5xl font-black text-slate-800" id="stat-total-responses">0</p>
+                    <p class="text-sm text-slate-500 mt-2 font-medium">總作答人數</p>
+                </div>
+
+                <div id="analysis-trigger-box" class="bg-gradient-to-br from-violet-600 to-fuchsia-600 p-8 rounded-3xl shadow-lg text-center relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 text-white opacity-10"><i class="fas fa-brain text-[150px]"></i></div>
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 bg-white/20 rounded-2xl backdrop-blur-sm flex items-center justify-center mx-auto mb-6"><i class="fas fa-bolt text-3xl text-white"></i></div>
+                        <h3 class="text-xl font-black text-white mb-3">啟動 AI 深度診斷</h3>
+                        <p class="text-white/80 text-sm mb-6 font-medium leading-relaxed">Gemini 將綜合圖片、影片與全班作答內容，產出多模態專業洞察報告。</p>
+                        <button onclick="triggerAIAnalysis()" class="w-full bg-white text-violet-700 hover:bg-slate-50 transition font-black py-3.5 rounded-xl shadow-md active:scale-95">立即生成報告</button>
+                    </div>
+                </div>
+
+                <div id="analysis-loading" class="hidden bg-white p-10 rounded-3xl shadow-sm border border-slate-200 text-center">
+                    <div class="loader mx-auto mb-6"></div>
+                    <h3 class="text-lg font-black text-slate-800 mb-2">Gemini 3.8 Flash</h3>
+                    <p class="text-sm font-medium text-slate-500">正在進行多模態運算與診斷...</p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3 bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200 min-h-[600px]">
+                <div id="analysis-content-empty" class="h-full flex flex-col items-center justify-center text-slate-400 py-20">
+                    <i class="fas fa-chart-area text-6xl mb-6 opacity-30"></i>
+                    <p class="text-lg font-bold">點擊左側按鈕開始生成逐題分析報告</p>
+                </div>
+
+                <div id="analysis-content" class="hidden space-y-10">
+                    <div class="bg-slate-50 border border-slate-200 p-8 rounded-2xl relative">
+                        <div class="absolute -left-3 top-8 w-1 h-12 bg-blue-500 rounded-r-full"></div>
+                        <h4 class="font-black text-xl mb-5 text-slate-800 flex items-center gap-2"><i class="fas fa-chalkboard-teacher text-blue-600"></i> 教學成效總結</h4>
+                        <div class="text-slate-700 ai-typography" id="ai-summary"></div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-black text-2xl mb-6 text-slate-800 pb-4 border-b border-slate-200">逐題分佈圖表與診斷</h4>
+                        <div id="ai-question-analyses" class="space-y-8"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <input type="file" id="q-image-upload-input" class="hidden" accept="image/*, video/mp4, video/webm, video/quicktime" onchange="handleQuestionImageChange(event)">
 
     <!-- Tony Modal -->
-    <div id="modal-tony" class="fixed inset-0 bg-slate-900/60 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+    <div id="modal-tony" class="fixed inset-0 bg-slate-900/60 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
         <div class="bg-white rounded-3xl max-w-4xl w-full shadow-2xl relative overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
             <button onclick="closeTonyModal()" class="absolute top-4 right-4 bg-white/90 rounded-full w-10 h-10 flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition z-10 shadow-sm"><i class="fas fa-times text-lg"></i></button>
             <div class="md:w-2/5 relative min-h-[300px] md:min-h-full shrink-0 bg-slate-100">
@@ -910,8 +689,8 @@
         </div>
     </div>
     
-    <!-- Confirm Delete Modal -->
-    <div id="modal-confirm" class="fixed inset-0 bg-slate-900/60 z-[105] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <!-- Confirm Modal -->
+    <div id="modal-confirm" class="fixed inset-0 bg-slate-900/60 z-[115] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-3xl max-w-sm w-full p-8 shadow-2xl text-center">
             <div class="w-20 h-20 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-5"><i class="fas fa-exclamation-triangle text-3xl"></i></div>
             <h3 class="text-2xl font-black text-slate-800 mb-2" id="confirm-title">確認操作</h3>
@@ -923,8 +702,8 @@
         </div>
     </div>
 
-    <!-- Prompt Modal (YouTube Input included) -->
-    <div id="modal-prompt" class="fixed inset-0 bg-slate-900/60 z-[106] flex items-center justify-center p-4 backdrop-blur-sm hidden">
+    <!-- Prompt Modal -->
+    <div id="modal-prompt" class="fixed inset-0 bg-slate-900/60 z-[116] flex items-center justify-center p-4 backdrop-blur-sm hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-black text-slate-800" id="prompt-title">加入 YouTube 影片</h3>
@@ -937,12 +716,6 @@
             </div>
         </div>
     </div>
-
-    <footer class="bg-white border-t border-slate-200 mt-auto py-6">
-        <div class="text-center text-sm text-slate-400 font-medium">© 2026 TONY STUDIO. AI 教學科技解決方案. All Rights Reserved.</div>
-    </footer>
-    
-    <div id="toast-container"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -974,7 +747,7 @@
 
         window.qCharts = []; 
 
-        function showToast(msg, type='info') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':(type==='error'?'fa-exclamation-circle':(type==='warning'?'fa-exclamation-triangle':'fa-info-circle'))} text-lg"></i><span>${msg}</span>`; c.appendChild(t); setTimeout(() => t.remove(), 4000); }
+        function showToast(msg, type='info') { let c = document.getElementById('toast-container'); if(!c){ c = document.createElement('div'); c.id = 'toast-container'; document.body.appendChild(c); } const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':(type==='error'?'fa-exclamation-circle':(type==='warning'?'fa-exclamation-triangle':'fa-info-circle'))} text-lg"></i><span>${msg}</span>`; c.appendChild(t); setTimeout(() => t.remove(), 4000); }
         function generateId() { return Math.random().toString(36).substring(2,8).toUpperCase(); }
         
         function extractJSON(text) {
@@ -988,9 +761,6 @@
             }
         }
 
-        /*=============================================
-         * 多模態：圖片、影片與 YouTube 引擎
-         *=============================================*/
         let currentImageUploadCtx = null;
         
         function compressImage(file, maxWidth = 600) {
@@ -1027,21 +797,14 @@
             const qIdx = currentImageUploadCtx.qIdx;
 
             if (file.type.startsWith('video/')) {
-                // 升級：直接上傳至 Firebase Storage，突破 1MB 限制！
                 showToast('正在上傳影片至雲端，請稍候...', 'info');
                 try {
-                    // 建立一個不重複的雲端路徑
                     const storageRef = ref(storage, `k19-media/${Date.now()}_${file.name}`);
-                    
-                    // 【修正重點】：強制作為影片格式上傳，避免 Firebase 誤判為不明檔案
                     const metadata = { contentType: file.type || 'video/mp4' };
-                    
-                    // 執行上傳
                     await uploadBytes(storageRef, file, metadata);
-                    // 取得公開下載網址
                     const downloadURL = await getDownloadURL(storageRef);
                     
-                    targetQuestions[qIdx].video = downloadURL; // 存入雲端網址而非 Base64
+                    targetQuestions[qIdx].video = downloadURL; 
                     delete targetQuestions[qIdx].image; 
                     delete targetQuestions[qIdx].youtube;
                     
@@ -1089,7 +852,6 @@
             }
         }
 
-        // 輔助函數：渲染編輯區/草稿區的多媒體預覽 HTML
         function getMediaPreviewHtml(q, mode, qIdx) {
             let mediaHtml = '';
             let removeBtn = `<button onclick="removeQuestionMedia('${mode}', ${qIdx})" class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full opacity-0 group-hover/img:opacity-100 transition shadow flex items-center justify-center" title="移除多媒體"><i class="fas fa-trash"></i></button>`;
@@ -1115,7 +877,6 @@
             });
         }
 
-        // UI 互動函數註冊
         function openTonyModal() { document.getElementById('modal-tony').classList.remove('hidden'); setTimeout(()=>document.getElementById('modal-tony').style.opacity=1,10); }
         function closeTonyModal() { document.getElementById('modal-tony').classList.add('hidden'); }
         function toggleVisibility(inputId, iconId) { const i=document.getElementById(inputId), ic=document.getElementById(iconId); if(i.type==="password"){i.type="text";ic.classList.replace("fa-eye","fa-eye-slash");}else{i.type="password";ic.classList.replace("fa-eye-slash","fa-eye");} }
@@ -1158,7 +919,7 @@
             else navigate(currentState.apiKey ? 'auth' : 'api-key');
         }
 
-        Object.assign(window, { navigate, navigateHome, saveApiKey, handleAuthAction, toggleAuthMode, handleLogout, openTonyModal, closeTonyModal, toggleVisibility, toggleCustomCount, nextStep, prevStep, handleFileUpload, generateAIQuestions, publishActivity, studentJoinActivity, submitQuiz, endActivityAndAnalyze, triggerAIAnalysis, downloadWordReport, downloadExcelReport, openLiveActivity, viewAnalysis, goBackFromAnalysis, loadAdminDashboard, toggleUserStatus, deleteUserRecord, requestDeleteActivity, closeConfirmModal, executeConfirmAction, showPromptModal, closePromptModal, executePromptAction, toggleCreateMode, loadOverallDashboard, loadAdminTeacherActivities, downloadOverallWordReport, duplicateActivity, editActivity, saveEditedActivity, triggerQuestionImageUpload, handleQuestionImageChange, removeQuestionMedia, promptYouTubeUrl });
+        Object.assign(window, { navigate, navigateHome, saveApiKey, handleAuthAction, toggleAuthMode, handleLogout, openTonyModal, closeTonyModal, toggleVisibility, toggleCustomCount, nextStep, prevStep, handleFileUpload, generateAIQuestions, publishActivity, studentJoinActivity, submitQuiz, endActivityAndAnalyze, triggerAIAnalysis, downloadWordReport, downloadExcelReport, openLiveActivity, viewAnalysis, goBackFromAnalysis, loadAdminDashboard, toggleUserStatus, deleteUserRecord, requestDeleteActivity, closeConfirmModal, executeConfirmAction, showPromptModal, closePromptModal, executePromptAction, toggleCreateMode, loadOverallDashboard, loadAdminTeacherActivities, downloadOverallWordReport, duplicateActivity, editActivity, saveEditedActivity, triggerQuestionImageUpload, handleQuestionImageChange, removeQuestionMedia, promptYouTubeUrl, clearActivityResponses, clearActivityResponsesFromDashboard });
 
         function initApp() {
             currentState.apiKey = localStorage.getItem('k19_api_key') || sessionStorage.getItem('k19_api_key') || '';
@@ -1254,9 +1015,29 @@
             });
         }
 
-        // ============================================
-        // 渲染草稿區與編輯區的共用邏輯 (整合多媒體)
-        // ============================================
+        function clearActivityResponsesFromDashboard(id) {
+            const act = currentState.activities.find(a => a.id === id); if(!act) return;
+            showConfirmModal('確定要將數據歸零嗎？', `這將會清空「${act.activityName}」目前所有的測試作答紀錄，此操作不可還原。`, async () => {
+                showToast('正在清除數據...', 'info');
+                try {
+                    const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses'));
+                    if(snap.empty) { showToast('目前沒有任何作答紀錄，無需歸零', 'info'); return; }
+                    const deletePromises = [];
+                    snap.forEach(docSnap => { deletePromises.push(deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses', docSnap.id))); });
+                    await Promise.all(deletePromises);
+                    
+                    if (act.analysis) {
+                        await updateDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), { analysis: null });
+                        act.analysis = null;
+                    }
+                    showToast('測試數據已成功歸零！', 'success');
+                    loadDashboard();
+                } catch (error) {
+                    console.error(error); showToast('清除失敗，請檢查網路連線', 'error');
+                }
+            });
+        }
+
         function renderDraftQuestions() {
             const scenario = document.getElementById('create-scenario').value;
             document.getElementById('draft-questions-container').innerHTML = currentState.draftQuestions.map((q,i) => {
@@ -1488,6 +1269,7 @@
                             ${act.status==='open' ? `<button onclick="openLiveActivity('${act.id}')" class="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5"><i class="fas fa-desktop"></i> 管理課堂</button>` : ''}
                             <button onclick="editActivity('${act.id}')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-amber-400 hover:text-amber-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="編輯題目"><i class="fas fa-pencil-alt"></i></button>
                             <button onclick="duplicateActivity('${act.id}')" class="bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="複製一份"><i class="fas fa-copy"></i></button>
+                            <button onclick="clearActivityResponsesFromDashboard('${act.id}')" class="bg-white text-rose-500 border-2 border-slate-200 hover:border-rose-400 hover:bg-rose-50 px-4 py-2.5 rounded-xl text-sm transition font-bold flex items-center gap-1.5 shadow-sm active:scale-95" title="清除測試數據 (歸零)"><i class="fas fa-eraser"></i></button>
                             <button onclick="requestDeleteActivity('${act.id}')" class="bg-white text-slate-400 border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95" title="刪除活動"><i class="fas fa-trash-alt"></i></button>
                         </div>
                         <div class="flex gap-2 items-center sm:border-l sm:border-slate-200 sm:pl-4">
@@ -1574,7 +1356,18 @@
         function openLiveActivity(id) {
             const act = currentState.activities.find(a=>a.id===id); if(!act) return; currentState.currentActivity = act;
             document.getElementById('live-activity-name').innerText = act.activityName; document.getElementById('live-activity-code').innerText = act.code;
-            document.getElementById('qrcode').innerHTML = ''; new QRCode(document.getElementById('qrcode'), {text: `${window.location.origin}${window.location.pathname}?code=${act.code}`, width:220, height:220, colorDark: "#1e293b", colorLight: "#ffffff", correctLevel : QRCode.CorrectLevel.H});
+            document.getElementById('qrcode').innerHTML = ''; 
+            
+            // Generate QR Code with appropriate dark styling for the new immersive mode
+            new QRCode(document.getElementById('qrcode'), {
+                text: `${window.location.origin}${window.location.pathname}?code=${act.code}`, 
+                width: 280, 
+                height: 280, 
+                colorDark: "#000000", 
+                colorLight: "#ffffff", 
+                correctLevel : QRCode.CorrectLevel.H
+            });
+            
             navigate('activity-live');
             if(currentState.unsubscribeLive) { currentState.unsubscribeLive(); currentState.unsubscribeLive = null; }
             try { currentState.unsubscribeLive = onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses'), { next: (snap) => { document.getElementById('live-response-count').innerText = snap.size; currentState.responses = []; snap.forEach(d=>currentState.responses.push(d.data())); } }); } catch(e) {}
@@ -1638,6 +1431,36 @@
         }
 
         function endActivityAndAnalyze() { if(currentState.unsubscribeLive) { currentState.unsubscribeLive(); currentState.unsubscribeLive = null; } viewAnalysis(currentState.currentActivity.id); }
+
+        function clearActivityResponses() {
+            const act = currentState.currentActivity;
+            if (!act) return;
+            if (currentState.responses.length === 0) return showToast('目前已經是 0 人，無需歸零', 'info');
+            
+            showConfirmModal('確定要將數據歸零嗎？', '這將會清空目前為止所有的作答紀錄（包含測試數據），此操作不可還原。', async () => {
+                showToast('正在清除數據...', 'info');
+                try {
+                    const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses'));
+                    const deletePromises = [];
+                    snap.forEach(docSnap => {
+                        deletePromises.push(deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses', docSnap.id)));
+                    });
+                    await Promise.all(deletePromises);
+                    
+                    if (act.analysis) {
+                        await updateDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), { analysis: null });
+                        act.analysis = null;
+                        const idx = currentState.activities.findIndex(a => a.id === act.id);
+                        if(idx !== -1) currentState.activities[idx].analysis = null;
+                    }
+                    
+                    showToast('測試數據已成功歸零！', 'success');
+                } catch (error) {
+                    console.error(error);
+                    showToast('清除失敗，請檢查網路連線', 'error');
+                }
+            });
+        }
 
         async function viewAnalysis(id) {
             const act = currentState.activities.find(a=>a.id===id); if(!act) return; currentState.currentActivity = act;
@@ -1763,7 +1586,6 @@
             const userPrompt = `活動名稱：${act.courseName} - ${act.activityName}\n【班級總人數】：${tot} 人\n【系統精算作答數據】\n${JSON.stringify(exactStatsData, null, 2)}`;
             const parts = [{text: userPrompt}];
             
-            // 將附圖/影片資訊掛載進入 parts，讓 Gemini 了解多媒體上下文！
             act.questions.forEach((q, i) => {
                 if(q.image) {
                     const match = q.image.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
@@ -1874,5 +1696,5 @@
 
         window.addEventListener('DOMContentLoaded', () => { initApp(); });
     </script>
-
-</body></html>
+</body>
+</html>
