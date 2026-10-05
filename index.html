@@ -2,7 +2,6 @@
 <html lang="zh-TW" data-immersive-translate-page-theme="light">
 <head>
     <meta charset="UTF-8">
-    <!-- 鎖定手機端縮放與彈跳效應，營造 Native App 般穩定的操作體驗 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AI 課堂互動與理解分析 Web App</title>
     
@@ -24,7 +23,7 @@
         
         html, body {
             overflow-x: hidden;
-            overscroll-behavior-y: none; /* 禁用 iOS 橡皮筋回彈效應 */
+            overscroll-behavior-y: none; 
             width: 100%;
             position: relative;
         }
@@ -43,15 +42,6 @@
         .view-section { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .view-section.active { display: flex; flex-direction: column; flex-grow: 1; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* 玻璃擬物化 (Glassmorphism) */
-        .glass-panel { 
-            background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(12px); 
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.6); 
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); 
-        }
         
         /* 捲軸美化 */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -99,7 +89,9 @@
     </style>
 </head>
 <body>
-    <nav class="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200 sticky top-0 z-50 shrink-0">
+    <div id="toast-container"></div>
+    
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50 shrink-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-3 cursor-pointer group" onclick="navigateHome()">
@@ -126,7 +118,7 @@
         
         <!-- API Key 設定 -->
         <section id="view-api-key" class="view-section max-w-xl mx-auto mt-10 active w-full">
-            <div class="glass-panel p-8 rounded-2xl">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
                 <div class="text-center mb-8">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600 mb-4 shadow-sm transform -rotate-6"><i class="fas fa-key text-2xl transform rotate-6"></i></div>
                     <h2 class="text-3xl font-black text-slate-800 tracking-tight">AI 課堂互動系統</h2>
@@ -158,7 +150,7 @@
 
         <!-- 教師登入 -->
         <section id="view-auth" class="view-section max-w-md mx-auto mt-10 w-full">
-            <div class="glass-panel p-8 rounded-2xl">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
                 <div class="text-center mb-6">
                     <h2 class="text-2xl font-black text-slate-800 tracking-tight" id="auth-title">教師登入</h2>
                     <p class="text-sm text-slate-500 mt-2">管理您的課堂活動與 AI 分析報告</p>
@@ -188,7 +180,7 @@
 
         <!-- 學生加入 -->
         <section id="view-student-entry" class="view-section max-w-md mx-auto mt-10 w-full">
-             <div class="glass-panel p-8 rounded-2xl text-center">
+             <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center">
                 <div class="w-20 h-20 mx-auto bg-gradient-to-tr from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg mb-6 transform rotate-3">
                     <i class="fas fa-qrcode text-4xl text-white transform -rotate-3"></i>
                 </div>
@@ -339,8 +331,7 @@
 
         <!-- 建立新活動 Wizard -->
         <section id="view-create-activity" class="view-section max-w-4xl mx-auto w-full">
-            <div class="glass-panel p-6 sm:p-10 rounded-3xl border border-white/80 shadow-xl relative overflow-hidden">
-                <div class="absolute top-0 right-0 -mt-10 -mr-10 text-blue-50 opacity-50 pointer-events-none"><i class="fas fa-magic text-[200px]"></i></div>
+            <div class="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
                 
                 <div class="flex justify-between items-center mb-8 relative z-10">
                     <div>
@@ -450,7 +441,7 @@
                     </div>
                     <div id="draft-questions-container" class="space-y-5 max-h-[50vh] overflow-y-auto pr-2 pb-4 scroll-smooth"></div>
                     
-                    <div class="mt-6 border-t border-slate-200 pt-5 bg-white/80 p-4 rounded-xl -mx-4 -mb-4 px-4 sm:mx-0 sm:mb-0">
+                    <div class="mt-6 border-t border-slate-200 pt-5 bg-white p-4 rounded-xl -mx-4 -mb-4 px-4 sm:mx-0 sm:mb-0">
                         <label class="flex items-center text-sm font-bold bg-emerald-50 p-4 rounded-xl border border-emerald-200 cursor-pointer mb-5 hover:bg-emerald-100 transition shadow-inner">
                             <input type="checkbox" id="confirm-review-check" class="mr-3 w-5 h-5 rounded border-emerald-400 text-emerald-600 focus:ring-emerald-500"> 
                             <span class="text-emerald-800">我已完成檢查，確認題目無誤。</span>
@@ -466,7 +457,7 @@
 
         <!-- 編輯活動內容 -->
         <section id="view-edit-activity" class="view-section max-w-4xl mx-auto mt-4 w-full">
-            <div class="glass-panel p-6 sm:p-10 rounded-3xl border-t-8 border-amber-400 shadow-xl">
+            <div class="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
                 <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-5">
                     <h2 class="text-2xl font-black text-amber-900 flex items-center gap-3"><i class="fas fa-edit bg-amber-100 p-2 rounded-lg text-amber-600"></i> 編輯活動內容</h2>
                     <div class="flex gap-3">
@@ -604,7 +595,6 @@
                     </div>
 
                     <div id="analysis-trigger-box" class="bg-gradient-to-br from-violet-600 to-fuchsia-600 p-8 rounded-3xl shadow-lg text-center relative overflow-hidden">
-                        <div class="absolute -top-10 -right-10 text-white opacity-10"><i class="fas fa-brain text-[150px]"></i></div>
                         <div class="relative z-10">
                             <div class="w-16 h-16 bg-white/20 rounded-2xl backdrop-blur-sm flex items-center justify-center mx-auto mb-6"><i class="fas fa-bolt text-3xl text-white"></i></div>
                             <h3 class="text-xl font-black text-white mb-3">啟動 AI 深度診斷</h3>
@@ -758,7 +748,6 @@
 
         window.qCharts = []; 
 
-        /* 自我修復的 Toast 通知系統 (確保容器存在) */
         function showToast(msg, type='info') { 
             let c = document.getElementById('toast-container'); 
             if(!c){ 
@@ -775,38 +764,26 @@
 
         function generateId() { return Math.random().toString(36).substring(2,8).toUpperCase(); }
         
-        /**
-         * 企業級 JSON 容錯解析引擎 (Robust JSON Parser)
-         * 自動偵測、萃取與清理 Markdown 殘留物，防範 AI 幻覺輸出
-         */
         function extractJSON(text) {
             try {
-                // 清理可能存在的 Markdown code block 標記
                 let cleanText = text.replace(/```(?:json)?\n?/gi, '').replace(/```/g, '').trim();
-                
-                // 尋找 JSON 陣列或物件的邊界
                 const firstBrace = cleanText.indexOf('{');
                 const lastBrace = cleanText.lastIndexOf('}');
                 const firstBracket = cleanText.indexOf('[');
                 const lastBracket = cleanText.lastIndexOf(']');
 
-                let startIdx = -1;
-                let endIdx = -1;
+                let startIdx = -1; let endIdx = -1;
 
                 if (firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) {
-                    startIdx = firstBrace;
-                    endIdx = lastBrace;
+                    startIdx = firstBrace; endIdx = lastBrace;
                 } else if (firstBracket !== -1) {
-                    startIdx = firstBracket;
-                    endIdx = lastBracket;
+                    startIdx = firstBracket; endIdx = lastBracket;
                 }
 
                 if (startIdx !== -1 && endIdx !== -1 && endIdx >= startIdx) {
                     const jsonString = cleanText.substring(startIdx, endIdx + 1);
                     return JSON.parse(jsonString);
                 }
-
-                // Fallback attempt
                 return JSON.parse(cleanText);
             } catch(e) {
                 console.error("JSON 萃取與解析失敗 (自我修復失敗):", e, "\n原始輸出:", text);
@@ -962,7 +939,6 @@
         function navigate(viewId) {
             if(currentState.unsubscribeLive) { currentState.unsubscribeLive(); currentState.unsubscribeLive = null; }
             
-            // 銷毀可能存在的 Chart 實例避免記憶體洩漏
             if(window.qCharts && window.qCharts.length > 0) { 
                 window.qCharts.forEach(c => { if(c && typeof c.destroy === 'function') c.destroy(); }); 
                 window.qCharts = []; 
@@ -989,8 +965,10 @@
             deleteUserRecord, requestDeleteActivity, closeConfirmModal, executeConfirmAction, showPromptModal, 
             closePromptModal, executePromptAction, toggleCreateMode, loadOverallDashboard, 
             loadAdminTeacherActivities, downloadOverallWordReport, duplicateActivity, editActivity, 
-            saveEditedActivity, triggerQuestionImageUpload, handleQuestionImageChange, removeQuestionMedia, 
-            promptYouTubeUrl, clearActivityResponses, clearActivityResponsesFromDashboard 
+            saveEditedActivity,
+            promptYouTubeUrl, clearActivityResponses, clearActivityResponsesFromDashboard,
+            regenerateSingleQuestion, removeUploadedFile,
+            triggerQuestionImageUpload, handleQuestionImageChange, removeQuestionMedia
         });
 
         function initApp() {
@@ -1140,6 +1118,7 @@
                     <div class="mt-2 flex gap-2">
                         <button onclick="triggerQuestionImageUpload('draft', ${i})" class="text-xs bg-white text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 font-bold transition shadow-sm flex items-center gap-1.5"><i class="fas fa-upload"></i> ${q.image || q.video || q.youtube ? '更換圖/影' : '上傳圖/影'}</button>
                         <button onclick="promptYouTubeUrl('draft', ${i})" class="text-xs bg-white text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg border border-red-200 font-bold transition shadow-sm flex items-center gap-1.5"><i class="fab fa-youtube"></i> 加入 YouTube</button>
+                        <button id="btn-regen-draft-${i}" onclick="regenerateSingleQuestion('draft', ${i})" class="text-xs bg-white text-violet-600 hover:bg-violet-50 px-3 py-1.5 rounded-lg border border-violet-200 font-bold transition shadow-sm flex items-center gap-1.5"><i class="fas fa-sync-alt"></i> AI 換題</button>
                     </div>
                     
                     ${mediaHtml}
@@ -1195,6 +1174,7 @@
                     <div class="mb-4 flex gap-2">
                         <button onclick="triggerQuestionImageUpload('edit', ${i})" class="text-xs bg-white text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 font-bold transition shadow-sm flex items-center gap-1.5"><i class="fas fa-upload"></i> ${q.image || q.video || q.youtube ? '更換圖/影' : '上傳圖/影'}</button>
                         <button onclick="promptYouTubeUrl('edit', ${i})" class="text-xs bg-white text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg border border-red-200 font-bold transition shadow-sm flex items-center gap-1.5"><i class="fab fa-youtube"></i> 加入 YouTube</button>
+                        <button id="btn-regen-edit-${i}" onclick="regenerateSingleQuestion('edit', ${i})" class="text-xs bg-white text-violet-600 hover:bg-violet-50 px-3 py-1.5 rounded-lg border border-violet-200 font-bold transition shadow-sm flex items-center gap-1.5"><i class="fas fa-sync-alt"></i> AI 換題</button>
                     </div>
                     
                     ${mediaHtml}
@@ -1229,15 +1209,28 @@
             
             flushEditsToState(true);
 
+            // 【防呆加固】強制清洗資料：透過 JSON 轉換，洗掉所有可能讓 Firebase 當機的 undefined 屬性
+            const cleanQuestions = JSON.parse(JSON.stringify(act.questions));
+
             try {
-                await updateDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), { courseName: act.courseName, activityName: act.activityName, questions: act.questions });
-                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code), { courseName: act.courseName, activityName: act.activityName, questions: act.questions });
+                // 【強制覆寫】將 updateDoc 替換為最強大的 setDoc 搭配 { merge: true }
+                await setDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), { courseName: act.courseName, activityName: act.activityName, questions: cleanQuestions }, { merge: true });
+                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code), { courseName: act.courseName, activityName: act.activityName, questions: cleanQuestions }, { merge: true });
+                
                 showToast('活動修改已成功儲存', 'success');
+                
                 const idx = currentState.activities.findIndex(a => a.id === act.id);
                 if(idx !== -1) currentState.activities[idx] = act;
-                if(act.analysis) { await updateDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), { analysis: null }); act.analysis = null; }
+                
+                if(act.analysis) { 
+                    await setDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), { analysis: null }, { merge: true }); 
+                    act.analysis = null; 
+                }
                 loadDashboard(); navigate('dashboard');
-            } catch(e) { showToast('修改失敗，請確認網路連線', 'error'); }
+            } catch(e) { 
+                console.error("儲存失敗詳情:", e);
+                showToast('修改失敗，請確認網路或資料庫權限', 'error'); 
+            }
         }
 
         function nextStep(s) { document.querySelectorAll('.wizard-step').forEach(e=>e.classList.add('hidden')); document.getElementById(`wizard-step-${s}`).classList.remove('hidden'); }
@@ -1258,7 +1251,96 @@
                 } catch(err){}
             }
         }
-        function renderFiles() { document.getElementById('file-list').innerHTML = currentState.uploadedFiles.map(f => `<div class="px-3 py-2 border border-blue-200 rounded-lg bg-white text-sm font-medium text-slate-700 truncate shadow-sm"><i class="fas fa-file-alt text-blue-500 mr-2"></i>${f.name}</div>`).join(''); }
+
+        function renderFiles() { 
+            document.getElementById('file-list').innerHTML = currentState.uploadedFiles.map((f, i) => 
+                `<div class="px-3 py-2 border border-blue-200 rounded-lg bg-white text-sm font-medium text-slate-700 flex justify-between items-center shadow-sm">
+                    <div class="truncate"><i class="fas fa-file-alt text-blue-500 mr-2"></i>${f.name}</div>
+                    <button onclick="removeUploadedFile(${i})" class="text-slate-400 hover:text-red-500 transition ml-2 px-2" title="刪除檔案"><i class="fas fa-times text-lg"></i></button>
+                </div>`
+            ).join(''); 
+        }
+
+        function removeUploadedFile(index) {
+            currentState.uploadedFiles.splice(index, 1);
+            renderFiles();
+            showToast('檔案已移除', 'success');
+        }
+
+        async function regenerateSingleQuestion(mode, qIdx) {
+            if(!currentState.apiKey) return showToast('缺少 API Key', 'error');
+            const targetQuestions = mode === 'edit' ? currentState.editingActivity.questions : currentState.draftQuestions;
+            const q = targetQuestions[qIdx];
+            if(!q) return;
+
+            const btn = document.getElementById(`btn-regen-${mode}-${qIdx}`);
+            const originalHtml = btn ? btn.innerHTML : '<i class="fas fa-sync-alt"></i> AI 換題';
+            if(btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 換題中...'; btn.disabled = true; }
+
+            let courseName = mode === 'edit' ? document.getElementById('edit-course-name').value : document.getElementById('create-course-name').value;
+            let activityName = mode === 'edit' ? document.getElementById('edit-activity-name').value : document.getElementById('create-activity-name').value;
+            let contextInfo = `【課程名稱】：${courseName || '未指定'}\n【單元主題】：${activityName || '未指定'}\n`;
+
+            const text = document.getElementById('create-material') ? document.getElementById('create-material').value : '';
+            let fileText = currentState.uploadedFiles.filter(f=>f.isText).map(f=>f.data).join('\n');
+            if (text.trim() || fileText.trim()) {
+                contextInfo += `\n【上傳的參考教材內容】\n${text}\n${fileText}\n`;
+            }
+
+            let otherStems = targetQuestions.filter((_, idx) => idx !== qIdx).map(tq => tq.stem).join('\n- ');
+            if (otherStems) {
+                contextInfo += `\n【同單元已有的題目 (出題請務必避開這些考點)】\n- ${otherStems}\n`;
+            }
+
+            const diff = document.getElementById('create-difficulty') ? document.getElementById('create-difficulty').value : '中等 (情境應用、邏輯分析)';
+            let typeInstruction = q.type === 'short_answer' ? '簡答題' : '單選題';
+
+            const systemInstruction = `你是一位「頂尖的高教教學顧問與出題專家」。僅允許輸出純 JSON 字串！絕對不可以使用 markdown \`\`\`json 標籤。
+{
+  "question": {
+    "id": "隨機字串",
+    "type": "${q.type}",
+    "stem": "題幹...",
+    "options": ["A", "B", "C", "D"],
+    "correctAnswer": "A",
+    "explanation": "解析...",
+    "difficulty": "${diff}"
+  }
+}`;
+            const prompt = `請根據以下【課程主題與教材內容】，為原本的題目（原題：${q.stem}）進行「重新換題」。
+⚠️ 換題嚴格要求：
+1. 必須嚴格扣緊【課程名稱】、【單元主題】與【上傳的參考教材內容】，絕對不可無中生有或隨機亂出跨領域題目！
+2. 考點必須與「原題」及「同單元已有的題目」完全不同，但依然緊密符合該單元的教材範圍。
+3. 題目類型必須是：【${typeInstruction}】，認知難度為：【${diff}】。
+
+${contextInfo}`;
+
+            let parts = [{text: prompt}];
+            if (mode === 'draft') {
+                currentState.uploadedFiles.filter(f=>!f.isText).forEach(f=> parts.push({inlineData: {mimeType: f.mimeType, data: f.data}}));
+            }
+
+            try {
+                const req = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${currentState.apiKey}`, {
+                    method: 'POST', headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ contents: [{role: "user", parts}], systemInstruction: {parts: [{text: systemInstruction}]}, generationConfig: {responseMimeType: "application/json"} })
+                });
+                const res = await req.json(); if(res.error) throw new Error(res.error.message);
+                const parsedData = extractJSON(res.candidates[0].content.parts[0].text);
+                if (parsedData && (parsedData.question || parsedData.questions)) {
+                     let newQ = parsedData.question || parsedData.questions[0]; 
+                     newQ.id = 'gen_' + Date.now() + '_' + qIdx;
+                     newQ.image = q.image; newQ.youtube = q.youtube; newQ.video = q.video;
+                     targetQuestions[qIdx] = newQ; 
+                     if (mode === 'edit') renderEditQuestions(); else renderDraftQuestions();
+                     showToast('換題成功，已根據教材生成新題目！', 'success');
+                } else throw new Error('格式錯誤');
+            } catch(e) { 
+                console.error(e); 
+                showToast('換題失敗，請稍後重試', 'error'); 
+                if(btn) { btn.innerHTML = originalHtml; btn.disabled = false; }
+            }
+        }
 
         async function generateAIQuestions() {
             if(!currentState.apiKey) return showToast('缺少 API Key', 'error');
@@ -1276,7 +1358,6 @@
             let typeDesc = qType === 'single_choice' ? '單選題' : (qType === 'short_answer' ? '簡答題' : '綜合題 (單選題與簡答題混合)');
             let exactTypeStr = qType === 'mixed' ? 'single_choice 或 short_answer' : qType;
             
-            // 優化 System Prompt：加入 Few-Shot 範例與純 JSON 強制要求
             const systemInstruction = `你是一位「頂尖的高教數據分析師與資深教學顧問」。
 【🔴 絕對核心守則】
 1. 僅允許輸出純 JSON 字串！絕對不可使用 Markdown 的 \`\`\`json 標籤！
@@ -1291,7 +1372,7 @@
       "type": "${exactTypeStr}",
       "stem": "這裡填寫題幹內容...",
       "options": ["選項A", "選項B", "選項C", "選項D"],
-      "correctAnswer": "選項A 的完整文字",
+      "correctAnswer": "【極度重要】必須完全照抄正確選項的完整文字內容，絕對不可以使用 A、B、1、2 等簡寫代號",
       "explanation": "詳細解析...",
       "difficulty": "${diff}"
     }
@@ -1312,7 +1393,6 @@
             currentState.uploadedFiles.filter(f=>!f.isText).forEach(f=> parts.push({inlineData: {mimeType: f.mimeType, data: f.data}}));
 
             try {
-                // 強制鎖定指定模型 gemini-3.8-flash
                 const req = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${currentState.apiKey}`, { 
                     method: 'POST', 
                     headers: {'Content-Type':'application/json'}, 
@@ -1326,7 +1406,6 @@
                 
                 const rawText = res.candidates[0].content.parts[0].text;
                 
-                // 採用企業級防呆 JSON Parser
                 const parsedData = extractJSON(rawText);
                 currentState.draftQuestions = parsedData.questions;
                 currentState.draftQuestions.forEach((q, idx) => { q.id = 'gen_' + Date.now() + '_' + idx; });
@@ -1412,8 +1491,8 @@
             const bestAct = validStats.length > 0 ? validStats[0] : null; const worstAct = validStats.length > 0 ? validStats[validStats.length - 1] : null;
 
             let insightText = `<p class="mb-4 text-slate-700">根據累積的 <b class="text-xl text-blue-700 bg-blue-100 px-2 py-0.5 rounded">${totalResponses}</b> 筆作答，平均正確率為 <b class="text-xl px-2 py-0.5 rounded ${overallAcc >= 70 ? 'text-emerald-700 bg-emerald-100' : (overallAcc===-1?'text-slate-500':'text-amber-700 bg-amber-100')}">${overallAcc===-1?'N/A':overallAcc+'%'}</b>。</p>`;
-            if(bestAct) insightText += `<p class="mb-3 text-slate-700 bg-white/70 p-3 rounded-xl border border-white">✨ <b>亮眼表現：</b> 「<b class="text-emerald-700">${bestAct.course} - ${bestAct.name}</b>」正確率達 <b>${bestAct.accuracy}%</b>。</p>`;
-            if(worstAct && worstAct.accuracy < 60) insightText += `<p class="mb-2 text-rose-800 bg-rose-50/80 p-3 rounded-xl border border-rose-200 font-medium">⚠️ <b>優先關注：</b> 「<b class="text-rose-900">${worstAct.course} - ${worstAct.name}</b>」偏低（<b>${worstAct.accuracy}%</b>），需加強複習。</p>`;
+            if(bestAct) insightText += `<p class="mb-3 text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-200">✨ <b>亮眼表現：</b> 「<b class="text-emerald-700">${bestAct.course} - ${bestAct.name}</b>」正確率達 <b>${bestAct.accuracy}%</b>。</p>`;
+            if(worstAct && worstAct.accuracy < 60) insightText += `<p class="mb-2 text-rose-800 bg-rose-50 p-3 rounded-xl border border-rose-200 font-medium">⚠️ <b>優先關注：</b> 「<b class="text-rose-900">${worstAct.course} - ${worstAct.name}</b>」偏低（<b>${worstAct.accuracy}%</b>），需加強複習。</p>`;
 
             currentState.dashboardData = { activityStats, insightText, overallAcc, totalResponses, totalActivities: filteredActivities.length, bestActName: bestAct ? bestAct.name : 'N/A' };
 
@@ -1424,7 +1503,7 @@
                     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition group overflow-hidden relative"><div class="absolute -right-4 -bottom-4 ${overallAcc>=60?'text-emerald-50':(overallAcc===-1?'text-slate-50':'text-rose-50')} opacity-50 group-hover:scale-110 transition duration-500"><i class="fas fa-bullseye text-[100px]"></i></div><div class="relative z-10"><div class="flex justify-between items-center mb-4"><span class="text-xs font-bold text-slate-500 uppercase tracking-widest">整體正確率</span><i class="fas fa-bullseye ${overallAcc>=60?'text-emerald-500':(overallAcc===-1?'text-slate-400':'text-rose-500')} text-xl"></i></div><div class="flex items-end gap-2"><span class="text-4xl font-black ${overallAcc>=60?'text-emerald-600':(overallAcc===-1?'text-slate-400':'text-rose-600')}">${overallAcc===-1?'--':overallAcc+'%'}</span></div></div></div>
                     <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition group overflow-hidden relative"><div class="absolute -right-4 -bottom-4 text-amber-50 opacity-50 group-hover:scale-110 transition duration-500"><i class="fas fa-trophy text-[100px]"></i></div><div class="relative z-10"><div class="flex justify-between items-center mb-4"><span class="text-xs font-bold text-slate-500 uppercase tracking-widest">最佳單元</span><i class="fas fa-trophy text-amber-500 text-xl"></i></div><span class="text-lg font-black text-slate-800 truncate block mt-2" title="${bestAct ? bestAct.name : 'N/A'}">${bestAct ? bestAct.name : 'N/A'}</span></div></div>
                 </div>
-                <div class="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 p-8 rounded-3xl shadow-inner mb-10 relative overflow-hidden"><div class="absolute top-0 right-0 -mt-10 -mr-10 text-indigo-200 opacity-30"><i class="fas fa-brain text-[200px]"></i></div><h3 class="text-xl font-black text-indigo-900 mb-5 flex items-center gap-3 relative z-10"><i class="fas fa-lightbulb text-amber-500 text-2xl"></i> 整體教學洞察</h3><div class="relative z-10 bg-white/50 p-5 rounded-2xl border border-white backdrop-blur-md shadow-sm ai-typography">${insightText}</div></div>
+                <div class="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 p-8 rounded-3xl shadow-inner mb-10 relative overflow-hidden"><div class="absolute top-0 right-0 -mt-10 -mr-10 text-indigo-200 opacity-30"><i class="fas fa-brain text-[200px]"></i></div><h3 class="text-xl font-black text-indigo-900 mb-5 flex items-center gap-3 relative z-10"><i class="fas fa-lightbulb text-amber-500 text-2xl"></i> 整體教學洞察</h3><div class="relative z-10 bg-white p-5 rounded-2xl border border-white shadow-sm ai-typography">${insightText}</div></div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
                     <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm"><h3 class="font-black text-slate-800 mb-6 text-center text-lg">作答人次統計</h3><div style="height: 280px; width: 100%; position: relative;"><canvas id="chart-overall-responses"></canvas></div></div>
                     <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm"><h3 class="font-black text-slate-800 mb-6 text-center text-lg">正確率趨勢</h3><div style="height: 280px; width: 100%; position: relative;"><canvas id="chart-overall-accuracy"></canvas></div></div>
@@ -1436,7 +1515,7 @@
                 let barColor, statusBadge, widthStr, valStr;
                 if(stat.accuracy === -1) { barColor = 'bg-slate-200'; statusBadge = '<span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-lg text-xs font-bold border border-slate-200 shadow-sm">不適用</span>'; widthStr = '0%'; valStr = '--'; } 
                 else { barColor = stat.accuracy >= 80 ? 'bg-emerald-500' : (stat.accuracy >= 60 ? 'bg-blue-500' : 'bg-rose-500'); statusBadge = stat.accuracy >= 80 ? '<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg text-xs font-bold border border-emerald-200 shadow-sm">優異精熟</span>' : (stat.accuracy >= 60 ? '<span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold border border-blue-200 shadow-sm">標準達標</span>' : '<span class="bg-rose-100 text-rose-700 px-3 py-1 rounded-lg text-xs font-bold border border-rose-200 shadow-sm">需強烈補強</span>'); widthStr = `${stat.accuracy}%`; valStr = `${stat.accuracy}%`; }
-                html += `<tr class="hover:bg-slate-50/80 transition duration-200"><td class="px-8 py-6 font-black text-slate-300 text-lg">#${idx+1}</td><td class="px-8 py-6"><div class="font-black text-slate-800 text-base mb-1">${stat.name}</div><div class="text-xs text-slate-500 font-medium bg-slate-100 inline-block px-2 py-0.5 rounded">${stat.course}</div></td><td class="px-8 py-6 text-center font-black text-slate-700 text-lg">${stat.responses}</td><td class="px-8 py-6 w-1/3 min-w-[200px]"><div class="flex justify-between items-center mb-2"><span class="text-sm font-black ${stat.accuracy>=60?'text-slate-700':(stat.accuracy===-1?'text-slate-400':'text-rose-600')}">${valStr}</span></div><div class="w-full bg-slate-100 rounded-full h-3 shadow-inner"><div class="${barColor} h-3 rounded-full transition-all duration-1000 ease-out" style="width: ${widthStr}"></div></div></td><td class="px-8 py-6 text-center">${statusBadge}</td></tr>`;
+                html += `<tr class="hover:bg-slate-50 transition duration-200"><td class="px-8 py-6 font-black text-slate-300 text-lg">#${idx+1}</td><td class="px-8 py-6"><div class="font-black text-slate-800 text-base mb-1">${stat.name}</div><div class="text-xs text-slate-500 font-medium bg-slate-100 inline-block px-2 py-0.5 rounded">${stat.course}</div></td><td class="px-8 py-6 text-center font-black text-slate-700 text-lg">${stat.responses}</td><td class="px-8 py-6 w-1/3 min-w-[200px]"><div class="flex justify-between items-center mb-2"><span class="text-sm font-black ${stat.accuracy>=60?'text-slate-700':(stat.accuracy===-1?'text-slate-400':'text-rose-600')}">${valStr}</span></div><div class="w-full bg-slate-100 rounded-full h-3 shadow-inner"><div class="${barColor} h-3 rounded-full transition-all duration-1000 ease-out" style="width: ${widthStr}"></div></div></td><td class="px-8 py-6 text-center">${statusBadge}</td></tr>`;
             });
             html += `</tbody></table></div></div>`;
             container.innerHTML = html;
@@ -1498,20 +1577,18 @@
                     }).join('');
                 } else { inputHtml = `<textarea name="q_${q.id}" class="w-full p-4 border border-slate-300 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 shadow-inner font-medium text-slate-700 transition" rows="5" placeholder="請在此輸入您的回覆..."></textarea>`; }
                 
-                let mediaHtml = '';
-                if (q.youtube) {
-                    mediaHtml = `<div class="mt-4 mb-3 w-full aspect-video"><iframe src="https://www.youtube.com/embed/${q.youtube}" class="w-full h-full rounded-xl shadow-sm border border-slate-200" allowfullscreen></iframe></div>`;
-                } else if (q.video) {
-                    mediaHtml = `<div class="mt-4 mb-3"><video src="${q.video}" controls class="max-h-64 w-full rounded-xl shadow-sm border border-slate-200 bg-black"></video></div>`;
-                } else if (q.image) {
-                    mediaHtml = `<div class="mt-4 mb-3"><img src="${q.image}" class="max-h-64 rounded-xl shadow-sm border border-slate-200"></div>`;
-                }
+                let mediaHtml = getMediaPreviewHtml(q, 'quiz', i);
 
-                return `<div class="bg-slate-50/80 p-6 border-2 border-slate-100 rounded-3xl mb-5 shadow-sm">
-                        <h3 class="font-black mb-2 text-lg text-slate-800 leading-snug"><span class="text-xs bg-slate-800 text-white px-2.5 py-1 rounded-md mr-3 align-middle shadow-sm">Q${i+1}</span> ${q.stem}</h3>
-                        ${mediaHtml}
-                        <div class="space-y-3 pl-1 mt-4">${inputHtml}</div>
-                    </div>`;
+                return `<div class="p-6 border border-slate-200 rounded-2xl bg-white mb-6 shadow-sm">
+                    <h4 class="font-black text-slate-800 text-lg flex items-start pr-32 leading-snug w-full">
+                        <span class="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded-md mr-3 mt-1 shrink-0 font-bold border border-slate-300">${isChoice?'選擇':'簡答'}</span>
+                        <span class="shrink-0 mr-1.5 mt-0.5 text-blue-600">Q${i+1}: </span>
+                        <span class="w-full">${q.stem}</span>
+                    </h4>
+                    
+                    ${mediaHtml}
+                    <div class="space-y-3 pl-1 mt-4">${inputHtml}</div>
+                </div>`;
             }).join('');
             
             document.getElementById('quiz-questions-container').classList.remove('hidden'); document.getElementById('btn-submit-quiz').classList.remove('hidden'); document.getElementById('quiz-success-msg').classList.add('hidden'); navigate('student-quiz');
@@ -1582,7 +1659,6 @@
         function renderPerQuestionAnalyses(act, totalResponses) {
             const container = document.getElementById('ai-question-analyses'); container.innerHTML = '';
             
-            // 安全清理舊圖表實例
             if(window.qCharts && window.qCharts.length > 0) { 
                 window.qCharts.forEach(c => { if(c && typeof c.destroy === 'function') c.destroy(); }); 
             }
@@ -1619,23 +1695,35 @@
                 } else if (originalQ.video) {
                     mediaHtml = `<div class="mt-4 mb-2"><video src="${originalQ.video}" controls class="max-h-48 rounded-xl shadow border border-slate-200 inline-block bg-black"></video></div>`;
                 } else if (originalQ.image) {
-                    mediaHtml = `<div class="mt-4 mb-2"><img src="${originalQ.image}" class="max-h-48 rounded-xl shadow border border-slate-200 inline-block"></div>`;
+                    mediaHtml = `<div class="mt-4 mb-2"><img src="${originalQ.image}" class="max-h-64 rounded-xl shadow border border-slate-200 inline-block"></div>`;
                 }
                 
-                const cardHtml = `
-                    <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition duration-300">
-                        <div class="bg-slate-50/80 p-5 border-b border-slate-200 flex flex-col gap-2">
-                            <div class="flex items-start gap-4">
-                                <div class="bg-slate-800 text-white font-black px-4 py-1.5 rounded-xl shadow-md shrink-0 mt-0.5 text-lg">Q${index+1}</div>
-                                <h5 class="font-black text-slate-800 text-xl leading-snug">${originalQ.stem}</h5>
+                let cardHtml = `<div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+                    <div class="p-6 md:p-8 border-b border-slate-100 bg-slate-50/50">
+                        <div class="flex items-start gap-4 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 font-black flex items-center justify-center shrink-0 shadow-sm text-lg">Q${index+1}</div>
+                            <h5 class="text-xl font-black text-slate-800 leading-relaxed">${qData.stem}</h5>
+                        </div>
+                        ${mediaHtml}
+                    </div>
+                    <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="space-y-5 lg:border-r border-slate-100 lg:pr-8">
+                            <h6 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><i class="fas fa-chart-pie"></i> 作答數據與分佈</h6>
+                            ${isChoice ? `<div class="h-48 relative w-full flex justify-center mb-6"><canvas id="${chartId}"></canvas></div>` : ''}
+                            <div class="space-y-3 ${!isChoice ? 'h-full pt-2' : ''}">${optionsHtml}</div>
+                        </div>
+                        <div class="space-y-6">
+                            <div>
+                                <h6 class="text-xs font-black text-violet-600 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-search bg-violet-100 p-2 rounded-lg"></i> 迷思概念診斷</h6>
+                                <div class="bg-violet-50/50 p-5 rounded-2xl text-slate-700 border border-violet-100 ai-typography shadow-inner">${qData.diagnostic}</div>
                             </div>
-                            ${mediaHtml}
+                            <div>
+                                <h6 class="text-xs font-black text-amber-600 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-lightbulb bg-amber-100 p-2 rounded-lg"></i> 教學落地行動</h6>
+                                <div class="bg-amber-50/50 p-5 rounded-2xl text-slate-700 border border-amber-100 ai-typography shadow-inner">${qData.teachingAction}</div>
+                            </div>
                         </div>
-                        <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div class="space-y-5 lg:border-r border-slate-100 lg:pr-8"><h6 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><i class="fas fa-chart-pie"></i> 作答數據與分佈</h6>${isChoice ? `<div class="h-48 relative w-full flex justify-center mb-6"><canvas id="${chartId}"></canvas></div>` : ''}<div class="space-y-3 ${!isChoice ? 'h-full pt-2' : ''}">${optionsHtml}</div></div>
-                            <div class="space-y-6"><div><h6 class="text-xs font-black text-violet-600 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-search bg-violet-100 p-2 rounded-lg"></i> 迷思概念診斷</h6><div class="bg-violet-50/50 p-5 rounded-2xl text-slate-700 border border-violet-100 ai-typography shadow-inner">${qData.diagnostic}</div></div><div><h6 class="text-xs font-black text-amber-600 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-lightbulb bg-amber-100 p-2 rounded-lg"></i> 教學落地行動</h6><div class="bg-amber-50/50 p-5 rounded-2xl text-slate-700 border border-amber-100 ai-typography shadow-inner">${qData.teachingAction}</div></div></div>
-                        </div>
-                    </div>`;
+                    </div>
+                </div>`;
                 container.insertAdjacentHTML('beforeend', cardHtml);
 
                 if (isChoice) {
@@ -1670,7 +1758,6 @@
                 return qData;
             });
 
-            // 優化 System Prompt：加入嚴格 JSON 限制與防 Markdown 規範
             const systemPrompt = `你是一位「頂尖的高教數據分析師與資深教學顧問」。
 請根據提供的【每一題的完整內容 (包含圖片或影片情境)】與【精確作答數據】，進行深度的「逐題」診斷分析。
 
@@ -1690,7 +1777,7 @@
        "questionNumber": 1,
        "diagnostic": "【迷思診斷】針對此題，分析學生深層思維。務必使用 <b> 與 <ul> 進行排版。",
        "teachingAction": "【教學對策】給老師的具體指導建議。務必使用 <b> 與 <ul><li> 進行排版。",
-       "distribution": { "選項A": 5, "選項B": 12 } // 簡答題則回傳空物件 {}
+       "distribution": { "選項A": 5, "選項B": 12 } 
     }
   ]
 }`;
@@ -1713,7 +1800,6 @@
             });
 
             try {
-                // 強制鎖定模型 gemini-3.8-flash 進行多模態診斷
                 const req = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${currentState.apiKey}`, {
                     method:'POST', headers:{'Content-Type':'application/json'}, 
                     body:JSON.stringify({
@@ -1726,7 +1812,6 @@
                 
                 const rawText = res.candidates[0].content.parts[0].text;
                 
-                // 採用企業級防呆 JSON Parser
                 const ai = extractJSON(rawText);
                 act.analysis = { ai }; 
                 if(currentState.user && currentState.user.uid === act.ownerId) { try { await updateDoc(doc(db, 'artifacts', APP_ID, 'users', act.ownerId, 'activities', act.id), { analysis: act.analysis }); } catch(e){} }
@@ -1801,7 +1886,7 @@
                 if (q.youtube) {
                     mediaInfoHtml = `<div style="margin: 15px 0; padding: 12px; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #991b1b;"><p style="margin: 0; font-size: 14px;"><b>▶️ 附帶 YouTube 影片：</b> <a href="https://youtu.be/${q.youtube}" target="_blank" style="color: #dc2626; text-decoration: underline;">https://youtu.be/${q.youtube}</a></p></div>`;
                 } else if (q.video) {
-                    mediaInfoHtml = `<div style="margin: 15px 0; padding: 12px; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color: #166534;"><p style="margin: 0; font-size: 14px;"><b>🎞️ 附帶本機影片</b> (請至線上系統檢視完整影片)</p></div>`;
+                    mediaInfoHtml = `<div style="margin: 15px 0; padding: 12px; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color: #166534;"><p style="margin: 0; font-size: 14px;"><b>🎞️️ 附帶本機影片</b> (請至線上系統檢視完整影片)</p></div>`;
                 } else if (q.image) {
                     mediaInfoHtml = `<div style="text-align: center; margin: 15px 0;"><img src="${q.image}" style="max-width: 100%; max-height: 300px; border: 1px solid #cbd5e1; border-radius: 8px;" /></div>`;
                 }
