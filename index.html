@@ -1202,6 +1202,20 @@
             navigate('edit-activity');
         }
 
+        // 深度清洗資料，移除 Firestore 不允許的 undefined 屬性
+        function sanitizeDataForFirestore(data) {
+            if (data === undefined) return null;
+            if (data === null || typeof data !== 'object') return data;
+            if (Array.isArray(data)) return data.map(item => sanitizeDataForFirestore(item));
+            const sanitized = {};
+            for (const key in data) {
+                if (data[key] !== undefined) {
+                    sanitized[key] = sanitizeDataForFirestore(data[key]);
+                }
+            }
+            return sanitized;
+        }
+
         async function saveEditedActivity() {
             const act = currentState.editingActivity;
             act.courseName = document.getElementById('edit-course-name').value.trim() || act.courseName;
@@ -1407,7 +1421,7 @@ ${contextInfo}`;
             const count = qCountVal === 'custom' ? (document.getElementById('create-q-count-custom').value || 5) : qCountVal;
             const diff = document.getElementById('create-difficulty').value; const qType = document.getElementById('create-q-type').value; const scenario = document.getElementById('create-scenario').value;
             
-            document.getElementById('ai-loading-text').innerText = mode === 'generate' ? 'Gemini 正在深度解析教材...' : 'Gemini 正在優化與潤飾題目...'; nextStep(2);
+            document.getElementById('ai-loading-text').innerText = mode === 'generate' ? 'Gemini 正在深度解析教材...' : 'Gemini 正在優化與潤飾題目...'; nextStep(3);
 
             let typeDesc = qType === 'single_choice' ? '單選題' : (qType === 'short_answer' ? '簡答題' : '綜合題 (單選題與簡答題混合)');
             let exactTypeStr = qType === 'mixed' ? 'single_choice 或 short_answer' : qType;
