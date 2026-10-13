@@ -217,7 +217,7 @@
                 </div>
                 <div class="flex flex-wrap gap-3">
                     <button onclick="loadOverallDashboard()" class="bg-white border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 transition px-5 py-2.5 rounded-xl font-bold shadow-sm flex items-center gap-2"><i class="fas fa-chart-pie"></i> 總體成效看板</button>
-                    <button onclick="navigate('create-activity')" class="bg-blue-600 hover:bg-blue-700 text-white transition px-5 py-2.5 rounded-xl font-bold shadow-md hover:shadow-lg flex items-center gap-2"><i class="fas fa-plus"></i> 建立新活動</button>
+                    <button onclick="openCreateActivity()" class="bg-blue-600 hover:bg-blue-700 text-white transition px-5 py-2.5 rounded-xl font-bold shadow-md hover:shadow-lg flex items-center gap-2"><i class="fas fa-plus"></i> 建立新活動</button>
                 </div>
             </div>
             
@@ -967,7 +967,7 @@
             loadAdminTeacherActivities, downloadOverallWordReport, duplicateActivity, editActivity, 
             saveEditedActivity,
             promptYouTubeUrl, clearActivityResponses, clearActivityResponsesFromDashboard,
-            regenerateSingleQuestion, removeUploadedFile,
+            regenerateSingleQuestion, removeUploadedFile, openCreateActivity,
             triggerQuestionImageUpload, handleQuestionImageChange, removeQuestionMedia
         });
 
@@ -1248,37 +1248,43 @@
         }
 
         function openCreateActivity() {
-            // 1. 強制重置所有文字欄位
+            // 1. Reset text inputs
             document.getElementById('create-course-name').value = '';
             document.getElementById('create-activity-name').value = '';
-            document.getElementById('create-material').value = '';
+            const materialInput = document.getElementById('create-material');
+            if(materialInput) materialInput.value = '';
             
-            // 2. 恢復預設下拉選單與按鈕狀態
+            // 2. Reset dropdowns and checkboxes to defaults
             document.getElementById('create-q-count').value = '5';
             document.getElementById('create-q-count-custom').value = '';
             document.getElementById('create-q-type').value = 'single_choice';
             document.getElementById('create-difficulty').value = '中等 (情境應用、邏輯分析)';
             document.getElementById('create-scenario').value = 'quiz';
-            document.getElementById('confirm-review-check').checked = false;
+            const reviewCheck = document.getElementById('confirm-review-check');
+            if(reviewCheck) reviewCheck.checked = false;
             
-            // 3. 恢復出題模式為「根據教材出題」
+            // 3. Reset the mode toggle (Generate from material)
             const modeRadios = document.getElementsByName('create-mode');
-            for(let i = 0; i < modeRadios.length; i++) {
-                if(modeRadios[i].value === 'generate') modeRadios[i].checked = true;
+            if (modeRadios && modeRadios.length > 0) {
+                for(let i = 0; i < modeRadios.length; i++) {
+                    if(modeRadios[i].value === 'generate') modeRadios[i].checked = true;
+                }
+                toggleCreateMode();
             }
-            toggleCreateMode();
             toggleCustomCount();
             
-            // 4. 徹底清空上傳的檔案與暫存
-            document.getElementById('file-upload').value = '';
+            // 4. Clear uploaded files
+            const fileUpload = document.getElementById('file-upload');
+            if(fileUpload) fileUpload.value = '';
             currentState.uploadedFiles = [];
             renderFiles();
             
-            // 5. 徹底清空 AI 產生的題目草稿
+            // 5. Clear AI generated drafts
             currentState.draftQuestions = [];
-            document.getElementById('draft-questions-container').innerHTML = '';
+            const draftContainer = document.getElementById('draft-questions-container');
+            if(draftContainer) draftContainer.innerHTML = '';
             
-            // 6. 將 UI 切回第一步 (Step 1)，然後跳轉到建立畫面
+            // 6. Force UI back to Step 1 and navigate to the view
             nextStep(1);
             navigate('create-activity');
         }
