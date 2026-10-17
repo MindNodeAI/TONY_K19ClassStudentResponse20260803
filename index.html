@@ -1437,6 +1437,7 @@ ${contextInfo}`;
 1. 僅允許輸出純 JSON 字串！絕對不可使用 Markdown 的 \`\`\`json 標籤！
 2. 絕對不可以有任何開場白或結語，輸出必須由 '{' 開始並以 '}' 結束。
 3. 如果是單選題，options 必須提供至少 4 個選項。若是簡答題，options 必須為空陣列 []。
+4. 【資訊鎖定強制令 (Closed-Book)】：絕對只能使用使用者提供的【參考素材與檔案】出題！嚴禁參雜任何外部知識、常識或過往經驗。所有的考點與標準答案，都必須能從給定素材中 100% 找到依據。如果不相關，請勿出題！
 
 【預期 JSON 輸出結構範例】
 {
@@ -1457,10 +1458,12 @@ ${contextInfo}`;
             let fileText = currentState.uploadedFiles.filter(f=>f.isText).map(f=>f.data).join('\n');
             let combinedText = `【參考素材文字】\n${text}\n【參考檔案內容】\n${fileText}`;
 
+            let strictConstraint = "\n⚠️ 【極度重要】：你必須完全「鎖定」上述素材出題，絕對不可以無中生有或使用外部知識！如果素材資訊不足以出滿題數，請盡量運用現有內容變換題型，嚴禁瞎編。\n";
+            
             if (scenario === 'feedback') {
-                prompt = mode === 'generate' ? `請設計 ${count} 題${typeDesc}「意見回饋問卷」。\n${combinedText}` : `請優化以下內容，產出 ${count} 題${typeDesc}「意見回饋問卷」。\n${combinedText}`;
+                prompt = mode === 'generate' ? `請設計 ${count} 題${typeDesc}「意見回饋問卷」。\n${combinedText}${strictConstraint}` : `請優化以下內容，產出 ${count} 題${typeDesc}「意見回饋問卷」。\n${combinedText}${strictConstraint}`;
             } else {
-                prompt = mode === 'generate' ? `請根據素材產出 ${count} 題${typeDesc}。認知難度設定為：${diff}。\n${combinedText}` : `請優化素材中的題目，輸出 ${count} 題${typeDesc}。認知難度設定為：${diff}。\n${combinedText}`;
+                prompt = mode === 'generate' ? `請根據素材產出 ${count} 題${typeDesc}。認知難度設定為：${diff}。\n${combinedText}${strictConstraint}` : `請優化素材中的題目，輸出 ${count} 題${typeDesc}。認知難度設定為：${diff}。\n${combinedText}${strictConstraint}`;
             }
             parts = [{text: prompt}];
 
