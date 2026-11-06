@@ -128,7 +128,7 @@
                     <div class="relative">
                         <input type="password" id="input-api-key" class="w-full px-4 py-3.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition pr-10 text-slate-700 font-mono text-sm" placeholder="AIzaSy...">
                         <button type="button" onclick="toggleVisibility('input-api-key', 'icon-api-key')" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition">
-                            <i class="fas fa-eye" id="icon-api-key"></i>
+                            <i class="fas fa-eye-slash" id="icon-api-key"></i>
                         </button>
                     </div>
                     <div class="flex items-center justify-between px-1">
@@ -163,7 +163,7 @@
                     </div>
                     <input type="email" id="auth-email" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition text-sm" placeholder="電子信箱 (teacher@school.edu)">
                     <div class="relative">
-                        <input type="text" id="auth-password" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition pr-10 text-sm" placeholder="密碼 (至少 6 碼)">
+                        <input type="password" id="auth-password" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition pr-10 text-sm" placeholder="密碼 (至少 6 碼)">
                         <button type="button" onclick="toggleVisibility('auth-password', 'icon-password')" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition">
                             <i class="fas fa-eye-slash" id="icon-password"></i>
                         </button>
@@ -355,12 +355,12 @@
                             </div>
                         </div>
 
-                        <div class="flex gap-2 p-1 bg-slate-100 rounded-xl inline-flex shadow-inner">
-                            <label class="flex items-center cursor-pointer px-5 py-2.5 rounded-lg transition-all duration-200 text-sm font-bold" id="label-mode-generate" style="background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #1e293b;">
+                        <div class="flex flex-wrap sm:inline-flex gap-2 p-1.5 bg-slate-100 rounded-xl shadow-inner w-full sm:w-auto">
+                            <label class="flex-1 sm:flex-initial flex items-center justify-center cursor-pointer px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-bold text-center" id="label-mode-generate" style="background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #1e293b;">
                                 <input type="radio" name="create-mode" value="generate" checked="" onchange="toggleCreateMode()" class="hidden"> 
-                                <i class="fas fa-book-open text-blue-600 mr-2"></i> 根據教材出題 (嚴格鎖定教材)
+                                <i class="fas fa-book-open text-blue-600 mr-2"></i> 根據教材出題 (嚴格鎖定)
                             </label>
-                            <label class="flex items-center cursor-pointer px-5 py-2.5 rounded-lg text-slate-500 hover:text-slate-700 transition-all duration-200 text-sm font-bold" id="label-mode-optimize">
+                            <label class="flex-1 sm:flex-initial flex items-center justify-center cursor-pointer px-4 py-2.5 rounded-lg text-slate-500 hover:text-slate-700 transition-all duration-200 text-sm font-bold text-center" id="label-mode-optimize">
                                 <input type="radio" name="create-mode" value="optimize" onchange="toggleCreateMode()" class="hidden"> 
                                 <i class="fas fa-magic text-violet-600 mr-2"></i> AI 優化既有題目
                             </label>
@@ -490,47 +490,47 @@
             <div class="fixed bottom-[-20%] right-[-10%] w-[40vw] h-[40vw] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
 
             <!-- 頂部固定導覽列：確保返回主畫面的 X 按鈕永遠清晰可見 -->
-            <div class="sticky top-0 z-50 w-full bg-slate-900/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span></span>
-                    <span class="text-white font-bold tracking-wider text-sm uppercase">LIVE 課堂互動投影模式</span>
+            <div class="sticky top-0 z-50 w-full bg-slate-900/80 backdrop-blur-md border-b border-white/10 px-4 sm:px-6 py-3.5 flex justify-between items-center gap-2">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <span class="relative flex h-3 w-3 shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span></span>
+                    <span class="text-white font-bold tracking-wider text-xs sm:text-sm uppercase truncate">LIVE 課堂互動投影模式</span>
                 </div>
-                <button onclick="navigate('dashboard')" class="text-white bg-rose-600 hover:bg-rose-500 px-5 py-2.5 rounded-xl text-sm font-black transition flex items-center gap-2 shadow-lg border border-rose-400/30 active:scale-95 cursor-pointer">
-                    <i class="fas fa-times text-lg"></i> 關閉投影返回主畫面
+                <button onclick="navigate('dashboard')" class="shrink-0 text-white bg-rose-600 hover:bg-rose-500 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black transition flex items-center gap-1.5 sm:gap-2 shadow-lg border border-rose-400/30 active:scale-95 cursor-pointer">
+                    <i class="fas fa-times text-base sm:text-lg"></i> <span>關閉投影<span class="hidden sm:inline">返回主畫面</span></span>
                 </button>
             </div>
 
-            <div class="flex-grow w-full flex flex-col items-center justify-center p-6 md:p-12 relative z-10">
+            <div class="flex-grow w-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-12 relative z-10">
                 <div class="w-full max-w-7xl mx-auto flex flex-col items-center">
-                    <div class="text-center mb-10 md:mb-14">
-                        <h2 class="text-4xl md:text-6xl font-black text-white tracking-tight drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]" id="live-activity-name">活動名稱</h2>
+                    <div class="text-center mb-8 md:mb-14 px-2">
+                        <h2 class="text-3xl sm:text-4xl md:text-6xl font-black text-white tracking-tight drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] break-words" id="live-activity-name">活動名稱</h2>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 w-full items-center max-w-6xl">
-                        <div class="flex flex-col items-center justify-center p-10 md:p-14 bg-white/5 border border-white/10 rounded-[3rem] backdrop-blur-xl shadow-2xl relative group w-full">
-                            <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-[3rem] opacity-50 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
-                            <p class="text-blue-300 font-bold tracking-widest uppercase mb-8 text-lg"><i class="fas fa-camera text-blue-400 mr-2"></i>Scan QR Code</p>
-                            <div class="bg-white p-5 rounded-[2rem] shadow-[0_0_50px_rgba(59,130,246,0.3)] transform transition hover:scale-105 duration-300">
-                                <div id="qrcode" class="flex justify-center w-[260px] h-[260px]"></div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-24 w-full items-center max-w-6xl">
+                        <div class="flex flex-col items-center justify-center p-6 sm:p-10 md:p-14 bg-white/5 border border-white/10 rounded-[2rem] sm:rounded-[3rem] backdrop-blur-xl shadow-2xl relative group w-full">
+                            <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-[2rem] sm:rounded-[3rem] opacity-50 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
+                            <p class="text-blue-300 font-bold tracking-widest uppercase mb-5 sm:mb-8 text-base sm:text-lg"><i class="fas fa-camera text-blue-400 mr-2"></i>Scan QR Code</p>
+                            <div class="bg-white p-4 sm:p-5 rounded-[1.5rem] sm:rounded-[2rem] shadow-[0_0_50px_rgba(59,130,246,0.3)] transform transition hover:scale-105 duration-300">
+                                <div id="qrcode" class="flex justify-center items-center w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] [&>img]:max-w-full [&>img]:h-auto [&>canvas]:max-w-full [&>canvas]:h-auto"></div>
                             </div>
                         </div>
 
                         <div class="flex flex-col justify-center items-center lg:items-start text-center lg:text-left w-full">
-                            <h3 class="text-slate-400 font-bold uppercase tracking-widest text-xl mb-4">輸入活動代碼</h3>
-                            <div id="live-activity-code" class="text-7xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 font-mono tracking-[0.2em] mb-12 drop-shadow-[0_0_30px_rgba(99,102,241,0.4)]">------</div>
+                            <h3 class="text-slate-400 font-bold uppercase tracking-widest text-base sm:text-xl mb-2 sm:mb-4">輸入活動代碼</h3>
+                            <div id="live-activity-code" class="text-5xl sm:text-7xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 font-mono tracking-[0.15em] sm:tracking-[0.2em] mb-8 sm:mb-12 drop-shadow-[0_0_30px_rgba(99,102,241,0.4)]">------</div>
                             
-                            <div class="w-full max-w-md bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-md mb-10 flex items-center justify-between shadow-xl">
-                                <div>
-                                    <span class="block text-slate-400 font-bold text-sm uppercase tracking-wider mb-2">已連線學生人數</span>
+                            <div class="w-full max-w-md bg-white/5 border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-md mb-8 sm:mb-10 flex items-center justify-between shadow-xl">
+                                <div class="text-left">
+                                    <span class="block text-slate-400 font-bold text-xs sm:text-sm uppercase tracking-wider mb-2">已連線學生人數</span>
                                     <div class="flex items-center gap-3">
                                         <span class="relative flex h-4 w-4">
                                           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                           <span class="relative inline-flex rounded-full h-4 w-4 bg-green-500"></span>
                                         </span>
-                                        <span class="text-green-400 font-medium text-lg uppercase tracking-wide">Connected</span>
+                                        <span class="text-green-400 font-medium text-base sm:text-lg uppercase tracking-wide">Connected</span>
                                     </div>
                                 </div>
-                                <span id="live-response-count" class="font-black text-white text-7xl drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">0</span>
+                                <span id="live-response-count" class="font-black text-white text-5xl sm:text-7xl drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">0</span>
                             </div>
 
                             <div class="flex flex-col sm:flex-row w-full max-w-md gap-4">
@@ -551,13 +551,13 @@
         </section>
 
         <!-- 學生作答畫面 -->
-        <section id="view-student-quiz" class="view-section max-w-3xl mx-auto mt-4 p-4 sm:p-6 lg:p-8 w-full">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-6 flex justify-between items-center sticky top-20 z-40 backdrop-blur-md bg-white/90">
-                <div>
-                    <h2 class="font-black text-slate-800 text-lg" id="quiz-course-title">課程</h2>
-                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wider mt-0.5" id="quiz-activity-title">活動</p>
+        <section id="view-student-quiz" class="view-section max-w-3xl mx-auto mt-2 sm:mt-4 p-3 sm:p-6 lg:p-8 w-full">
+            <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 mb-5 sm:mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sticky top-16 sm:top-20 z-40 backdrop-blur-md bg-white/95">
+                <div class="min-w-0 w-full sm:w-auto">
+                    <h2 class="font-black text-slate-800 text-base sm:text-lg truncate" id="quiz-course-title">課程</h2>
+                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wider mt-0.5 truncate" id="quiz-activity-title">活動</p>
                 </div>
-                <div class="text-right text-sm">
+                <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 text-sm shrink-0">
                     <span class="bg-slate-100 text-slate-600 font-bold px-2.5 py-1 rounded-md text-xs border border-slate-200 mr-2" id="quiz-student-id">學號</span>
                     <span class="font-black text-slate-800" id="quiz-student-name">姓名</span>
                 </div>
@@ -890,14 +890,15 @@
 
         function getMediaPreviewHtml(q, mode, qIdx) {
             let mediaHtml = '';
-            let removeBtn = `<button onclick="removeQuestionMedia('${mode}', ${qIdx})" class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full opacity-0 group-hover/img:opacity-100 transition shadow flex items-center justify-center" title="移除多媒體"><i class="fas fa-trash"></i></button>`;
+            const isEditable = (mode === 'draft' || mode === 'edit');
+            let removeBtn = isEditable ? `<button onclick="removeQuestionMedia('${mode}', ${qIdx})" class="absolute top-2.5 right-2.5 bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full opacity-90 sm:opacity-0 group-hover/img:opacity-100 transition shadow-md flex items-center justify-center z-10" title="移除多媒體"><i class="fas fa-trash text-xs"></i></button>` : '';
             
             if (q.youtube) {
-                mediaHtml = `<div class="mt-3 relative group/img w-full max-w-lg aspect-video"><iframe src="https://www.youtube.com/embed/${q.youtube}" class="w-full h-full rounded-lg shadow-sm border border-slate-200" allowfullscreen></iframe>${removeBtn}</div>`;
+                mediaHtml = `<div class="mt-3.5 relative group/img w-full max-w-lg mx-auto sm:mx-0 aspect-video"><iframe src="https://www.youtube.com/embed/${q.youtube}" class="w-full h-full rounded-xl shadow-sm border border-slate-200" allowfullscreen></iframe>${removeBtn}</div>`;
             } else if (q.video) {
-                mediaHtml = `<div class="mt-3 relative inline-block group/img"><video src="${q.video}" controls class="max-h-64 rounded-lg shadow-sm border border-slate-200 bg-black"></video>${removeBtn}</div>`;
+                mediaHtml = `<div class="mt-3.5 relative group/img w-full flex justify-center sm:justify-start"><video src="${q.video}" controls class="max-h-64 w-full sm:w-auto rounded-xl shadow-sm border border-slate-200 bg-black"></video>${removeBtn}</div>`;
             } else if (q.image) {
-                mediaHtml = `<div class="mt-3 relative inline-block group/img"><img src="${q.image}" class="max-h-48 rounded-lg shadow-sm border border-slate-200">${removeBtn}</div>`;
+                mediaHtml = `<div class="mt-3.5 relative group/img w-full flex justify-center sm:justify-start"><img src="${q.image}" class="${isEditable ? 'max-h-56' : 'max-h-80 w-full sm:w-auto object-contain'} rounded-xl shadow-sm border border-slate-200">${removeBtn}</div>`;
             }
             return mediaHtml;
         }
@@ -927,7 +928,16 @@
 
         function openTonyModal() { document.getElementById('modal-tony').classList.remove('hidden'); setTimeout(()=>document.getElementById('modal-tony').style.opacity=1,10); }
         function closeTonyModal() { document.getElementById('modal-tony').classList.add('hidden'); }
-        function toggleVisibility(inputId, iconId) { const i=document.getElementById(inputId), ic=document.getElementById(iconId); if(i.type==="password"){i.type="text";ic.classList.replace("fa-eye","fa-eye-slash");}else{i.type="password";ic.classList.replace("fa-eye-slash","fa-eye");} }
+        function toggleVisibility(inputId, iconId) { 
+            const i = document.getElementById(inputId), ic = document.getElementById(iconId); 
+            if(i.type === "password") {
+                i.type = "text";
+                ic.classList.replace("fa-eye-slash", "fa-eye");
+            } else {
+                i.type = "password";
+                ic.classList.replace("fa-eye", "fa-eye-slash");
+            } 
+        }
         function toggleCustomCount() { const s=document.getElementById('create-q-count'), c=document.getElementById('create-q-count-custom'); if(s.value==='custom'){c.classList.remove('hidden');c.focus();}else{c.classList.add('hidden');} }
 
         function checkAnswerMatch(studentAns, correctAns) {
@@ -1117,25 +1127,29 @@
                 if(isChoice) {
                     previewOptions = `<div class="mt-4 space-y-2.5">${(q.options || []).map((o, optIdx)=> {
                         let safeText = typeof o === 'string' ? o.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : JSON.stringify(o);
-                        return `<div class="flex items-center p-3 bg-white border border-slate-200 rounded-xl hover:border-blue-300 transition shadow-sm group/opt">
-                            <input type="radio" disabled class="mr-3 w-4 h-4 text-blue-600 cursor-not-allowed opacity-50"> 
-                            <span class="text-slate-700 text-sm editable-field w-full outline-none rounded-md px-2 py-1 transition font-medium group-hover/opt:bg-blue-50" contenteditable="true" data-qidx="${i}" data-optidx="${optIdx}">${safeText}</span>
+                        return `<div class="flex items-start sm:items-center p-3 bg-white border border-slate-200 rounded-xl hover:border-blue-300 transition shadow-sm group/opt">
+                            <input type="radio" disabled class="mr-3 mt-1 sm:mt-0 w-4 h-4 shrink-0 text-blue-600 cursor-not-allowed opacity-50"> 
+                            <span class="text-slate-700 text-sm editable-field w-full outline-none rounded-md px-2 py-1 transition font-medium group-hover/opt:bg-blue-50 break-words leading-relaxed" contenteditable="true" data-qidx="${i}" data-optidx="${optIdx}">${safeText}</span>
                         </div>`
                     }).join('')}</div>`;
                 } else { previewOptions = `<div class="mt-4"><textarea disabled class="w-full p-4 border border-slate-200 rounded-xl bg-slate-50 text-sm text-slate-400 cursor-not-allowed shadow-inner" rows="3" placeholder="此處為學生簡答輸入預覽區..."></textarea></div>`; }
                 
                 let mediaHtml = getMediaPreviewHtml(q, 'draft', i);
 
-                return `<div class="p-6 border-2 border-slate-100 rounded-2xl bg-slate-50/50 mb-5 shadow-sm relative group hover:border-blue-200 hover:shadow-md transition duration-300">
-                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition text-xs text-blue-700 font-bold bg-blue-100 px-3 py-1.5 rounded-lg shadow-sm border border-blue-200 z-10 pointer-events-none transform translate-y-2 group-hover:translate-y-0 duration-300 flex items-center gap-1.5"><i class="fas fa-edit"></i> 點擊文字即可修改</div>
+                return `<div class="p-4 sm:p-6 border-2 border-slate-100 rounded-2xl bg-slate-50/50 mb-5 shadow-sm relative group hover:border-blue-200 hover:shadow-md transition duration-300">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-blue-600 text-white font-black px-2.5 py-1 rounded-lg text-xs shadow-sm">Q${i+1}</span>
+                            <span class="text-xs bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md font-bold border border-slate-300">${isChoice?'選擇題':'簡答題'}</span>
+                        </div>
+                        <span class="text-xs text-blue-700 font-bold bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 flex items-center gap-1"><i class="fas fa-edit"></i> 點擊文字可直接修改</span>
+                    </div>
                     
-                    <h4 class="font-black text-slate-800 text-lg flex items-start pr-32 leading-snug w-full">
-                        <span class="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded-md mr-3 mt-1 shrink-0 font-bold border border-slate-300">${isChoice?'選擇':'簡答'}</span>
-                        <span class="shrink-0 mr-1.5 mt-0.5 text-blue-600">Q${i+1}: </span>
-                        <span class="editable-field outline-none rounded-md px-2 py-0.5 transition w-full hover:bg-white" contenteditable="true" data-qidx="${i}" data-field="stem">${q.stem}</span>
+                    <h4 class="font-black text-slate-800 text-base sm:text-lg leading-relaxed w-full break-words">
+                        <div class="editable-field outline-none rounded-lg px-2.5 py-1.5 -mx-1 transition w-full bg-white/60 hover:bg-white border border-transparent hover:border-slate-200" contenteditable="true" data-qidx="${i}" data-field="stem">${q.stem}</div>
                     </h4>
                     
-                    <div class="mt-2 flex gap-2">
+                    <div class="mt-3 flex flex-wrap gap-2">
                         <button onclick="triggerQuestionImageUpload('draft', ${i})" class="text-xs bg-white text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 font-bold transition shadow-sm flex items-center gap-1.5"><i class="fas fa-upload"></i> ${q.image || q.video || q.youtube ? '更換圖/影' : '上傳圖/影'}</button>
                         <button onclick="promptYouTubeUrl('draft', ${i})" class="text-xs bg-white text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg border border-red-200 font-bold transition shadow-sm flex items-center gap-1.5"><i class="fab fa-youtube"></i> 加入 YouTube</button>
                         <button id="btn-regen-draft-${i}" onclick="regenerateSingleQuestion('draft', ${i})" class="text-xs bg-white text-violet-600 hover:bg-violet-50 px-3 py-1.5 rounded-lg border border-violet-200 font-bold transition shadow-sm flex items-center gap-1.5"><i class="fas fa-sync-alt"></i> AI 換題</button>
@@ -1147,11 +1161,11 @@
                     <div class="mt-5 pt-4 border-t border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-emerald-50/80 p-3 rounded-xl border border-emerald-100">
                             <span class="block text-xs text-emerald-700 font-black tracking-wider uppercase mb-1.5">${isChoice?(scenario==='feedback'?'建議選項':'標準正解'):(scenario==='feedback'?'開放回答':'參考解答')}</span>
-                            <div class="text-sm text-emerald-900 font-bold editable-field outline-none rounded-md px-2 py-1 transition w-full hover:bg-white" contenteditable="true" data-qidx="${i}" data-field="correctAnswer">${q.correctAnswer}</div>
+                            <div class="text-sm text-emerald-900 font-bold editable-field outline-none rounded-md px-2 py-1 transition w-full hover:bg-white break-words" contenteditable="true" data-qidx="${i}" data-field="correctAnswer">${q.correctAnswer}</div>
                         </div>
                         <div class="bg-slate-100/80 p-3 rounded-xl border border-slate-200">
                             <span class="block text-xs text-slate-500 font-black tracking-wider uppercase mb-1.5">${scenario==='feedback'?'提問目的':'觀念解析'}</span>
-                            <div class="text-sm text-slate-700 font-medium editable-field outline-none rounded-md px-2 py-1 transition w-full hover:bg-white" contenteditable="true" data-qidx="${i}" data-field="explanation">${q.explanation}</div>
+                            <div class="text-sm text-slate-700 font-medium editable-field outline-none rounded-md px-2 py-1 transition w-full hover:bg-white break-words" contenteditable="true" data-qidx="${i}" data-field="explanation">${q.explanation}</div>
                         </div>
                     </div>
                 </div>`;
@@ -1769,39 +1783,87 @@ ${contextInfo}`;
                     inputHtml = (q.options || []).map(o => {
                         let safeText = typeof o === 'string' ? o.replace(/</g, '&lt;').replace(/>/g, '&gt;') : JSON.stringify(o);
                         let safeVal = typeof o === 'string' ? o.replace(/"/g, '&quot;') : JSON.stringify(o);
-                        return `<label class="flex items-center p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition group shadow-sm"><input type="radio" name="q_${q.id}" value="${safeVal}" class="mr-4 w-5 h-5 text-blue-600 focus:ring-blue-500 border-slate-300"> <span class="text-slate-700 font-medium group-hover:text-blue-800 transition">${safeText}</span></label>`;
+                        return `<label class="flex items-start sm:items-center p-3.5 sm:p-4 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:bg-blue-50/60 hover:border-blue-400 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/80 transition-all group shadow-sm active:scale-[0.99]">
+                            <input type="radio" name="q_${q.id}" value="${safeVal}" class="mr-3.5 mt-0.5 sm:mt-0 w-5 h-5 shrink-0 text-blue-600 focus:ring-blue-500 border-slate-300"> 
+                            <span class="text-slate-700 text-base font-medium group-hover:text-blue-900 leading-snug break-words w-full">${safeText}</span>
+                        </label>`;
                     }).join('');
-                } else { inputHtml = `<textarea name="q_${q.id}" class="w-full p-4 border border-slate-300 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 shadow-inner font-medium text-slate-700 transition" rows="5" placeholder="請在此輸入您的回覆..."></textarea>`; }
+                } else { 
+                    inputHtml = `<textarea name="q_${q.id}" class="w-full p-4 border-2 border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 shadow-inner font-medium text-slate-700 text-base transition" rows="4" placeholder="請在此輸入您的想法與回覆..."></textarea>`; 
+                }
                 
                 let mediaHtml = getMediaPreviewHtml(q, 'quiz', i);
 
-                return `<div class="p-6 border border-slate-200 rounded-2xl bg-white mb-6 shadow-sm">
-                    <h4 class="font-black text-slate-800 text-lg flex items-start pr-32 leading-snug w-full">
-                        <span class="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded-md mr-3 mt-1 shrink-0 font-bold border border-slate-300">${isChoice?'選擇':'簡答'}</span>
-                        <span class="shrink-0 mr-1.5 mt-0.5 text-blue-600">Q${i+1}: </span>
-                        <span class="w-full">${q.stem}</span>
+                return `<div id="quiz-card-${q.id}" class="p-4 sm:p-6 border border-slate-200 rounded-2xl bg-white mb-5 shadow-sm transition-all duration-300">
+                    <div class="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-blue-600 text-white font-black px-2.5 py-0.5 rounded-lg text-sm shadow-sm">Q${i+1}</span>
+                            <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md font-bold border border-slate-200">${isChoice?'單選題':'簡答題'}</span>
+                        </div>
+                        <span class="text-xs font-medium text-slate-400">第 ${i+1} / ${act.questions.length} 題</span>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-base sm:text-lg leading-relaxed w-full break-words mb-2">
+                        ${q.stem}
                     </h4>
                     
                     ${mediaHtml}
-                    <div class="space-y-3 pl-1 mt-4">${inputHtml}</div>
+                    <div class="space-y-3 mt-4">${inputHtml}</div>
                 </div>`;
             }).join('');
             
+            const submitBtn = document.getElementById('btn-submit-quiz');
+            if(submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-check-double"></i> 確定送出答案';
+            }
             document.getElementById('quiz-questions-container').classList.remove('hidden'); document.getElementById('btn-submit-quiz').classList.remove('hidden'); document.getElementById('quiz-success-msg').classList.add('hidden'); navigate('student-quiz');
         }
 
         async function submitQuiz() {
-            const act = currentState.currentActivity; let ans = {}; let all = true;
+            const act = currentState.currentActivity; let ans = {}; let firstUnansweredId = null;
             act.questions.forEach(q => { 
-                if(q.type === 'short_answer' || !q.options || q.options.length === 0) { const textEl = document.querySelector(`textarea[name="q_${q.id}"]`); if(textEl && textEl.value.trim()) ans[q.id] = textEl.value.trim(); else all = false; } 
-                else { const sel = document.querySelector(`input[name="q_${q.id}"]:checked`); if(sel) ans[q.id] = sel.value; else all = false; }
+                const cardEl = document.getElementById(`quiz-card-${q.id}`);
+                if(cardEl) cardEl.classList.remove('border-rose-500', 'ring-4', 'ring-rose-500/20');
+                
+                if(q.type === 'short_answer' || !q.options || q.options.length === 0) { 
+                    const textEl = document.querySelector(`textarea[name="q_${q.id}"]`); 
+                    if(textEl && textEl.value.trim()) ans[q.id] = textEl.value.trim(); 
+                    else if(!firstUnansweredId) firstUnansweredId = q.id;
+                } else { 
+                    const sel = document.querySelector(`input[name="q_${q.id}"]:checked`); 
+                    if(sel) ans[q.id] = sel.value; 
+                    else if(!firstUnansweredId) firstUnansweredId = q.id;
+                }
             });
-            if(!all) return showToast('尚有題目未作答，請檢查', 'warning');
             
+            if(firstUnansweredId) {
+                showToast('尚有題目未完成作答，已為您標示！', 'warning');
+                const targetCard = document.getElementById(`quiz-card-${firstUnansweredId}`);
+                if(targetCard) {
+                    targetCard.classList.add('border-rose-500', 'ring-4', 'ring-rose-500/20');
+                    targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
+            
+            const submitBtn = document.getElementById('btn-submit-quiz');
+            if(submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 答案傳送中...';
+            }
+
             const uid = auth.currentUser ? auth.currentUser.uid : 's_'+Date.now();
             const payload = { studentUid: uid, department: currentState.studentInfo.dept, grade: currentState.studentInfo.grade, studentId: currentState.studentInfo.sid, nickname: currentState.studentInfo.name, answers: ans, submittedAt: Date.now() };
             currentState.responses.push(payload); 
-            try { await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses', uid), payload); } catch(e){}
+            try { 
+                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'activities', act.code, 'responses', uid), payload); 
+            } catch(e){
+                if(submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-check-double"></i> 確定送出答案';
+                }
+                return showToast('網路連線異常，請再試一次', 'error');
+            }
             
             document.getElementById('quiz-questions-container').classList.add('hidden'); document.getElementById('btn-submit-quiz').classList.add('hidden'); document.getElementById('quiz-success-msg').classList.remove('hidden'); window.scrollTo({top: 0, behavior: 'smooth'});
         }
